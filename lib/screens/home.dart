@@ -1,16 +1,21 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_familly_app/main.dart';
-import 'package:provider/provider.dart';
-import 'firebase_services/auth.dart';
+import 'package:flutter_familly_app/services/auth.dart';
+import 'package:flutter_familly_app/widgets/chatlist.dart';
 
-class OnceLoggedIn extends StatefulWidget {
+class Home extends StatefulWidget {
+  final FirebaseAuth auth;
+  final FirebaseFirestore firestore;
+
+  const Home({Key key, this.auth, this.firestore}) : super(key: key);
+
   @override
-  _OnceLoggedInState createState() => _OnceLoggedInState();
+  _HomeState createState() => _HomeState();
 }
 
-class _OnceLoggedInState extends State<OnceLoggedIn> {
+class _HomeState extends State<Home> {
   PageController pageController;
   double _labelfontsize = 12;
   int _page = 0;
@@ -32,22 +37,22 @@ class _OnceLoggedInState extends State<OnceLoggedIn> {
               children: [
                 Text("Home"),
                 RaisedButton(
-                  onPressed: () {
-                    readData();
-                  },
-                  child: Text("Read Data"),
-                ),
-                RaisedButton(
-                  onPressed: () {
-                    context.read<Auth>().signOut();
+                  onPressed: () async {
+                    //sign Out
+                    await Auth(auth: widget.auth).signOut();
                   },
                   child: Text("Sign out"),
                 ),
               ],
             ),
           ),
-          Center(child: Text("Second Page")),
-          Center(child: Text("Third Page")),
+          AppBar(
+            title: const Text("Add a Task"),
+            actions: [
+              IconButton(icon: const Icon(Icons.exit_to_app), onPressed: () {})
+            ],
+          ),
+          Container(child: ChatList()),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,
@@ -91,23 +96,4 @@ class _OnceLoggedInState extends State<OnceLoggedIn> {
   void navigationTapped(int page) {
     pageController.jumpToPage(page);
   }
-
-  void readData() {
-    usersRef.once().then((DataSnapshot datasnapshot) {
-      print(datasnapshot.value);
-    });
-  }
 }
-
-void main() => runApp(
-    MaterialApp(debugShowCheckedModeBanner: false, home: OnceLoggedIn()));
-
-/*
-    //update
-    usersRef.child("userid").update({
-      //value
-    });
-
-       //delete
-    usersRef.child("userid").remove();
-    */

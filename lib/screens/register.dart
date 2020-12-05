@@ -1,18 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_familly_app/once_loggedin.dart';
+import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
+import 'package:flutter_familly_app/screens/login.dart';
+import 'package:flutter_familly_app/services/auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'Animation/FadeAnimation.dart';
-import 'package:provider/provider.dart';
-//import 'package:provider/provider.dart'; context read -> need provider
-import 'firebase_services/auth.dart';
-import 'main.dart';
-
-void main() {
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: RegisterPage()));
-}
 
 class RegisterPage extends StatefulWidget {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
@@ -21,6 +18,7 @@ class _RegisterPageState extends State<RegisterPage> {
   DateTime _dateTime;
   TextEditingController emailControler = new TextEditingController();
   TextEditingController passwordControler = new TextEditingController();
+  TextEditingController _passwordControler = new TextEditingController();
   TextEditingController nameControler = new TextEditingController();
   TextEditingController birthdayControler = new TextEditingController();
   @override
@@ -125,36 +123,47 @@ class _RegisterPageState extends State<RegisterPage> {
                                     hintStyle: TextStyle(color: Colors.grey)),
                               ),
                             ),
-                            Text(_dateTime == null
-                                ? "No date has been picked yet"
-                                : _dateTime.toIso8601String().split('T').first),
-                            RaisedButton(
-                                child: Text("Pick your birthay"),
-                                onPressed: () {
-                                  showDatePicker(
-                                          context: context,
-                                          initialDate: DateTime(2000),
-                                          firstDate: DateTime(1900),
-                                          lastDate: DateTime(2024))
-                                      .then((data) {
-                                    setState(() {
-                                      _dateTime = data;
-                                    });
-                                  });
-                                }),
                             Container(
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                   border: Border(
                                       bottom:
                                           BorderSide(color: Colors.grey[200]))),
-                              child: TextField(
-                                controller: birthdayControler,
-                                decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: "Birthday",
-                                    hintStyle: TextStyle(color: Colors.grey)),
-                              ),
+                              child: GestureDetector(
+                                  onTap: () {
+                                    // signIn
+                                    showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime(2000),
+                                            firstDate: DateTime(1900),
+                                            lastDate: DateTime(2024))
+                                        .then((data) {
+                                      setState(() {
+                                        _dateTime = data;
+                                        displayToastMessage(
+                                            _dateTime
+                                                .toIso8601String()
+                                                .split('T')
+                                                .first,
+                                            context);
+                                      });
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 50,
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 60),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: Color.fromRGBO(0, 171, 236, 1),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Pick your Birthday",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  )),
                             ),
                             Container(
                               padding: EdgeInsets.all(10),
@@ -175,6 +184,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             Container(
                               padding: EdgeInsets.all(10),
                               child: TextField(
+                                controller: _passwordControler,
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
                                     hintText: "Repeat Password",
@@ -190,25 +200,52 @@ class _RegisterPageState extends State<RegisterPage> {
                     height: 20,
                   ),
                   GestureDetector(
-                      onTap: () {
-                        print("Active");
-                        if (nameControler.text.length < 4)
-                          displayToastMessage(
-                              "Name must be at least 3 characters.", context);
-                        else if (!emailControler.text.contains('@'))
-                          displayToastMessage(
-                              "Email is invalid, must contain '@'.", context);
-                        else if (_dateTime == null)
-                          displayToastMessage(
-                              "Please pick your birthday", context);
-                        else if (passwordControler.text.length < 7)
-                          displayToastMessage(
-                              "Password must be at least 6 characters.",
-                              context);
-                        else
-                          createAccount(context);
+                      onTap: () async {
+                        if (passwordControler.text == _passwordControler.text) {
+                          // signIn
+                          final String returnValue =
+                              await Auth(auth: widget.auth).createAccount(
+                                  email: emailControler.text.trim(),
+                                  password: passwordControler.text.trim());
+                          //Store user info to Firestore
+                          if (nameControler.text.length < 3)
+                            displayToastMessage(
+                                "Your name must be at least 3 characters ",
+                                context);
+                          if (_dateTime == null)
+                            displayToastMessage(
+                                "Please select your birthday ", context);
 
-                        //code
+                          FirebaseFirestore.instance
+                              .collection("users")
+                              .doc()
+                              .set({
+                            "name": nameControler.text,
+                            "email": emailControler.text,
+                            "birthday":
+                                _dateTime.toIso8601String().split('T').first,
+                          });
+                          if (returnValue == "Succes") {
+                            emailControler.clear();
+                            passwordControler.clear();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Login(
+                                          auth: widget.auth,
+                                          firestore: widget.firestore,
+                                        )));
+                          } else {
+                            //show error
+                            displayToastMessage(returnValue, context);
+                          }
+                        } else {
+                          displayToastMessage(
+                              "Please make sure your password is the same !",
+                              context);
+                          _passwordControler.clear();
+                          passwordControler.clear();
+                        }
                       },
                       child: FadeAnimation(
                           1.9,
@@ -233,7 +270,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
+                        MaterialPageRoute(
+                            builder: (context) => Login(
+                                  auth: widget.auth,
+                                  firestore: widget.firestore,
+                                )),
                       );
                     },
                     child: FadeAnimation(
@@ -252,42 +293,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 ],
               )),
         ])));
-  }
-
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
-  void createAccount(BuildContext context) async {
-    final User firebaseUser = (await _firebaseAuth
-            .createUserWithEmailAndPassword(
-      email: emailControler.text.trim(),
-      password: passwordControler.text.trim(),
-    )
-            .catchError((errMsg) {
-      displayToastMessage("Error: " + errMsg.toString(), context);
-    }))
-        .user;
-    if (firebaseUser != null) {
-      //save in RTDB
-
-      Map userDataMap = {
-        "name": nameControler.text.trim(),
-        "email": emailControler.text.trim(),
-        "birthday": _dateTime.toIso8601String().split('T').first,
-      };
-      //usersRef init in main
-      usersRef.child(firebaseUser.uid).set(userDataMap);
-
-      displayToastMessage("Useraccount has been created", context);
-
-      //Nav to home, once user is logged in
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } else {
-      //error RTDB
-      displayToastMessage("Useraccount has Not been created", context);
-    }
   }
 
   displayToastMessage(String msg, BuildContext context) {

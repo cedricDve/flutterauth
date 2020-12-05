@@ -26,18 +26,19 @@ dependencies:
   flutter_launcher_icons: ^0.8.1
   simple_animations: ^1.3.3
   google_fonts: ^1.1.1
-
-       # Add the dependency for the Firebase Core Flutter SDK
+  # Firebase
+    # Add the dependency for the Firebase Core Flutter SDK
   firebase_core: "^0.5.2+1"
   cloud_firestore: "^0.14.3+1"
-  firebase_database: "^4.3.0"
-   # For example, to use Firebase Authentication and Cloud Firestore
+  firebase_database: "^4.3.0"   
   firebase_auth: ^0.18.0+1
+
   fluttertoast: ^7.1.5
-  
-#streambuilders : multiproverds
-  provider: ^4.3.2+1
+
+  #Testing
   mockito:
+  flutter_driver:
+  test:
 
 
   
