@@ -1,11 +1,7 @@
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
-import 'package:flutter_familly_app/commons/const.dart';
-import 'package:flutter_familly_app/models/user.dart';
-import 'package:flutter_familly_app/screens/Choose.dart';
 import 'package:flutter_familly_app/screens/login.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -19,7 +15,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  UserModel userModel = UserModel();
   DateTime _dateTime;
   TextEditingController emailControler = new TextEditingController();
   TextEditingController passwordControler = new TextEditingController();
@@ -206,13 +201,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   GestureDetector(
                       onTap: () async {
-                        String myThumbnail;
-
-                        String tempThumbnail =
-                            iconImageList[Random().nextInt(50)];
-
-                        myThumbnail = tempThumbnail;
-
                         if (passwordControler.text == _passwordControler.text) {
                           // signIn
                           final String returnValue =
@@ -220,41 +208,33 @@ class _RegisterPageState extends State<RegisterPage> {
                                   email: emailControler.text.trim(),
                                   password: passwordControler.text.trim());
                           //Store user info to Firestore
-                          if (nameControler.text.length < 3 &&
-                              nameControler.text.length < 20)
+                          if (nameControler.text.length < 3)
                             displayToastMessage(
                                 "Your name must be at least 3 characters ",
                                 context);
                           if (_dateTime == null)
                             displayToastMessage(
                                 "Please select your birthday ", context);
-                          print(widget.auth.currentUser.uid);
-                          // Put data into userModel !
-                          userModel = UserModel(
-                            uid: widget.auth.currentUser.uid,
-                            email: emailControler.text.trim(),
-                            name: nameControler.text.trim(),
-                            birthday:
-                                _dateTime.toIso8601String().split('T').first,
-                            avatar: myThumbnail,
-                            isFamily: false,
-                            isAdmin: false,
-                          );
-                          print(userModel.uid + userModel.email);
-                          widget.firestore
-                              .collection("users")
-                              .doc(widget.auth.currentUser.uid)
-                              .set(userModel.toMap(userModel));
 
-                          if (returnValue == "Success") {
+                          FirebaseFirestore.instance
+                              .collection("users")
+                              .doc()
+                              .set({
+                            "name": nameControler.text,
+                            "email": emailControler.text,
+                            "birthday":
+                                _dateTime.toIso8601String().split('T').first,
+                          });
+                          if (returnValue == "Succes") {
                             emailControler.clear();
                             passwordControler.clear();
-                            /* Navigator.pushNamed(context,
-                                "/chosefam"); */
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Choose()));
+                                    builder: (context) => Login(
+                                          auth: widget.auth,
+                                          firestore: widget.firestore,
+                                        )));
                           } else {
                             //show error
                             displayToastMessage(returnValue, context);

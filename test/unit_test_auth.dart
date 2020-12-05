@@ -1,89 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_familly_app/services/auth.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_familly_app/firebase_services/auth.dart';
 import 'package:mockito/mockito.dart';
+import 'package:test/test.dart';
 
-class MockUser extends Mock implements User {}
-
-final MockUser _mockUser = MockUser();
-
-class MockFirebaseAuth extends Mock implements FirebaseAuth {
-  @override
-  Stream<User> authStateChanges() {
-    return Stream.fromIterable([
-      _mockUser,
-    ]);
-  }
-}
+//auth mock
+class MockAuth extends Mock implements Auth {}
 
 void main() {
-  final MockFirebaseAuth mockFirebaseAuth = MockFirebaseAuth();
-  final Auth auth = Auth(auth: mockFirebaseAuth);
+  final MockAuth mockAuth = MockAuth();
   setUp(() {});
   tearDown(() {});
 
-  test("emit occurs", () async {
-    expectLater(auth.user, emitsInOrder([_mockUser]));
-  });
-
-  test("create account", () async {
-    when(
-      mockFirebaseAuth.createUserWithEmailAndPassword(
-          email: "tadas@gmail.com", password: "123456"),
-    ).thenAnswer((realInvocation) => null);
-
-    expect(
-        await auth.createAccount(email: "test@gmail.com", password: "123456"),
-        "Success");
-  });
-
-  test("create account exception", () async {
-    when(
-      mockFirebaseAuth.createUserWithEmailAndPassword(
-          email: "test@gmail.com", password: "123456"),
-    ).thenAnswer((realInvocation) =>
-        throw FirebaseAuthException(message: "You screwed up"));
-
-    expect(
-        await auth.createAccount(email: "test@gmail.com", password: "123456"),
-        "You screwed up");
-  });
-
-  test("sign in", () async {
-    when(
-      mockFirebaseAuth.signInWithEmailAndPassword(
-          email: "test@gmail.com", password: "123456"),
-    ).thenAnswer((realInvocation) => null);
-
-    expect(await auth.signIn(email: "test@gmail.com", password: "123456"),
-        "Success");
-  });
-
-  test("sign in exception", () async {
-    when(
-      mockFirebaseAuth.signInWithEmailAndPassword(
-          email: "test@gmail.com", password: "123456"),
-    ).thenAnswer((realInvocation) =>
-        throw FirebaseAuthException(message: "You screwed up"));
-
-    expect(await auth.signIn(email: "test@gmail.com", password: "123456"),
-        "You screwed up");
-  });
-
-  test("sign out", () async {
-    when(
-      mockFirebaseAuth.signOut(),
-    ).thenAnswer((realInvocation) => null);
-
-    expect(await auth.signOut(), "Success");
-  });
-
-  test("create account exception", () async {
-    when(
-      mockFirebaseAuth.signOut(),
-    ).thenAnswer((realInvocation) =>
-        throw FirebaseAuthException(message: "You screwed up"));
-
-    expect(await auth.signOut(), "You screwed up");
-  });
+  //test the authStateChage
+  test("emit occurs");
 }

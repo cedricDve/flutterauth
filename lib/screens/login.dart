@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
 import 'package:flutter_familly_app/screens/register.dart';
 import 'package:flutter_familly_app/services/auth.dart';
-import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 //Firebase App
@@ -24,7 +23,6 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
-  FirebaseHelper firebaseHelper = FirebaseHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -158,9 +156,7 @@ class _LoginState extends State<Login> {
                           displayToastMessage(returnValue, context);
                           passwordController.clear();
                         }
-
-                        },
-
+                      },
                       child: FadeAnimation(
                           1.9,
                           Container(
