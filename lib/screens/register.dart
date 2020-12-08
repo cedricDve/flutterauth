@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
+import 'package:flutter_familly_app/models/user.dart';
 import 'package:flutter_familly_app/screens/login.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -15,6 +16,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  UserModel userModel = UserModel();
   DateTime _dateTime;
   TextEditingController emailControler = new TextEditingController();
   TextEditingController passwordControler = new TextEditingController();
@@ -215,26 +217,29 @@ class _RegisterPageState extends State<RegisterPage> {
                           if (_dateTime == null)
                             displayToastMessage(
                                 "Please select your birthday ", context);
-
-                          FirebaseFirestore.instance
+                          print(widget.auth.currentUser.uid);
+                          // Put data into userModel !
+                          userModel = UserModel(
+                            uid: widget.auth.currentUser.uid,
+                            email: emailControler.text.trim(),
+                            name: nameControler.text.trim(),
+                            username: "nameControler.text.trim()",
+                            birthday:
+                                _dateTime.toIso8601String().split('T').first,
+                            avatar: "AVATAR",
+                          );
+                          print(userModel.uid + userModel.email);
+                          widget.firestore
                               .collection("users")
                               .doc()
-                              .set({
-                            "name": nameControler.text,
-                            "email": emailControler.text,
-                            "birthday":
-                                _dateTime.toIso8601String().split('T').first,
-                          });
-                          if (returnValue == "Succes") {
+                              .set(userModel.toMap(userModel));
+
+                          if (returnValue == "Success") {
                             emailControler.clear();
                             passwordControler.clear();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Login(
-                                          auth: widget.auth,
-                                          firestore: widget.firestore,
-                                        )));
+                            Navigator.pushNamed(context,
+                                "/"); // JE SUIS UN GENIE JAMIE CA AHAHAH
+
                           } else {
                             //show error
                             displayToastMessage(returnValue, context);

@@ -17,7 +17,7 @@ class _SearchScreenState extends State<SearchScreen> {
   //search instantly: performance => fetch once the data => then check for the data
   @override
   void initState() {
-    // implement initState
+    // TODO: implement initState
     super.initState();
     firebaseHelper.getCurrentUser().then((User user) {
       firebaseHelper.fetchAllUsers(user).then((List<UserModel> list) {
@@ -79,7 +79,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ? []
         : userList
             .where((UserModel user) =>
-                (user.name.contains(query.toLowerCase()) ||
+                (user.username.contains(query.toLowerCase()) ||
                     (user.name.contains(query.toLowerCase()))))
             .toList();
     return ListView.builder(
@@ -88,12 +88,12 @@ class _SearchScreenState extends State<SearchScreen> {
           UserModel searchedUser = UserModel(
             uid: searchResults[index].uid,
             name: searchResults[index].name,
-            email: searchResults[index].email,
+            username: searchResults[index].username,
             avatar: searchResults[index].avatar,
           );
           //return same view as chat-feed
           return CustomChat(
-            title: Text(searchedUser.email,
+            title: Text(searchedUser.username,
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.w700)),
             leading: CircleAvatar(

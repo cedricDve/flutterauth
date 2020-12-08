@@ -6,6 +6,8 @@ class Auth {
   Auth({this.auth});
   // User -> FirebaseUser
   Stream<User> get user => auth.authStateChanges();
+  User get currentUser => auth.currentUser;
+
   Future<String> createAccount({String email, String password}) async {
     try {
       await auth.createUserWithEmailAndPassword(

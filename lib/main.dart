@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_familly_app/screens/home.dart';
 import 'package:flutter_familly_app/screens/login.dart';
+import 'package:flutter_familly_app/screens/search.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 
 void main() {
@@ -17,6 +18,14 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "Family App",
+      //routing : / is the main route = main.dart
+      initialRoute: "/",
+      routes: {
+        //all the other routes
+        //multiple searchs
+        '/search': (context) => SearchScreen(),
+      },
       home: FutureBuilder(
         // Initialize FlutterFire:
         future: Firebase.initializeApp(),
@@ -66,6 +75,7 @@ class _RootState extends State<Root> {
         if (snapshot.connectionState == ConnectionState.active) {
           if (snapshot.data?.uid == null) {
             //not logged in
+            print("NOT LOGGED IN");
             return Login(
               auth: _auth,
               firestore: _firebaseFirestore,

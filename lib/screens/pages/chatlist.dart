@@ -30,9 +30,7 @@ class _ChatListState extends State<ChatList> {
     return CustomAppBar(
         title: LogoUser(username[0]),
         leading: IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.notification_important),
-            color: Colors.black),
+            icon: Icon(Icons.notification_important), color: Colors.black),
         centerTitle: true,
         actions: <Widget>[
           //Search
