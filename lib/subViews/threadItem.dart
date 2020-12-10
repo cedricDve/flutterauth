@@ -3,16 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/commons/const.dart';
 import 'package:flutter_familly_app/commons/utils.dart';
 import 'package:flutter_familly_app/screens/reportPost.dart';
-import 'package:flutter_familly_app/services/firebaseHelper.dart';
 
-import '../controllers/FBCloudStore.dart';
-import 'commentItem.dart';
 
-DocumentSnapshot ds;
-final FirebaseHelper _firebaseHelper = FirebaseHelper();
-final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-String _myName;
-String _myThumbnail;
 class ThreadItem extends StatefulWidget{
   final BuildContext parentContext;
   final DocumentSnapshot data;
@@ -21,9 +13,6 @@ class ThreadItem extends StatefulWidget{
   final bool isFromThread;
   final Function threadItemAction;
   final int commentCount;
-  
-  TextEditingController writingTextController = TextEditingController();
-
   ThreadItem({this.data,this.myData,this.updateMyDataToMain,this.threadItemAction,this.isFromThread,this.commentCount,this.parentContext});
   @override State<StatefulWidget> createState() => _ThreadItem();
 }
@@ -47,19 +36,9 @@ class _ThreadItem extends State<ThreadItem>{
       isLikePost ? _likeCount-- : _likeCount++;
     });
   }
-  void _getUserThumbnailAndName(String cuid) async{
-    ds =
-        await _firestore.collection("users").doc(cuid).get();
-    setState(() {
-      _myName=ds.get("name");
-      _myThumbnail=ds.get("avatar");
-    });
-  }
-
 
   @override
   Widget build(BuildContext context) {
-    _getUserThumbnailAndName(widget.data['userId']);
     return Padding(
       padding: const EdgeInsets.fromLTRB(2.0,2.0,2.0,6),
       child: Card(
@@ -78,13 +57,13 @@ class _ThreadItem extends State<ThreadItem>{
                       child: Container(
                           width: 48,
                           height: 48,
-                          child: Image.asset('assets/images/$_myThumbnail') //profile icons on thread
+                          child: Image.asset('assets/images/${widget.data['userThumbnail']}') //profile icons on thread
                       ),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(_myName,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                        Text(widget.data['userName'],style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
                         Padding(
                           padding: const EdgeInsets.all(2.0),
                           child: Text(Utils.readTimestamp(widget.data['postTimeStamp']),style: TextStyle(fontSize: 16,color: Colors.black87),),
@@ -155,7 +134,7 @@ class _ThreadItem extends State<ThreadItem>{
                       ),
                     ),
                     GestureDetector(
-                      onTap: () =>widget.isFromThread ? widget.threadItemAction(widget.data) : null,
+                      onTap: () => widget.isFromThread ? widget.threadItemAction(widget.data) : null,
                       child: Row(
                         children: <Widget>[
                           Icon(Icons.mode_comment,size: 18),
