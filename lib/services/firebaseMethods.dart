@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_familly_app/models/group.dart';
 import 'package:flutter_familly_app/models/user.dart';
 
 class FirebaseMethods {
@@ -25,6 +26,36 @@ class FirebaseMethods {
     }
     return userList;
   }
+
+  //fetch all groups in a List
+  Future<List<GroupModel>> fetchAllGroups() async {
+    List<GroupModel> groupsList = List<GroupModel>();
+    //get all groups and store in Querydatasnapshot
+    QuerySnapshot querySnapshot =
+    await _firebaseFirestore.collection("test").get();
+//each user has a user id = firebaseAuth currentUserId
+    for (var i = 0; i < querySnapshot.docs.length; i++) {
+      groupsList.add(GroupModel.fromMap(querySnapshot.docs[i].data()));
+    }
+    return groupsList;
+  }
+
+
+/*
+  //fetch all users in a List (for search) => Passing User : otherwise auth user could find himself ..
+  Future<UserModel> fetchUserModel(String currentUser) async {
+    UserModel userModel;
+    //get all users and store in Querydatasnapshot
+    await _firebaseFirestore.collection("users").doc(currentUser.uid).get().then((value) => value.id);
+    print( await _firebaseFirestore.collection("users").doc(currentUser.uid).get().then((value) => value.id));
+
+//each user has a user id = firebaseAuth currentUserId
+
+
+    return userModel;
+  }
+
+ */
 /*
   Future<void> addDataToFirestore(User currentUser) async {
     user = UserModel(
