@@ -42,6 +42,7 @@ void checkFamily() async{
   Widget build(BuildContext context) {
     checkFamily();
     return Scaffold(
+
       backgroundColor: Colors.black,
       body: PageView(
         children: <Widget>[
