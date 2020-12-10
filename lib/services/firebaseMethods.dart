@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter_familly_app/models/user.dart';
 
 class FirebaseMethods {
@@ -7,6 +8,7 @@ class FirebaseMethods {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   Future<User> getCurrentUser() async {
+    // User currentUser = await _auth.currentUser;
     User currentUser = await _auth.currentUser;
     return currentUser;
   }
@@ -25,6 +27,7 @@ class FirebaseMethods {
     }
     return userList;
   }
+
 /*
   //fetch all users in a List (for search) => Passing User : otherwise auth user could find himself ..
   Future<UserModel> fetchUserModel(String currentUser) async {

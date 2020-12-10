@@ -17,7 +17,7 @@ class _SearchScreenState extends State<SearchScreen> {
   //search instantly: performance => fetch once the data => then check for the data
   @override
   void initState() {
-    // TODO: implement initState
+    // implement initState
     super.initState();
     firebaseHelper.getCurrentUser().then((User user) {
       firebaseHelper.fetchAllUsers(user).then((List<UserModel> list) {
