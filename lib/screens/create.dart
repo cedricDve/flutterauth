@@ -8,7 +8,7 @@ import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:math';
 
-void main()async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(Create());
@@ -24,20 +24,23 @@ class Create extends StatelessWidget {
     );
   }
 }
+
 /// This is the stateful widget that the main application instantiates.
 class CreateStatefulWidget extends StatefulWidget {
   CreateStatefulWidget({Key key}) : super(key: key);
   @override
   _CreateStatefulWidgetState createState() => _CreateStatefulWidgetState();
 }
+
 class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
   TextEditingController fnameController = new TextEditingController();
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   FirebaseHelper firebaseHelper = FirebaseHelper();
   //counter(veilig invoer)
-  int counter  =0;
+  int counter = 0;
   //Random
-  final _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  final _chars =
+      'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
   Random _rnd = Random();
   String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
       length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
@@ -121,7 +124,7 @@ class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
                               decoration: BoxDecoration(
                                   border: Border(
                                       bottom:
-                                      BorderSide(color: Colors.grey[200]))),
+                                          BorderSide(color: Colors.grey[200]))),
                               child: TextField(
                                 controller: fnameController,
                                 decoration: InputDecoration(
@@ -137,62 +140,72 @@ class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
                     height: 30,
                   ),
                   GestureDetector(
-                      onTap: ()async{
+                      onTap: () async {
                         FirebaseFirestore _f = FirebaseFirestore.instance;
 
                         bool success = true;
-                        String cuid = await firebaseHelper.getCurrentUser().then((user) => user.uid);
-                         //QuerySnapshot g=  await FirebaseFirestore.instance.collection("users").where(cuid).get();
-                         //print(g.docs[1].get('uid'));
+                        String cuid = await firebaseHelper
+                            .getCurrentUser()
+                            .then((user) => user.uid);
+                        //QuerySnapshot g=  await FirebaseFirestore.instance.collection("users").where(cuid).get();
+                        //print(g.docs[1].get('uid'));
 
-
-
-                        await _f.collection("families").doc(code).get().then((value) {
-                          if(value.exists){
-                            success=  false;
-                          }});
-                        if(success) {
-                          FamilyModel  famModel = FamilyModel(
-                              fid: code,
-                              fname: fnameController.text.trim(),
-                              avatar: null,
-                              members: [cuid],
-                              membersRequest: [],
-
+                        await _f
+                            .collection("families")
+                            .doc(code)
+                            .get()
+                            .then((value) {
+                          if (value.exists) {
+                            success = false;
+                          }
+                        });
+                        if (success) {
+                          FamilyModel famModel = FamilyModel(
+                            fid: code,
+                            fname: fnameController.text.trim(),
+                            avatar: null,
+                            members: [cuid],
+                            membersRequest: [],
                           );
 
-                          //TODO: put fid(code) in user
-                          _firestore.collection("families").doc(code).set(
-                              famModel.toMap(famModel))
+                          //Put the family code => fid in the current Auth user
+                          _firestore
+                              .collection("families")
+                              .doc(code)
+                              .set(famModel.toMap(famModel))
                               .then((value) =>
-                              Fluttertoast.showToast(msg: "Success"))
-                              .catchError((e) =>
-                              Fluttertoast.showToast(msg: e));
+                                  Fluttertoast.showToast(msg: "Success"))
+                              .catchError(
+                                  (e) => Fluttertoast.showToast(msg: e));
 
-                          DocumentSnapshot qs= await _f.collection("users").doc(cuid).get();
-                          print(qs.get('fid') );
-                          if(qs.get('fid') == null) {
-
-                            _f.collection("users").doc(cuid)
+                          DocumentSnapshot qs =
+                              await _f.collection("users").doc(cuid).get();
+                          print(qs.get('fid'));
+                          if (qs.get('fid') == null) {
+                            _f
+                                .collection("users")
+                                .doc(cuid)
                                 .update({
-                                  'fid':code,
-                                  'isFamily':true,
-                                  'isAdmin': true}).then((
-                                value) =>
-                                Fluttertoast.showToast(msg: "Fid Set"))
-                                .catchError((e) =>
-                                Fluttertoast.showToast(msg: e));
+                                  'fid': code,
+                                  'isFamily': true,
+                                  'isAdmin': true
+                                })
+                                .then((value) =>
+                                    Fluttertoast.showToast(msg: "Fid Set"))
+                                .catchError(
+                                    (e) => Fluttertoast.showToast(msg: e));
                           }
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
-                        }
-                        else {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => Home()));
+                        } else {
                           Fluttertoast.showToast(msg: "error");
                           counter++;
-                          if( counter == 100){
-                            code  = getRandomString(6);
-                            Fluttertoast.showToast(msg: "Push one more time to get a new code");
+                          if (counter == 100) {
+                            code = getRandomString(6);
+                            Fluttertoast.showToast(
+                                msg: "Push one more time to get a new code");
                             counter = 0;
-                         }
+                          }
                         }
                       },
                       child: FadeAnimation(
@@ -234,10 +247,9 @@ class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
                                 padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                     border: Border(
-                                        bottom:
-                                        BorderSide(color: Colors.grey[200]))),
-                                child: Text("yfzgiz"
-                                ),
+                                        bottom: BorderSide(
+                                            color: Colors.grey[200]))),
+                                child: Text("yfzgiz"),
                               ),
                             ],
                           ),
@@ -252,7 +264,7 @@ class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
     );
   }
 }
+
 displayToastMessage(String msg, BuildContext context) {
   Fluttertoast.showToast(msg: msg);
 }
-
