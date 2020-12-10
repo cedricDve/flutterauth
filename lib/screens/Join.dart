@@ -1,35 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
-import 'package:flutter_familly_app/screens/register.dart';
-import 'package:flutter_familly_app/services/auth.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-//Firebase App
-
-class Login extends StatefulWidget {
-  final FirebaseAuth auth;
-  final FirebaseFirestore firestore;
-  const Login({
-    Key key,
-    @required this.auth,
-    @required this.firestore,
-  }) : super(key: key);
-  @override
-  _LoginState createState() => _LoginState();
+void main() {
+  runApp(Join());
 }
 
-class _LoginState extends State<Login> {
-  TextEditingController emailController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
+class Join extends StatelessWidget {
+  static const String _title = 'Flutter Code Sample';
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: _title,
+      home: JoinStatefulWidget(),
+    );
+  }
+}
+/// This is the stateful widget that the main application instantiates.
+class JoinStatefulWidget extends StatefulWidget {
+  JoinStatefulWidget({Key key}) : super(key: key);
+  @override
+  _JoinStatefulWidgetState createState() => _JoinStatefulWidgetState();
+}
+class _JoinStatefulWidgetState extends State<JoinStatefulWidget> {
+  TextEditingController codeFamillyController = new TextEditingController();
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
   FirebaseHelper firebaseHelper = FirebaseHelper();
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -76,7 +78,7 @@ class _LoginState extends State<Login> {
                   FadeAnimation(
                       1.5,
                       Text(
-                        "Login",
+                        "Join",
                         style: TextStyle(
                             color: Color.fromRGBO(49, 39, 79, 1),
                             fontWeight: FontWeight.bold,
@@ -105,62 +107,51 @@ class _LoginState extends State<Login> {
                               decoration: BoxDecoration(
                                   border: Border(
                                       bottom:
-                                          BorderSide(color: Colors.grey[200]))),
+                                      BorderSide(color: Colors.grey[200]))),
                               child: TextField(
-                                controller: emailController,
+                                controller: codeFamillyController,
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: "Email",
+                                    hintText: "Familly Code",
                                     hintStyle: TextStyle(color: Colors.grey)),
                               ),
                             ),
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              child: TextField(
-                                controller: passwordController,
-                                decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: "Password",
-                                    hintStyle: TextStyle(color: Colors.grey)),
-                                autofocus: false,
-                                obscureText: true,
-                              ),
-                            )
                           ],
                         ),
                       )),
                   SizedBox(
                     height: 20,
                   ),
-                  FadeAnimation(
-                      1.7,
-                      Center(
-                          child: Text(
-                        "Forgot Password?",
-                        style:
-                            TextStyle(color: Color.fromRGBO(196, 135, 198, 1)),
-                      ))),
                   SizedBox(
                     height: 30,
                   ),
                   GestureDetector(
-                      onTap: () async {
-                        // signIn
-                        final String returnValue = await Auth(auth: widget.auth)
-                            .signIn(
-                                email: emailController.text.trim(),
-                                password: passwordController.text.trim());
-                        if (returnValue == "Succes") {
-                          emailController.clear();
-                          passwordController.clear();
-                        } else {
-                          //show error
-                          displayToastMessage(returnValue, context);
-                          passwordController.clear();
-                        }
+                      onTap: ()async{
+                        String cuid = await firebaseHelper.getCurrentUser().then((user) => user.uid);
+                        DocumentSnapshot qsu= await _firestore.collection("users").doc(cuid).get();
+                        await FirebaseFirestore.instance.collection("families").doc(codeFamillyController.text.trim()).get().then((value) {
+                          if(value.exists){
+                            print(qsu.get('fid') );
+                            if(qsu.get('fid') == null) {
 
+                              _firestore.collection("users").doc(cuid)
+                                  .update({
+                                'fid':codeFamillyController.text.trim(),
+                                'isFamily':false,// he join => neeed to be accepted by admin ! if a user a a family code and isFamily is false => wait admin to validate
+                                'isAdmin': false}).then((
+                                  value) =>
+                                  Fluttertoast.showToast(msg: "Fid Set"))
+                                  .catchError((e) =>
+                                  Fluttertoast.showToast(msg: e));
+                              //members request list add
+                              _firestore.collection("families").doc(codeFamillyController.text.trim()).update({'membersRequest': FieldValue.arrayUnion([cuid])});
+                            }
+                          }
+                          else{
+                            Fluttertoast.showToast(msg: "Family Code don't exist");
+                          }
+                          });
                         },
-
                       child: FadeAnimation(
                           1.9,
                           Container(
@@ -172,7 +163,7 @@ class _LoginState extends State<Login> {
                             ),
                             child: Center(
                               child: Text(
-                                "Login",
+                                "Join you familie",
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
@@ -180,22 +171,6 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 30,
                   ),
-                  GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RegisterPage()),
-                        );
-                      },
-                      child: FadeAnimation(
-                          2,
-                          Center(
-                              child: Text(
-                            "Create Account",
-                            style: TextStyle(
-                                color: Color.fromRGBO(49, 39, 79, .6)),
-                          )))),
                   SizedBox(
                     height: 30,
                   ),
@@ -208,7 +183,6 @@ class _LoginState extends State<Login> {
     );
   }
 }
-
 displayToastMessage(String msg, BuildContext context) {
   Fluttertoast.showToast(msg: msg);
 }

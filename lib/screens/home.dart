@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_familly_app/screens/Choose.dart';
 import 'package:flutter_familly_app/services/auth.dart';
+import 'package:flutter_familly_app/services/firebaseHelper.dart';
 
 import 'pages/chatlist.dart';
 
@@ -18,17 +20,27 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   PageController pageController;
-  double _labelfontsize = 12;
+  FirebaseHelper _firebaseHelper = FirebaseHelper();
   int _page = 0;
   @override
   void initState() {
     // TODO: implement initState
+
     super.initState();
     pageController = PageController();
   }
+void checkFamily() async{
+  String cuid = await _firebaseHelper.getCurrentUser().then((user) => user.uid);
+  DocumentSnapshot ds =  await widget.firestore.collection("users").doc(cuid).get();
+  if(ds.get('fid') == null)
+  {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Choose()));
 
+  }
+}
   @override
   Widget build(BuildContext context) {
+    checkFamily();
     return Scaffold(
       backgroundColor: Colors.black,
       body: PageView(
@@ -41,8 +53,10 @@ class _HomeState extends State<Home> {
                   onPressed: () async {
                     //sign Out
                     await Auth(auth: widget.auth).signOut();
+
                   },
                   child: Text("Sign out"),
+
                 ),
               ],
             ),

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
 import 'package:flutter_familly_app/models/user.dart';
+import 'package:flutter_familly_app/screens/Choose.dart';
 import 'package:flutter_familly_app/screens/login.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -221,24 +222,28 @@ class _RegisterPageState extends State<RegisterPage> {
                           // Put data into userModel !
                           userModel = UserModel(
                             uid: widget.auth.currentUser.uid,
+
                             email: emailControler.text.trim(),
                             name: nameControler.text.trim(),
                             username: "nameControler.text.trim()",
                             birthday:
                                 _dateTime.toIso8601String().split('T').first,
                             avatar: "AVATAR",
+                            isFamily: false,
+                            isAdmin: false,
                           );
                           print(userModel.uid + userModel.email);
                           widget.firestore
                               .collection("users")
-                              .doc()
+                              .doc(widget.auth.currentUser.uid)
                               .set(userModel.toMap(userModel));
 
                           if (returnValue == "Success") {
                             emailControler.clear();
                             passwordControler.clear();
-                            Navigator.pushNamed(context,
-                                "/"); // JE SUIS UN GENIE JAMIE CA AHAHAH
+                           /* Navigator.pushNamed(context,
+                                "/chosefam"); */
+                           Navigator.push(context, MaterialPageRoute(builder:  (context) => Choose()));
 
                           } else {
                             //show error
