@@ -65,9 +65,9 @@ class _HomeState extends State<Home> {
     ];
     return Scaffold(
       bottomNavigationBar: CurvedNavigationBar(
-        color: Colors.blue,
+        color: Colors.blue[100],
         backgroundColor: Colors.white,
-        buttonBackgroundColor: Colors.lightBlue,
+        buttonBackgroundColor: Colors.blue[200],
         index: _page,
         key: NavbarKey.getKey(),
         items: [
