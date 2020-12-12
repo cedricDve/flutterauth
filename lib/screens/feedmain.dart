@@ -77,7 +77,7 @@ class _MyFeedPageState extends State<MyFeedPage> with TickerProviderStateMixin {
 
     setState(() {
       myData = MyProfileData(
-        myThumbnail: myThumbnail,
+        myThumbnail: ds.get('avatar'),
         myName: ds.get('name'),
         myLikeList: prefs.getStringList('likeList'),
         myLikeCommnetList: prefs.getStringList('likeCommnetList'),
