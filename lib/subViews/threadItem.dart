@@ -4,6 +4,9 @@ import 'package:flutter_familly_app/commons/const.dart';
 import 'package:flutter_familly_app/commons/utils.dart';
 import 'package:flutter_familly_app/screens/reportPost.dart';
 
+import '../controllers/FBCloudStore.dart';
+import 'commentItem.dart';
+
 
 class ThreadItem extends StatefulWidget{
   final BuildContext parentContext;
@@ -13,6 +16,8 @@ class ThreadItem extends StatefulWidget{
   final bool isFromThread;
   final Function threadItemAction;
   final int commentCount;
+  TextEditingController writingTextController = TextEditingController();
+
   ThreadItem({this.data,this.myData,this.updateMyDataToMain,this.threadItemAction,this.isFromThread,this.commentCount,this.parentContext});
   @override State<StatefulWidget> createState() => _ThreadItem();
 }
@@ -36,6 +41,8 @@ class _ThreadItem extends State<ThreadItem>{
       isLikePost ? _likeCount-- : _likeCount++;
     });
   }
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +141,7 @@ class _ThreadItem extends State<ThreadItem>{
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => widget.isFromThread ? widget.threadItemAction(widget.data) : null,
+                      onTap: () =>widget.isFromThread ? widget.threadItemAction(widget.data) : null,
                       child: Row(
                         children: <Widget>[
                           Icon(Icons.mode_comment,size: 18),

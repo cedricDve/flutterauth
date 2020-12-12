@@ -98,7 +98,7 @@ class _MyFeedPageState extends State<MyFeedPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print("SUCEE");
+    print("SUCCESS");
     print(Auth(auth: FirebaseAuth.instance).currentUser);
     final size = MediaQuery.of(context).size;
     return Scaffold(

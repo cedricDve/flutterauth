@@ -7,6 +7,8 @@ import 'package:flutter_familly_app/controllers/FBCloudStore.dart';
 import 'package:flutter_familly_app/subViews/commentItem.dart';
 import 'package:flutter_familly_app/subViews/threadItem.dart';
 
+import '../services/firebaseHelper.dart';
+
 
 
 
@@ -25,12 +27,25 @@ class _ContentDetail extends State<ContentDetail> {
   String _replyCommentID;
   String _replyUserFCMToken;
   FocusNode _writingTextFocus = FocusNode();
+  String fID;
+
+final FirebaseHelper _firebaseHelper = FirebaseHelper();
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
 
   @override
   void initState() {
     currentMyData = widget.myData;
     _msgTextController.addListener(_msgTextControllerListener);
     super.initState();
+  }
+  void getFid()async{
+      String cuid =
+        await _firebaseHelper.getCurrentUser().then((user) => user.uid);
+    DocumentSnapshot ds = await _firestore.collection("users").doc(cuid).get();
+    setState(() {
+      fID = ds.get('fid');
+    });
   }
 
   void _msgTextControllerListener(){
@@ -60,9 +75,10 @@ class _ContentDetail extends State<ContentDetail> {
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('thread').doc(widget.postData['postID']).collection('comment').orderBy('commentTimeStamp',descending: true).snapshots(),
+        stream: _firestore.collection('families').doc(fID).collection('thread').doc(widget.postData['postID']).collection('comment').orderBy('commentTimeStamp',descending: true).snapshots(),
         builder: (context,snapshot) {
-          if (!snapshot.hasData) return LinearProgressIndicator();
+          if (!snapshot.hasData){ return LinearProgressIndicator();}
+          else if (snapshot.hasData){
           return
             Column(
               children: <Widget>[
@@ -80,6 +96,8 @@ class _ContentDetail extends State<ContentDetail> {
                                 primary: false,
                                 shrinkWrap: true,
                                 children: Utils.sortDocumentsByComment(snapshot.data.docs).map((document) {
+                                  print("SNAPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
+                                  print(snapshot.data.docs);
                                   return CommentItem(data: document,myData: widget.myData,size: size,updateMyDataToMain: widget.updateMyData,replyComment:_replyComment);
                                 }).toList(),
                               ) : Container(),
@@ -94,7 +112,7 @@ class _ContentDetail extends State<ContentDetail> {
               ],
             );
         }
-      )
+        })
     );
   }
 
@@ -120,6 +138,7 @@ class _ContentDetail extends State<ContentDetail> {
               child: new IconButton(
                 icon: new Icon(Icons.send),
                 onPressed: () {
+                  print(widget.postData['postID']);
                   _handleSubmitted(_msgTextController.text);
                 }),
             ),
@@ -128,15 +147,38 @@ class _ContentDetail extends State<ContentDetail> {
       ),
     );
   }
-
+/*
   Future<void> _handleSubmitted(String text) async {
     try {
-      await FBCloudStore.commentToPost(_replyUserID == null ? widget.postData['userName'] : _replyUserID,_replyCommentID == null ? widget.postData['commentID'] : _replyCommentID,widget.postData['postID'], _msgTextController.text, widget.myData,_replyUserID == null ? widget.postData['FCMToken'] : _replyUserFCMToken);
+      print("!****************!");
+      print(widget.postData['userName']);
+      await FBCloudStore.commentToPost(_replyUserID == null ? widget.postData['userName'] 
+      : _replyUserID,_replyCommentID == null ? widget.postData['commentID'] 
+      : _replyCommentID,widget.postData['postID'], 
+      _msgTextController.text, widget.myData,_replyUserID == null ? widget.postData['FCMToken'] 
+      : _replyUserFCMToken);
       await FBCloudStore.updatePostCommentCount(widget.postData);
       FocusScope.of(context).requestFocus(FocusNode());
       _msgTextController.text = '';
     }catch(e){
       print('error to submit comment');
     }
+  }*/
+  
+  Future<void> _handleSubmitted(String content) async {
+    try{
+   //DocumentSnapshot ds2 = await _firestore.collection("families").doc(fID).collection("thread").doc(widget.postData['postID']).get();
+      String toCommentID =widget.postData['userName'],
+      postID=widget.postData['postID'],
+      postFCMToken = widget.postData['FCMToken'];
+
+    await FBCloudStore.commentToPost(toCommentID,postID,content,widget.myData,postFCMToken);
+    await FBCloudStore.updatePostCommentCount(widget.postData);
+    FocusScope.of(context).requestFocus(FocusNode());
+      _msgTextController.text = '';
+    }catch(e){
+      print('error to submit comment');
+    }
+
   }
 }

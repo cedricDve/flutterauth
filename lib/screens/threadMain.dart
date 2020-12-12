@@ -74,7 +74,6 @@ class _ThreadMain extends State<ThreadMain> {
               .snapshots(),
           builder: (context, snapshot) {
             //if no data => tru e: false
-            print(!snapshot.hasData);
             if (!snapshot.hasData) return LinearProgressIndicator();
 
             return Stack(
