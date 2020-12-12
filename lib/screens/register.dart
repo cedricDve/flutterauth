@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
+import 'package:flutter_familly_app/commons/const.dart';
 import 'package:flutter_familly_app/models/user.dart';
 import 'package:flutter_familly_app/screens/Choose.dart';
 import 'package:flutter_familly_app/screens/login.dart';
@@ -204,6 +207,13 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   GestureDetector(
                       onTap: () async {
+                        String myThumbnail;
+
+                        String tempThumbnail =
+                            iconImageList[Random().nextInt(50)];
+
+                        myThumbnail = tempThumbnail;
+
                         if (passwordControler.text == _passwordControler.text) {
                           // signIn
                           final String returnValue =
@@ -211,7 +221,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                   email: emailControler.text.trim(),
                                   password: passwordControler.text.trim());
                           //Store user info to Firestore
-                          if (nameControler.text.length < 3)
+                          if (nameControler.text.length < 3 &&
+                              nameControler.text.length < 20)
                             displayToastMessage(
                                 "Your name must be at least 3 characters ",
                                 context);
@@ -222,13 +233,11 @@ class _RegisterPageState extends State<RegisterPage> {
                           // Put data into userModel !
                           userModel = UserModel(
                             uid: widget.auth.currentUser.uid,
-
                             email: emailControler.text.trim(),
                             name: nameControler.text.trim(),
-                            username: "nameControler.text.trim()",
                             birthday:
                                 _dateTime.toIso8601String().split('T').first,
-                            avatar: "AVATAR",
+                            avatar: myThumbnail,
                             isFamily: false,
                             isAdmin: false,
                           );
@@ -241,10 +250,12 @@ class _RegisterPageState extends State<RegisterPage> {
                           if (returnValue == "Success") {
                             emailControler.clear();
                             passwordControler.clear();
-                           /* Navigator.pushNamed(context,
+                            /* Navigator.pushNamed(context,
                                 "/chosefam"); */
-                           Navigator.push(context, MaterialPageRoute(builder:  (context) => Choose()));
-
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Choose()));
                           } else {
                             //show error
                             displayToastMessage(returnValue, context);

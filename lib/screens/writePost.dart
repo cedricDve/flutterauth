@@ -8,22 +8,19 @@ import 'package:flutter_familly_app/commons/utils.dart';
 import 'package:flutter_familly_app/controllers/FBCloudStore.dart';
 import 'package:flutter_familly_app/controllers/FBStorage.dart';
 import 'package:image_crop/image_crop.dart';
-import 'package:image_cropper/image_cropper.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
 
-
-
-
-class WritePost extends StatefulWidget{
+class WritePost extends StatefulWidget {
   final MyProfileData myData;
   WritePost({this.myData});
-  @override State<StatefulWidget> createState() => _WritePost();
+  @override
+  State<StatefulWidget> createState() => _WritePost();
 }
 
-class _WritePost extends State<WritePost>{
-
+class _WritePost extends State<WritePost> {
   TextEditingController writingTextController = TextEditingController();
   final FocusNode _nodeText1 = FocusNode();
   FocusNode writingTextFocus = FocusNode();
@@ -49,14 +46,14 @@ class _WritePost extends State<WritePost>{
       nextFocus: true,
       actions: [
         KeyboardActionsItem(
-          displayArrows:false,
+          displayArrows: false,
           focusNode: _nodeText1,
         ),
         KeyboardActionsItem(
           displayArrows: false,
           focusNode: writingTextFocus,
           toolbarButtons: [
-                (node) {
+            (node) {
               return GestureDetector(
                 onTap: () {
                   print('Select Image');
@@ -68,10 +65,13 @@ class _WritePost extends State<WritePost>{
                   padding: EdgeInsets.all(8.0),
                   child: Row(
                     children: <Widget>[
-                      Icon(Icons.add_photo_alternate,size:28),
+                      Icon(Icons.add_photo_alternate, size: 28),
                       Text(
                         "Add Image",
-                        style: TextStyle(color: Colors.black,fontSize: 18,fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -90,10 +90,12 @@ class _WritePost extends State<WritePost>{
     });
     String postID = Utils.getRandomString(8) + Random().nextInt(500).toString();
     String postImageURL;
-    if(_postImageFile != null){
-      postImageURL = await FBStorage.uploadPostImages(postID: postID, postImageFile: _postImageFile);
+    if (_postImageFile != null) {
+      postImageURL = await FBStorage.uploadPostImages(
+          postID: postID, postImageFile: _postImageFile);
     }
-    FBCloudStore.sendPostInFirebase(postID,writingTextController.text,widget.myData,postImageURL ?? 'NONE');
+    FBCloudStore.sendPostInFirebase(postID, writingTextController.text,
+        widget.myData, postImageURL ?? 'NONE');
 
     setState(() {
       _isLoading = false;
@@ -110,9 +112,14 @@ class _WritePost extends State<WritePost>{
         centerTitle: true,
         actions: <Widget>[
           FlatButton(
-            onPressed: () => _postToFB(),
-            child: Text('Post',style: TextStyle(fontSize: 20,color: Colors.white,fontWeight: FontWeight.bold),)
-          )
+              onPressed: () => _postToFB(),
+              child: Text(
+                'Post',
+                style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ))
         ],
       ),
       body: Stack(
@@ -123,9 +130,11 @@ class _WritePost extends State<WritePost>{
               children: <Widget>[
                 Container(
                     width: size.width,
-                    height: size.height - MediaQuery.of(context).viewInsets.bottom - 80,
+                    height: size.height -
+                        MediaQuery.of(context).viewInsets.bottom -
+                        80,
                     child: Padding(
-                      padding: const EdgeInsets.only(right:14.0,left:10.0),
+                      padding: const EdgeInsets.only(right: 14.0, left: 10.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
@@ -137,14 +146,20 @@ class _WritePost extends State<WritePost>{
                                 child: Container(
                                     width: 40,
                                     height: 40,
-                                    child: Image.asset('assets/images/${widget.myData.myThumbnail}')
-                                ),
+                                    child: Image.asset(
+                                        'assets/images/${widget.myData.myThumbnail}')),
                               ),
-                              Text(widget.myData.myName,style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
+                              Text(
+                                widget.myData.myName,
+                                style: TextStyle(
+                                    fontSize: 22, fontWeight: FontWeight.bold),
+                              ),
                             ],
                           ),
-                          Divider(height: 1,color: Colors.black,),
-
+                          Divider(
+                            height: 1,
+                            color: Colors.black,
+                          ),
                           TextFormField(
                             autofocus: true,
                             focusNode: writingTextFocus,
@@ -157,12 +172,15 @@ class _WritePost extends State<WritePost>{
                             keyboardType: TextInputType.multiline,
                             maxLines: null,
                           ),
-                          _postImageFile != null ? Image.file(_postImageFile,fit: BoxFit.fill,) :
-                          Container(),
+                          _postImageFile != null
+                              ? Image.file(
+                                  _postImageFile,
+                                  fit: BoxFit.fill,
+                                )
+                              : Container(),
                         ],
                       ),
-                    )
-                ),
+                    )),
               ],
             ),
           ),
@@ -171,7 +189,6 @@ class _WritePost extends State<WritePost>{
       ),
     );
   }
-
 
   Widget _buildCroppingImage() {
     return Column(
@@ -195,15 +212,12 @@ class _WritePost extends State<WritePost>{
                 ),
                 onPressed: () => _cropImage(),
               ),
-              
             ],
           ),
         )
       ],
     );
   }
-
-
 
   Future<void> _openImage() async {
     final file = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -244,11 +258,10 @@ class _WritePost extends State<WritePost>{
 
     _lastCropped?.delete();
     _lastCropped = file;
-setState(() {
+    setState(() {
       _sample = sample;
       _postImageFile = file;
     });
     debugPrint('$file');
   }
 }
-  
