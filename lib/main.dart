@@ -25,7 +25,6 @@ class App extends StatelessWidget {
         //all the other routes
         //multiple searchs
         '/search': (context) => SearchScreen(),
-
       },
       home: FutureBuilder(
         // Initialize FlutterFire:

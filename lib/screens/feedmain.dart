@@ -63,9 +63,6 @@ class _MyFeedPageState extends State<MyFeedPage> with TickerProviderStateMixin {
     String cuid =
         await _firebaseHelper.getCurrentUser().then((user) => user.uid);
     DocumentSnapshot ds = await _fs.collection('users').doc(cuid).get();
-    print("¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨");
-    print(ds.get('name'));
-    myThumbnail = ds.get('avatar');
 
     if (prefs.get('myThumbnail') == null) {
       String tempThumbnail = iconImageList[Random().nextInt(50)];
@@ -98,8 +95,7 @@ class _MyFeedPageState extends State<MyFeedPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print("SUCEE");
-    print(Auth(auth: FirebaseAuth.instance).currentUser);
+    //print(Auth(auth: FirebaseAuth.instance).currentUser);
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(

@@ -5,9 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/screens/Choose.dart';
 import 'package:flutter_familly_app/screens/feedmain.dart';
-import 'package:flutter_familly_app/screens/pages/homePage.dart';
+import 'package:flutter_familly_app/screens/pages/calendar/calendarHome..dart';
+
 import 'package:flutter_familly_app/screens/pages/test.dart';
-import 'package:flutter_familly_app/screens/userProfile.dart';
+
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:flutter_familly_app/widgets/navbarKey.dart';
@@ -24,6 +25,10 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
+bool isJoin = false;
+bool isFam;
+String join_username;
+
 class _HomeState extends State<Home> {
   PageController pageController;
   FirebaseHelper _firebaseHelper = FirebaseHelper();
@@ -35,57 +40,31 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     // implement initState
-
     super.initState();
     pageController = PageController();
   }
 
-  void checkFamily() async {
-    String cuid =
-        await _firebaseHelper.getCurrentUser().then((user) => user.uid);
+// A function that look checks if the current user has a family. If the authenticated user has a family, he can continue, otherwise he will be redirected to a page where he can join or create a family
+  void checkIsFamily() async {
+    String cuid = Auth(auth: widget.auth).currentUser.uid;
+    // Get data from Firestore of current user with cuid ->(CurrentUserID)
     DocumentSnapshot ds =
         await widget.firestore.collection("users").doc(cuid).get();
-    DocumentSnapshot dsf =
-        await widget.firestore.collection("families").doc(ds.get('fid')).get();
-    print("######");
-    print(dsf.get('members'));
-    print(ds.get('isAdmin'));
-    if (ds.get('fid') == null) {
+    if (ds.get('fid') == null)
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => Choose()));
-    } else if (ds.get('isAdmin') && dsf.get('members') != null) {
-      print("A USER WANA JOIN THE FAM");
-      List a = dsf.get('membersRequest');
-      for (var i = 0; i < a.length; i++) {
-        print(a[i]);
-        //update to members
-        FirebaseFirestore.instance
-            .collection("families")
-            .doc(ds.get('fid'))
-            .update({
-          'members': FieldValue.arrayUnion([a[i]])
-        });
-// set joined user to isFamily true
-        FirebaseFirestore.instance
-            .collection("users")
-            .doc(a[i])
-            .update({'isFamily': true});
-
-        //delete from membersRequest
-        FirebaseFirestore.instance
-            .collection("families")
-            .doc(ds.get('fid'))
-            .update({
-          'membersRequest': FieldValue.arrayRemove([a[i]])
-        });
-        print("member setted" + a[i]);
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    checkFamily();
+    checkIsFamily();
+    _firebaseHelper.joinFamily().then((List list) {
+      setState(() {
+        join_username = list[0];
+        isJoin = list[1];
+        isFam = list[2];
+      });
+    });
     final screen = [
       MyFeedPageMain(),
       ChatList(),
@@ -94,11 +73,12 @@ class _HomeState extends State<Home> {
         email: _email,
       ),
       TestPage(),
-      UserProfile(),
+      CalendarHome(),
     ]; //  HomeP(auth: widget.auth, firestore: widget.firestore)
 
     return Scaffold(
       bottomNavigationBar: CurvedNavigationBar(
+        height: 55,
         color: Colors.blue[100],
         backgroundColor: Colors.white,
         buttonBackgroundColor: Colors.blue[200],
@@ -122,7 +102,7 @@ class _HomeState extends State<Home> {
             size: 30,
           ),
           Icon(
-            Icons.settings,
+            Icons.calendar_today_rounded,
             size: 30,
           ),
         ],
@@ -153,13 +133,27 @@ class ProfileP extends StatefulWidget {
   final String email;
   ProfileP({this.userName, this.email});
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   _ProfilePState createState() => _ProfilePState();
 }
 
 class _ProfilePState extends State<ProfileP> {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseHelper _firebaseHelper = FirebaseHelper();
+
   @override
   Widget build(BuildContext context) {
+    _firebaseHelper.joinFamily().then((List list) {
+      setState(() {
+        join_username = list[0];
+        isJoin = list[1];
+        isFam = list[2];
+      });
+    });
+    print(" ----------------------");
+    print(join_username);
+    print(isJoin);
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile',
@@ -190,6 +184,24 @@ class _ProfilePState extends State<ProfileP> {
                   EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
               leading: Icon(Icons.group),
               title: Text('Groups'),
+            ),
+            ListTile(
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
+              leading: GestureDetector(
+                onTap: () {
+                  _showNotification();
+                },
+                child: (isJoin)
+                    ? Icon(
+                        Icons.notification_important,
+                        color: Colors.red,
+                      )
+                    : Icon(Icons.notification_important),
+              ),
+              title: (isJoin)
+                  ? Text('New Family Request')
+                  : Text('No New Request'),
             ),
             ListTile(
               selected: true,
@@ -241,6 +253,73 @@ class _ProfilePState extends State<ProfileP> {
               ],
             ),
           )),
+    );
+  }
+
+  void _showNotification() async {
+    await showDialog(
+      context: context,
+      child: new AlertDialog(
+        contentPadding: const EdgeInsets.all(16.0),
+        content: new Row(
+          children: <Widget>[
+            new Expanded(
+              child: (isJoin)
+                  ? new Text(join_username + "would like to join the family !")
+                  : new Text("No Notifications ..."),
+            )
+          ],
+        ),
+        actions: <Widget>[
+          new FlatButton(
+              child: const Text('ACCEPT'),
+              onPressed: () async {
+                String cuid = await _firebaseHelper
+                    .getCurrentUser()
+                    .then((user) => user.uid);
+                DocumentSnapshot ds =
+                    await firestore.collection("users").doc(cuid).get();
+                DocumentSnapshot dsf = await firestore
+                    .collection("families")
+                    .doc(ds.get('fid'))
+                    .get();
+                List a = dsf.get('membersRequest');
+
+                //update to members
+                await FirebaseFirestore.instance
+                    .collection("families")
+                    .doc(ds.get('fid'))
+                    .update({
+                  'members': FieldValue.arrayUnion([a[0]])
+                });
+                // set joined user to isFamily true
+                await FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(a[0])
+                    .update({'isFamily': true});
+
+                //delete from membersRequest
+                await FirebaseFirestore.instance
+                    .collection("families")
+                    .doc(ds.get('fid'))
+                    .update({
+                  'membersRequest': FieldValue.arrayRemove([a[0]])
+                });
+                setState(() {
+                  isJoin = false;
+                });
+                Navigator.pop(context);
+                final CurvedNavigationBarState navState =
+                    NavbarKey.getKey().currentState;
+                navState.setPage(2);
+              }),
+          new FlatButton(
+              child: const Text('Later'),
+              onPressed: () {
+                Navigator.pop(context);
+              })
+        ],
+      ),
     );
   }
 }

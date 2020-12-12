@@ -8,4 +8,6 @@ class FirebaseHelper {
   Future<User> getCurrentUser() => _firebaseHelper.getCurrentUser();
   Future<List<UserModel>> fetchAllUsers(User user) =>
       _firebaseHelper.fetchAllUsers(user);
+  Future<List> joinFamily() => _firebaseHelper.joinFamily();
+  Future<List> getFamMembers() => _firebaseHelper.getFamMembers();
 }
