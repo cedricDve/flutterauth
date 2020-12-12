@@ -1,24 +1,31 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/commons/const.dart';
 import 'package:flutter_familly_app/commons/utils.dart';
 import 'package:flutter_familly_app/controllers/FBCloudStore.dart';
 import 'package:flutter_familly_app/controllers/FBStorage.dart';
+import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:image_crop/image_crop.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
 
+
+DocumentSnapshot ds;
+final FirebaseHelper _firebaseHelper = FirebaseHelper();
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 class WritePost extends StatefulWidget {
   final MyProfileData myData;
   WritePost({this.myData});
   @override
   State<StatefulWidget> createState() => _WritePost();
 }
+
 
 class _WritePost extends State<WritePost> {
   TextEditingController writingTextController = TextEditingController();
