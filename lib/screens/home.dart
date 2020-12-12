@@ -4,9 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/screens/Choose.dart';
+import 'package:flutter_familly_app/screens/feedmain.dart';
 import 'package:flutter_familly_app/screens/pages/homePage.dart';
 import 'package:flutter_familly_app/screens/pages/test.dart';
-import 'package:flutter_familly_app/screens/register.dart';
+import 'package:flutter_familly_app/screens/userProfile.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:flutter_familly_app/widgets/navbarKey.dart';
@@ -44,9 +45,41 @@ class _HomeState extends State<Home> {
         await _firebaseHelper.getCurrentUser().then((user) => user.uid);
     DocumentSnapshot ds =
         await widget.firestore.collection("users").doc(cuid).get();
+    DocumentSnapshot dsf =
+        await widget.firestore.collection("families").doc(ds.get('fid')).get();
+    print("######");
+    print(dsf.get('members'));
+    print(ds.get('isAdmin'));
     if (ds.get('fid') == null) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => Choose()));
+    } else if (ds.get('isAdmin') && dsf.get('members') != null) {
+      print("A USER WANA JOIN THE FAM");
+      List a = dsf.get('membersRequest');
+      for (var i = 0; i < a.length; i++) {
+        print(a[i]);
+        //update to members
+        FirebaseFirestore.instance
+            .collection("families")
+            .doc(ds.get('fid'))
+            .update({
+          'members': FieldValue.arrayUnion([a[i]])
+        });
+// set joined user to isFamily true
+        FirebaseFirestore.instance
+            .collection("users")
+            .doc(a[i])
+            .update({'isFamily': true});
+
+        //delete from membersRequest
+        FirebaseFirestore.instance
+            .collection("families")
+            .doc(ds.get('fid'))
+            .update({
+          'membersRequest': FieldValue.arrayRemove([a[i]])
+        });
+        print("member setted" + a[i]);
+      }
     }
   }
 
@@ -54,15 +87,16 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     checkFamily();
     final screen = [
+      MyFeedPageMain(),
+      ChatList(),
       ProfileP(
         userName: _userName,
         email: _email,
       ),
-      ChatList(),
-      RegisterPage(),
       TestPage(),
-      HomeP(auth: widget.auth, firestore: widget.firestore)
-    ];
+      UserProfile(),
+    ]; //  HomeP(auth: widget.auth, firestore: widget.firestore)
+
     return Scaffold(
       bottomNavigationBar: CurvedNavigationBar(
         color: Colors.blue[100],

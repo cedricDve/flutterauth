@@ -79,7 +79,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ? []
         : userList
             .where((UserModel user) =>
-                (user.username.contains(query.toLowerCase()) ||
+                (user.name.contains(query.toLowerCase()) ||
                     (user.name.contains(query.toLowerCase()))))
             .toList();
     return ListView.builder(
@@ -88,12 +88,12 @@ class _SearchScreenState extends State<SearchScreen> {
           UserModel searchedUser = UserModel(
             uid: searchResults[index].uid,
             name: searchResults[index].name,
-            username: searchResults[index].username,
+            email: searchResults[index].email,
             avatar: searchResults[index].avatar,
           );
           //return same view as chat-feed
           return CustomChat(
-            title: Text(searchedUser.username,
+            title: Text(searchedUser.email,
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.w700)),
             leading: CircleAvatar(
