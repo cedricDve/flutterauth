@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/screens/Choose.dart';
 import 'package:flutter_familly_app/screens/feedmain.dart';
-import 'package:flutter_familly_app/screens/pages/calendar/calendarHome..dart';
+import 'package:flutter_familly_app/screens/pages/calendarHome..dart';
 
 import 'package:flutter_familly_app/screens/pages/test.dart';
 
@@ -58,13 +58,13 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     checkIsFamily();
-    _firebaseHelper.joinFamily().then((List list) {
+    /*_firebaseHelper.getFamMembers().then((List list) {
       setState(() {
         join_username = list[0];
         isJoin = list[1];
         isFam = list[2];
       });
-    });
+    });*/
     final screen = [
       MyFeedPageMain(),
       ChatList(),
