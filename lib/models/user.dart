@@ -3,25 +3,22 @@ class UserModel {
   String fid;
   String name;
   String email;
-  String username;
   String role;
   String birthday;
   String avatar;
   bool isFamily; //
   bool isAdmin; //
 
-  UserModel({
-    this.uid,
-    this.fid,
-    this.name,
-    this.email,
-    this.username,
-    this.role,
-    this.birthday,
-    this.avatar,
-    this.isFamily,
-    this.isAdmin
-  });
+  UserModel(
+      {this.uid,
+      this.fid,
+      this.name,
+      this.email,
+      this.role,
+      this.birthday,
+      this.avatar,
+      this.isFamily,
+      this.isAdmin});
 
   Map toMap(UserModel user) {
     var data = Map<String, dynamic>();
@@ -29,7 +26,6 @@ class UserModel {
     data['fid'] = user.fid;
     data['name'] = user.name;
     data['email'] = user.email;
-    data['username'] = user.username;
     data['role'] = user.role;
     data['birthday'] = user.birthday;
     data['avatar'] = user.avatar;
@@ -44,7 +40,6 @@ class UserModel {
     this.fid = mapData['fid'];
     this.name = mapData['name'];
     this.email = mapData['email'];
-    this.username = mapData['username'];
     this.role = mapData['role'];
     this.birthday = mapData['birthday'];
     this.avatar = mapData['avatar'];
