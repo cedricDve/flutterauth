@@ -231,6 +231,7 @@ class _WritePost extends State<WritePost> {
   }
 
   void _showPickOptionsDialog(BuildContext context) {
+    print("Daniel");
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

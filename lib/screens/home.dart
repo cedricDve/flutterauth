@@ -8,6 +8,7 @@ import 'package:flutter_familly_app/screens/feedmain.dart';
 import 'package:flutter_familly_app/screens/pages/calendarHome..dart';
 
 import 'package:flutter_familly_app/screens/pages/test.dart';
+import 'package:flutter_familly_app/screens/userProfile.dart';
 
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
@@ -226,6 +227,8 @@ class _ProfilePState extends State<ProfileP> {
           ],
         ),
       ),
+      body: UserProfile(),
+      /*
       body: Container(
           padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 170.0),
           child: Container(
@@ -253,6 +256,7 @@ class _ProfilePState extends State<ProfileP> {
               ],
             ),
           )),
+      */
     );
   }
 
