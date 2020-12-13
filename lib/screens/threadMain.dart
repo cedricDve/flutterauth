@@ -50,6 +50,7 @@ class _ThreadMain extends State<ThreadMain> {
         await _firebaseHelper.getCurrentUser().then((user) => user.uid);
     DocumentSnapshot ds =
         await widget._firestore.collection("users").doc(cuid).get();
+    print(ds.get('isFamily'));
 
     setState(() {
       isFamily = ds.get('isFamily');
@@ -61,6 +62,7 @@ class _ThreadMain extends State<ThreadMain> {
     // get fid of current user => use fID to have fid of current user
     getFidCurrentUser();
     getCurrentUserIsFamily();
+    print(isFamily);
 
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
@@ -71,6 +73,7 @@ class _ThreadMain extends State<ThreadMain> {
               .orderBy('postTimeStamp', descending: true)
               .snapshots(),
           builder: (context, snapshot) {
+            //if no data => tru e: false
             if (!snapshot.hasData) return LinearProgressIndicator();
 
             return Stack(

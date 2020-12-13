@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import '../commons/const.dart';
 
 class ChangeUserIcon extends StatefulWidget{
-  final MyProfileData myData;
-  ChangeUserIcon({this.myData});
+  //final MyProfileData myData;
+  String oldThumbnail;
+  //ChangeUserIcon({this.myData});
+  ChangeUserIcon(oldThumbnail);
   @override State<StatefulWidget> createState() => _ChangeUserIcon();
 }
 
@@ -13,7 +15,7 @@ class _ChangeUserIcon extends State<ChangeUserIcon>{
 
   @override
   void initState() {
-    myThumbnail = widget.myData.myThumbnail;
+    myThumbnail = widget.oldThumbnail;
     super.initState();
   }
 

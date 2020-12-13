@@ -1,24 +1,32 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/commons/const.dart';
 import 'package:flutter_familly_app/commons/utils.dart';
 import 'package:flutter_familly_app/controllers/FBCloudStore.dart';
 import 'package:flutter_familly_app/controllers/FBStorage.dart';
+import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:image_crop/image_crop.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
 
+
+DocumentSnapshot ds;
+final FirebaseHelper _firebaseHelper = FirebaseHelper();
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 class WritePost extends StatefulWidget {
   final MyProfileData myData;
   WritePost({this.myData});
   @override
   State<StatefulWidget> createState() => _WritePost();
 }
+
 
 class _WritePost extends State<WritePost> {
   TextEditingController writingTextController = TextEditingController();
@@ -30,6 +38,7 @@ class _WritePost extends State<WritePost> {
   File _file;
   File _sample;
   File _lastCropped;
+  File _pickedImage;
 
   @override
   void dispose() {
@@ -57,7 +66,7 @@ class _WritePost extends State<WritePost> {
               return GestureDetector(
                 onTap: () {
                   print('Select Image');
-                  _openImage();
+                  _showPickOptionsDialog(context);
                   print('Selected');
                 },
                 child: Container(
@@ -100,7 +109,8 @@ class _WritePost extends State<WritePost> {
     setState(() {
       _isLoading = false;
     });
-    Navigator.pop(context);
+        Navigator.pop(context);
+
   }
 
   @override
@@ -189,79 +199,59 @@ class _WritePost extends State<WritePost> {
       ),
     );
   }
-
-  Widget _buildCroppingImage() {
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: Crop.file(_sample, key: cropKey),
-        ),
-        Container(
-          padding: const EdgeInsets.only(top: 20.0),
-          alignment: AlignmentDirectional.center,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              FlatButton(
-                child: Text(
-                  'Crop Image',
-                  style: Theme.of(context)
-                      .textTheme
-                      .button
-                      .copyWith(color: Colors.white),
-                ),
-                onPressed: () => _cropImage(),
-              ),
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  Future<void> _openImage() async {
-    final file = await ImagePicker.pickImage(source: ImageSource.gallery);
-    final sample = await ImageCrop.sampleImage(
-      file: file,
-      preferredSize: context.size.longestSide.ceil(),
-    );
-
-    _sample?.delete();
-    _file?.delete();
-
-    setState(() {
-      _postImageFile = file;
-    });
-  }
-
-  Future<void> _cropImage() async {
-    final scale = cropKey.currentState.scale;
-    final area = cropKey.currentState.area;
-    if (area == null) {
-      // cannot crop, widget is not setup
-      return;
+  _loadPicker(ImageSource source) async {
+    File picked = await ImagePicker.pickImage(source: source);
+    if (picked != null) {
+      _cropImage(picked);
     }
+  }
 
-    // scale up to use maximum possible number of pixels
-    // this will sample image in higher resolution to make cropped image larger
-    final sample = await ImageCrop.sampleImage(
-      file: _file,
-      preferredSize: (2000 / scale).round(),
+  _cropImage(File picked) async {
+    File cropped = await ImageCropper.cropImage(
+      androidUiSettings: AndroidUiSettings(
+        statusBarColor: Colors.red,
+        toolbarColor: Colors.red,
+        toolbarTitle: "Crop Image",
+        toolbarWidgetColor: Colors.white,
+      ),
+      sourcePath: picked.path,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio16x9,
+        CropAspectRatioPreset.ratio4x3,
+      ],
+      maxWidth: 800,
     );
+    if (cropped != null) {
+      setState(() {
+        _pickedImage = cropped;
+        _postImageFile = _pickedImage;
+      });
+    }
+  }
 
-    final file = await ImageCrop.cropImage(
-      file: sample,
-      area: area,
+  void _showPickOptionsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              title: Text("Pick from Gallery"),
+              onTap: () {
+                _loadPicker(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              title: Text("Take a pictuer"),
+              onTap: () {
+                _loadPicker(ImageSource.camera);
+              },
+            )
+          ],
+        ),
+      ),
     );
-
-    sample.delete();
-
-    _lastCropped?.delete();
-    _lastCropped = file;
-    setState(() {
-      _sample = sample;
-      _postImageFile = file;
-    });
-    debugPrint('$file');
   }
 }

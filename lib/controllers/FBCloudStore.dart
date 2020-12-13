@@ -24,7 +24,7 @@ class FBCloudStore {
         await _firebaseHelper.getCurrentUser().then((user) => user.uid);
     DocumentSnapshot ds = await _firestore.collection("users").doc(cuid).get();
     print(ds.get('fid'));
-
+    print(cuid);
     FirebaseFirestore.instance
         .collection('families')
         .doc(ds.get('fid'))
@@ -33,6 +33,7 @@ class FBCloudStore {
         .set({
       'postID': postID,
       'userName': userProfile.myName,
+      'userId': cuid,
       'userThumbnail': userProfile.myThumbnail,
       'postTimeStamp': DateTime.now().millisecondsSinceEpoch,
       'postContent': postContent,
@@ -124,7 +125,7 @@ class FBCloudStore {
   }
 
   static Future<void> commentToPost(
-      String toUserID,
+      //String toUserID,
       String toCommentID,
       String postID,
       String commentContent,
@@ -136,6 +137,7 @@ class FBCloudStore {
     if (userProfile.myFCMToken == null) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       myFCMToken = prefs.get('FCMToken');
+      
     } else {
       myFCMToken = userProfile.myFCMToken;
     }
@@ -153,7 +155,7 @@ class FBCloudStore {
         .collection('comment')
         .doc(commentID)
         .set({
-      'toUserID': toUserID,
+      //'toUserID': toUserID,
       'commentID': commentID,
       'toCommentID': toCommentID,
       'userName': userProfile.myName,
@@ -163,7 +165,7 @@ class FBCloudStore {
       'commentLikeCount': 0,
       'FCMToken': myFCMToken
     });
-    await FBCloudMessaging.instance.sendNotificationMessageToPeerUser(
-        commentContent, '${userProfile.myName} was commented', postFCMToken);
+    /*await FBCloudMessaging.instance.sendNotificationMessageToPeerUser(
+        commentContent, '${userProfile.myName} was commented', postFCMToken);*/
   }
 }
