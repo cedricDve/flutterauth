@@ -87,7 +87,7 @@ class _UserProfile extends State<UserProfile> {
     final size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Container(
-        height: 650,
+        height: 500,
         child: Stack(
           children: <Widget>[
             Container(),

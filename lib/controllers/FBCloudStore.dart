@@ -125,7 +125,7 @@ class FBCloudStore {
   }
 
   static Future<void> commentToPost(
-      //String toUserID,
+      String toUserID,
       String toCommentID,
       String postID,
       String commentContent,
@@ -155,7 +155,7 @@ class FBCloudStore {
         .collection('comment')
         .doc(commentID)
         .set({
-      //'toUserID': toUserID,
+      'toUserID': toUserID,
       'commentID': commentID,
       'toCommentID': toCommentID,
       'userName': userProfile.myName,
@@ -165,7 +165,7 @@ class FBCloudStore {
       'commentLikeCount': 0,
       'FCMToken': myFCMToken
     });
-    /*await FBCloudMessaging.instance.sendNotificationMessageToPeerUser(
-        commentContent, '${userProfile.myName} was commented', postFCMToken);*/
+    await FBCloudMessaging.instance.sendNotificationMessageToPeerUser(
+        commentContent, '${userProfile.myName} was commented', postFCMToken);
   }
 }
