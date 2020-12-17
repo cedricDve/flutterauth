@@ -7,6 +7,8 @@ import 'package:flutter_familly_app/screens/home.dart';
 import 'package:flutter_familly_app/screens/login.dart';
 import 'package:flutter_familly_app/screens/search.dart';
 import 'package:flutter_familly_app/services/auth.dart';
+import 'package:flutter_familly_app/services/firebaseHelper.dart';
+import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
 
 void main() {
   runApp(App());
@@ -65,6 +67,8 @@ class Root extends StatefulWidget {
 class _RootState extends State<Root> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseHelper _firebaseHelper = FirebaseHelper();
+  User user;
   @override
   Widget build(BuildContext context) {
     // the functions i wrote returns future string so -> use streambuilder
@@ -83,10 +87,21 @@ class _RootState extends State<Root> {
             );
           } else {
             //logged in
-            return Home(
-              auth: _auth,
-              firestore: _firebaseFirestore,
-            );
+            //email verify
+            user = _auth.currentUser;
+            bool checkMail = _firebaseHelper.isEmailVerified(user);
+            print(checkMail);
+            print(" !!!!!!!!!!");
+            if (!checkMail) {
+              user.sendEmailVerification();
+              return VerifyPage(auth: _auth, user: user);
+            } else {
+              print("WENT TO HOME");
+              return Home(
+                auth: _auth,
+                firestore: _firebaseFirestore,
+              );
+            }
           }
         } else {
           //connection still loading
@@ -98,5 +113,56 @@ class _RootState extends State<Root> {
         }
       },
     );
+  }
+}
+
+class VerifyPage extends StatefulWidget {
+  final User user;
+  final FirebaseAuth auth;
+
+  const VerifyPage({Key key, this.user, this.auth}) : super(key: key);
+
+  @override
+  _VerifyPageState createState() => _VerifyPageState();
+}
+
+class _VerifyPageState extends State<VerifyPage> {
+  final FirebaseHelper _firebaseHelper = FirebaseHelper();
+  @override
+  Widget build(BuildContext context) {
+    print("FUCK YASSIN");
+    if (_firebaseHelper.isEmailVerified(widget.user)) return Root();
+
+    return Scaffold(
+        body: Center(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+          LinearProgressIndicator(),
+          SizedBox(height: 50.0),
+          Text(
+              'An email has been sent to ${widget.user.email}. Please verify your email and log in again ! '),
+          SizedBox(height: 50.0),
+          GestureDetector(
+              onTap: () async {
+                await Auth(auth: widget.auth).signOut();
+              },
+              child: FadeAnimation(
+                  1.9,
+                  Container(
+                    height: 50,
+                    margin: EdgeInsets.symmetric(horizontal: 60),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: Color.fromRGBO(0, 171, 236, 1),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Login",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ))),
+        ])));
   }
 }

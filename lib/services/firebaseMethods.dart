@@ -3,9 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_helpers/firebase_helpers.dart';
 import 'package:flutter_familly_app/commons/const.dart';
 import 'package:flutter_familly_app/models/calendarModel.dart';
-
 import 'package:flutter_familly_app/models/user.dart';
-
 import 'package:flutter_familly_app/services/auth.dart';
 
 class FirebaseMethods {
@@ -26,6 +24,14 @@ class FirebaseMethods {
     DocumentSnapshot ds =
         await _firebaseFirestore.collection("users").doc(cuid).get();
     return ds.get('isAdmin');
+  }
+
+  Future<String> getFID() async {
+    String cuid = Auth(auth: _auth).currentUser.uid;
+    // Get data from Firestore of current user with cuid ->(CurrentUserID)
+    DocumentSnapshot ds =
+        await _firebaseFirestore.collection("users").doc(cuid).get();
+    return ds.get('fid');
   }
 
   //fetch all users in a List (for search) => Passing User : otherwise auth user could find himself ..
@@ -98,8 +104,46 @@ class FirebaseMethods {
     return List();
   }
 
+  bool isEmailVerified(User user) {
+    if (user.emailVerified) {
+      return true;
+    } else
+      return false;
+  }
+}
+
+final eventDBS = DatabaseService<CalendarEvent>(
+  AppDBConstants.eventCollection,
+  fromDS: (id, data) => CalendarEvent.fromDS(id, data),
+  toMap: (event) => event.toMap(),
+);
+
+// For Calendar Events
+// Using firebase_helpers:
+
 /*
+
+  Future<List<Events>> getFamEvents() async {
+    List<Events> famEventsList = List<Events>();
+    String fID = await getFID();
+
+    print(fID);
+    //get FamEvents
+    QuerySnapshot fqs = await _firebaseFirestore
+        .collection("families")
+        .doc(fID)
+        .collection('family_events')
+        .get();
+    for (var i = 0; i < fqs.docs.length; i++) {
+      famEventsList.add(Events.fromMap(fqs.docs[i].data()));
+    }
+    print(famEventsList);
+    return famEventsList;
+  }
+
+
   //fetch all users in a List (for search) => Passing User : otherwise auth user could find himself ..
+
   Future<UserModel> fetchUserModel(String currentUser) async {
     UserModel userModel;
     //get all users and store in Querydatasnapshot
@@ -108,8 +152,8 @@ class FirebaseMethods {
 //each user has a user id = firebaseAuth currentUserId
     return userModel;
   }
- */
-/*
+ 
+
  Future<List> getFamilyCalendar() async {
     List a = await getFamMembers();
     print(a);
@@ -125,14 +169,12 @@ class FirebaseMethods {
       for (String key in s.keys) {
         if (a.contains(s[key])) userList.add(querySnapshot.docs[i].id);
       }
-
       // userList.add(UserModel.fromMap(querySnapshot.docs[i].data()));
     }
     return userList;
   }
-*/
 
-/*
+
   Future<void> addDataToFirestore(User currentUser) async {
     user = UserModel(
       uid: currentUser.uid,
@@ -144,12 +186,3 @@ class FirebaseMethods {
     );
     _firebaseFirestore.collection("users").doc().set(user.toMap(user));
   }*/
-}
-
-// For Calendar Events
-// Using firebase_helpers:
-final eventDBS = DatabaseService<CalendarEvent>(
-  AppDBConstants.eventCollection,
-  fromDS: (id, data) => CalendarEvent.fromDS(id, data),
-  toMap: (event) => event.toMap(),
-);

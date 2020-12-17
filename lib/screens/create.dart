@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
 import 'package:flutter_familly_app/models/families.dart';
-import 'package:flutter_familly_app/screens/home.dart';
+import 'package:flutter_familly_app/main.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:math';
@@ -196,7 +196,7 @@ class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
                                     (e) => Fluttertoast.showToast(msg: e));
                           }
                           Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => Home()));
+                              MaterialPageRoute(builder: (context) => Root()));
                         } else {
                           Fluttertoast.showToast(msg: "error");
                           counter++;
