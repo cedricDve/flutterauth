@@ -20,6 +20,14 @@ class FirebaseMethods {
     return currentUser;
   }
 
+  Future<bool> isAdmin() async {
+    String cuid = Auth(auth: _auth).currentUser.uid;
+    // Get data from Firestore of current user with cuid ->(CurrentUserID)
+    DocumentSnapshot ds =
+        await _firebaseFirestore.collection("users").doc(cuid).get();
+    return ds.get('isAdmin');
+  }
+
   //fetch all users in a List (for search) => Passing User : otherwise auth user could find himself ..
   Future<List<UserModel>> fetchAllUsers(User currentUser) async {
     List<UserModel> userList = List<UserModel>();
@@ -101,6 +109,28 @@ class FirebaseMethods {
     return userModel;
   }
  */
+/*
+ Future<List> getFamilyCalendar() async {
+    List a = await getFamMembers();
+    print(a);
+
+    // Get data from Firestore of current user with cuid ->(CurrentUserID)
+    List userList = List<CalendarEvent>();
+    //get all users and store in Querydatasnapshot
+    QuerySnapshot querySnapshot =
+        await _firebaseFirestore.collection("calendar_events").get();
+//each user has a user id = firebaseAuth currentUserId
+    for (var i = 0; i < querySnapshot.docs.length; i++) {
+      Map<String, dynamic> s = querySnapshot.docs[i].data();
+      for (String key in s.keys) {
+        if (a.contains(s[key])) userList.add(querySnapshot.docs[i].id);
+      }
+
+      // userList.add(UserModel.fromMap(querySnapshot.docs[i].data()));
+    }
+    return userList;
+  }
+*/
 
 /*
   Future<void> addDataToFirestore(User currentUser) async {

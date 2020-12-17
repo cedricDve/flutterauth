@@ -104,16 +104,7 @@ class _AddEventPageState extends State<AddEventPage> {
                             prefixIcon: Icon(Icons.short_text)),
                       ),
                       Divider(),
-                      FormBuilderSwitch(
-                        name: "isPublic",
-                        title: Text("Public"),
-                        //pass the initial values : when user wanna edit his profile
-                        initialValue: widget.event?.isPublic ?? false,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        decoration: InputDecoration(
-                            hintText: "Add Details", border: InputBorder.none),
-                      ),
-                      Divider(),
+                      // Divider(),
                       FormBuilderDateTimePicker(
                         validator: FormBuilderValidators.compose([
                           FormBuilderValidators.required(context),
@@ -136,3 +127,14 @@ class _AddEventPageState extends State<AddEventPage> {
     );
   }
 }
+
+/*
+                      FormBuilderSwitch(
+                        name: "isPublic",
+                        title: Text("Public"),
+                        //pass the initial values : when user wanna edit his profile
+                        initialValue: widget.event?.isPublic ?? false,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        decoration: InputDecoration(
+                            hintText: "Add Details", border: InputBorder.none),
+                      ),*/

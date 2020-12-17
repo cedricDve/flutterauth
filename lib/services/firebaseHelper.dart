@@ -10,4 +10,6 @@ class FirebaseHelper {
       _firebaseHelper.fetchAllUsers(user);
   Future<List> joinFamily() => _firebaseHelper.joinFamily();
   Future<List> getFamMembers() => _firebaseHelper.getFamMembers();
+  // Future<List> getFamCalendar() => _firebaseHelper.getFamilyCalendar();
+  Future<bool> isAdmin() => _firebaseHelper.isAdmin();
 }

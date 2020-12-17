@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/commons/const.dart';
 import 'package:flutter_familly_app/commons/utils.dart';
 import 'package:flutter_familly_app/screens/writePost.dart';
+import 'package:flutter_familly_app/screens/home.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:flutter_familly_app/subViews/threadItem.dart';
 
@@ -19,7 +20,7 @@ class ThreadMain extends StatefulWidget {
 }
 
 class _ThreadMain extends State<ThreadMain> {
-  bool _isLoading = false;
+  bool _isLoading = true;
   FirebaseHelper _firebaseHelper = FirebaseHelper();
 
   String fID;
@@ -58,73 +59,92 @@ class _ThreadMain extends State<ThreadMain> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    // get fid of current user => use fID to have fid of current user
+  void initState() {
+    // TODO: implement initState
+    super.initState();
     getFidCurrentUser();
     getCurrentUserIsFamily();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     print(isFamily);
+    print("!!");
+    // get fid of current user => use fID to have fid of current user
 
-    return Scaffold(
-      body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('families')
-              .doc(fID)
-              .collection('thread')
-              .orderBy('postTimeStamp', descending: true)
-              .snapshots(),
-          builder: (context, snapshot) {
-            //if no data => tru e: false
-            if (!snapshot.hasData) return LinearProgressIndicator();
+    return RefreshIndicator(
+      onRefresh: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Home()));
+      },
+      child: Scaffold(
+        body: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('families')
+                .doc(fID)
+                .collection('thread')
+                .orderBy('postTimeStamp', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              //if no data => tru e: false
+              if (!snapshot.hasData) return LinearProgressIndicator();
 
-            return Stack(
-              children: <Widget>[
-                (snapshot.data.docs.length > 0 && isFamily)
-                    ? ListView(
-                        shrinkWrap: true,
-                        children:
-                            snapshot.data.docs.map((DocumentSnapshot data) {
-                          return ThreadItem(
-                            data: data,
-                            myData: widget.myData,
-                            updateMyDataToMain: widget.updateMyData,
-                            threadItemAction: _moveToContentDetail,
-                            isFromThread: true,
-                            commentCount: data['postCommentCount'],
-                            parentContext: context,
-                          );
-                        }).toList(),
-                      )
-                    : Container(
-                        child: Center(
-                            child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(
-                              Icons.error,
-                              color: Colors.grey[700],
-                              size: 64,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(14.0),
-                              child: Text(
-                                'There is no post',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.grey[700]),
-                                textAlign: TextAlign.center,
+              return Stack(
+                children: <Widget>[
+                  (snapshot.data.docs.length > 0 && isFamily && _isLoading)
+                      ? ListView(
+                          shrinkWrap: true,
+                          children:
+                              snapshot.data.docs.map((DocumentSnapshot data) {
+                            if (data != null) {
+                              _isLoading = false;
+                              return ThreadItem(
+                                data: data,
+                                myData: widget.myData,
+                                updateMyDataToMain: widget.updateMyData,
+                                threadItemAction: _moveToContentDetail,
+                                isFromThread: true,
+                                commentCount: data['postCommentCount'],
+                                parentContext: context,
+                              );
+                            }
+                          }).toList(),
+                        )
+                      : Container(
+                          child: Center(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Icon(
+                                Icons.error,
+                                color: Colors.grey[700],
+                                size: 64,
                               ),
-                            ),
-                          ],
-                        )),
-                      ),
-                Utils.loadingCircle(_isLoading),
-              ],
-            );
-          }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _writePost,
-        tooltip: 'Increment',
-        child: Icon(Icons.create),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+                              Padding(
+                                padding: const EdgeInsets.all(14.0),
+                                child: Text(
+                                  'There is no post',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey[700]),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          )),
+                        ),
+                  if (_isLoading)
+                    LinearProgressIndicator()
+                  else
+                    Utils.loadingCircle(_isLoading)
+                ],
+              );
+            }),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _writePost,
+          tooltip: 'Increment',
+          child: Icon(Icons.create),
+        ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 

@@ -7,7 +7,7 @@ import 'package:flutter_familly_app/screens/Choose.dart';
 import 'package:flutter_familly_app/screens/feedmain.dart';
 import 'package:flutter_familly_app/screens/pages/calendarHome..dart';
 
-import 'package:flutter_familly_app/screens/pages/test.dart';
+import 'package:flutter_familly_app/screens/pages/eventTest.dart';
 import 'package:flutter_familly_app/screens/userProfile.dart';
 
 import 'package:flutter_familly_app/services/auth.dart';
@@ -73,7 +73,7 @@ class _HomeState extends State<Home> {
         userName: _userName,
         email: _email,
       ),
-      TestPage(),
+      EventTest(),
       CalendarHome(),
     ]; //  HomeP(auth: widget.auth, firestore: widget.firestore)
 
@@ -200,9 +200,7 @@ class _ProfilePState extends State<ProfileP> {
                       )
                     : Icon(Icons.notification_important),
               ),
-              title: (isJoin)
-                  ? Text('New Family Request')
-                  : Text('No New Request'),
+              title: (isJoin) ? Text('New Family Request') : Text('No Request'),
             ),
             ListTile(
               selected: true,
