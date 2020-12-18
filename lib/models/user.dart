@@ -1,49 +1,125 @@
+import 'dart:convert';
+
 class UserModel {
-  String uid;
-  String fid;
-  String name;
-  String email;
-  String role;
-  String birthday;
-  String avatar;
-  bool isFamily; //
-  bool isAdmin; //
+  final String uid;
+  final String fid;
+  final String name;
+  final String email;
+  final String role;
+  final String birthday;
+  final String avatar;
+  final bool isFamily; //
+  final bool isAdmin; //
+  final String uniqueId;
+  UserModel({
+    this.uid,
+    this.fid,
+    this.name,
+    this.email,
+    this.role,
+    this.birthday,
+    this.avatar,
+    this.isFamily,
+    this.isAdmin,
+    this.uniqueId,
+  });
 
-  UserModel(
-      {this.uid,
-      this.fid,
-      this.name,
-      this.email,
-      this.role,
-      this.birthday,
-      this.avatar,
-      this.isFamily,
-      this.isAdmin});
-
-  Map toMap(UserModel user) {
-    var data = Map<String, dynamic>();
-    data['uid'] = user.uid;
-    data['fid'] = user.fid;
-    data['name'] = user.name;
-    data['email'] = user.email;
-    data['role'] = user.role;
-    data['birthday'] = user.birthday;
-    data['avatar'] = user.avatar;
-    data['isFamily'] = user.isFamily;
-    data['isAdmin'] = user.isAdmin;
-    return data;
+  UserModel copyWith({
+    String uid,
+    String fid,
+    String name,
+    String email,
+    String role,
+    String birthday,
+    String avatar,
+    bool isFamily,
+    bool isAdmin,
+    String uniqueId,
+  }) {
+    return UserModel(
+      uid: uid ?? this.uid,
+      fid: fid ?? this.fid,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      role: role ?? this.role,
+      birthday: birthday ?? this.birthday,
+      avatar: avatar ?? this.avatar,
+      isFamily: isFamily ?? this.isFamily,
+      isAdmin: isAdmin ?? this.isAdmin,
+      uniqueId: uniqueId ?? this.uniqueId,
+    );
   }
 
-//parse the map and create a user object
-  UserModel.fromMap(Map<String, dynamic> mapData) {
-    this.uid = mapData['uid'];
-    this.fid = mapData['fid'];
-    this.name = mapData['name'];
-    this.email = mapData['email'];
-    this.role = mapData['role'];
-    this.birthday = mapData['birthday'];
-    this.avatar = mapData['avatar'];
-    this.isFamily = mapData['isFamily'];
-    this.isAdmin = mapData['isAdmin'];
+  Map<String, dynamic> toMap() {
+    return {
+      'uid': uid,
+      'fid': fid,
+      'name': name,
+      'email': email,
+      'role': role,
+      'birthday': birthday,
+      'avatar': avatar,
+      'isFamily': isFamily,
+      'isAdmin': isAdmin,
+      'uniqueId': uniqueId,
+    };
+  }
+
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    if (map == null) return null;
+
+    return UserModel(
+      uid: map['uid'],
+      fid: map['fid'],
+      name: map['name'],
+      email: map['email'],
+      role: map['role'],
+      birthday: map['birthday'],
+      avatar: map['avatar'],
+      isFamily: map['isFamily'],
+      isAdmin: map['isAdmin'],
+      uniqueId: map['uniqueId'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory UserModel.fromJson(String source) =>
+      UserModel.fromMap(json.decode(source));
+
+  @override
+  String toString() {
+    return 'UserModel(uid: $uid, fid: $fid, name: $name, email: $email, role: $role, birthday: $birthday, avatar: $avatar, isFamily: $isFamily, isAdmin: $isAdmin, uniqueId: $uniqueId)';
+  }
+
+  @override
+  bool operator ==(Object o) {
+    if (identical(this, o)) return true;
+
+    return o is UserModel &&
+        o.uid == uid &&
+        o.fid == fid &&
+        o.name == name &&
+        o.email == email &&
+        o.role == role &&
+        o.birthday == birthday &&
+        o.avatar == avatar &&
+        o.isFamily == isFamily &&
+        o.isAdmin == isAdmin &&
+        o.uniqueId == uniqueId;
+  }
+
+  @override
+  int get hashCode {
+    return uid.hashCode ^
+        fid.hashCode ^
+        name.hashCode ^
+        email.hashCode ^
+        role.hashCode ^
+        birthday.hashCode ^
+        avatar.hashCode ^
+        isFamily.hashCode ^
+        isAdmin.hashCode ^
+        uniqueId.hashCode;
   }
 }

@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
 import 'package:flutter_familly_app/screens/register.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //Firebase App
 
@@ -150,6 +154,7 @@ class _LoginState extends State<Login> {
                             .signIn(
                                 email: emailController.text.trim(),
                                 password: passwordController.text.trim());
+                        getToken();
                         if (returnValue == "Succes") {
                           emailController.clear();
                           passwordController.clear();
@@ -158,9 +163,7 @@ class _LoginState extends State<Login> {
                           displayToastMessage(returnValue, context);
                           passwordController.clear();
                         }
-
-                        },
-
+                      },
                       child: FadeAnimation(
                           1.9,
                           Container(
@@ -211,4 +214,66 @@ class _LoginState extends State<Login> {
 
 displayToastMessage(String msg, BuildContext context) {
   Fluttertoast.showToast(msg: msg);
+}
+
+Future<String> getToken() async {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  final databaseReference = FirebaseFirestore.instance;
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String cuid;
+  cuid = Auth(auth: _auth).currentUser.uid;
+  String userTokenThisDevice = prefs.get('FCMToken');
+  print(cuid);
+
+  if (userTokenThisDevice == null) {
+    _firebaseMessaging.getToken().then((val) async {
+      print('Token: ' + val);
+      prefs.setString('FCMToken', val);
+    });
+  }
+
+  print(userTokenThisDevice);
+  print("???????????????????");
+
+  await FirebaseFirestore.instance
+      .collection("users")
+      .doc(cuid)
+      .get()
+      .then((val) async {
+    //  'uniqueId': userToken
+    if (val.get('uniqueId') == null) {
+      print(userTokenThisDevice);
+      print("???????????????????");
+      databaseReference
+          .collection("users")
+          .doc(cuid)
+          .update({'uniqueId': userTokenThisDevice});
+    } else if (userTokenThisDevice != val.get('uniqueId')) {
+      //STUUR EMAIL CODE HIER !
+      String sender = 'firebasehelpme@gmail.com';
+      String password = 'FBSupport1';
+
+      //Create our email transport
+      final smtpServer = gmail(sender, password);
+      //var emailTransport = new SmtpTransport(options);
+      final message = Message()
+        ..from = 'firebasehelpme@gmail.com'
+        ..recipients.add('${val.get('email')}')
+        ..subject = 'Did you log in on: ${DateTime.now()} ?'
+        ..html =
+            "<h1>New device logged in on ${val.get('email')}</h1>\n<p>Someone just logged in on your account from another device. This email has been sent to your to check if it was you. If it is someone else, change your password as fast as possible on the app under the profile page</p>";
+      try {
+        final sendReport = await send(message, smtpServer);
+        print('Message sent: ' + sendReport.toString());
+      } on MailerException catch (e) {
+        print('Message not sent.');
+        for (var p in e.problems) {
+          print('Problem: ${p.code}: ${p.msg}');
+        }
+      }
+    }
+  });
+
+  return userTokenThisDevice;
 }

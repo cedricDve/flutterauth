@@ -131,7 +131,7 @@ class _VerifyPageState extends State<VerifyPage> {
   @override
   Widget build(BuildContext context) {
     print("FUCK YASSIN");
-    if (_firebaseHelper.isEmailVerified(widget.user)) return Root();
+    if (_firebaseHelper.isEmailVerified(widget.user)) Root();
 
     return Scaffold(
         body: Center(

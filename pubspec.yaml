@@ -33,6 +33,7 @@ dependencies:
   firebase_database: "^4.3.0"   
   firebase_auth: ^0.18.0+1
   firebase_helpers: ^0.2.2
+  mailer:
 
   table_calendar: ^2.3.1
   firebase_storage: "5.2.0"

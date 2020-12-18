@@ -244,7 +244,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           widget.firestore
                               .collection("users")
                               .doc(widget.auth.currentUser.uid)
-                              .set(userModel.toMap(userModel));
+                              .set(userModel.toMap());
 
                           if (returnValue == "Success") {
                             emailControler.clear();
