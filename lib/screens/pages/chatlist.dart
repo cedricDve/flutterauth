@@ -1,108 +1,143 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_familly_app/screens/chatscreens/createConversations.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
-import 'package:flutter_familly_app/widgets/customAppBar.dart';
-import 'package:flutter_familly_app/widgets/customChat.dart';
+import 'package:flutter_familly_app/models/user.dart';
+import 'package:flutter_familly_app/screens/chatscreens/chat.dart';
 
 class ChatList extends StatefulWidget {
   @override
   _ChatListState createState() => _ChatListState();
 }
 
-//global final var
-final FirebaseHelper fHelper = FirebaseHelper();
-
 class _ChatListState extends State<ChatList> {
-  String currentUid;
 
   @override
   void initState() {
     super.initState();
-    //get the current user uid
-    fHelper.getCurrentUser().then((user) {
-      setState(() {
-        currentUid = user.uid;
-      });
-    });
-  }
-
-  CustomAppBar customAppBar(BuildContext context) {
-    String username = "Name";
-    return CustomAppBar(
-        title: LogoUser(username[0]),
-        leading: IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.notification_important),
-            color: Colors.black),
-        centerTitle: true,
-        actions: <Widget>[
-          //Search
-          IconButton(
-              icon: Icon(
-                Icons.search,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                //When user press SearchButton -> change view -> navigator with route
-                Navigator.pushNamed(context, "/search");
-              })
-        ]);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar(context),
+      appBar: AppBar(
+        title: Text("Conversations"),
+        automaticallyImplyLeading: false ,
+      ),
       floatingActionButton: NewChatBtn(),
-      body: ChatListContainer(currentUid),
+      body: ChatListContainer(),
     );
   }
 }
 
 class ChatListContainer extends StatefulWidget {
-  final String currentUserid;
-  ChatListContainer(this.currentUserid);
   @override
   _ChatListContainerState createState() => _ChatListContainerState();
 }
 
 class _ChatListContainerState extends State<ChatListContainer> {
+  FirebaseHelper firebaseHelper = FirebaseHelper();
+  Stream<QuerySnapshot> _conversations;
+  List<UserModel> userList = List<UserModel>();
+  
+  @override
+  void initState() {
+    super.initState();
+    //TODO: make a cloud function
+    firebaseHelper.fetchAllConversations().then((list) => {
+      setState(() {
+        _conversations = list;
+      }),
+    });
+    firebaseHelper.fetchUsersWithFid().then((usersList) {
+      setState(() {
+        userList = usersList;
+      });
+    });
+  }
+
+  Widget noConversationWidget(){
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          GestureDetector(
+              child: Icon(Icons.edit, color: Colors.grey[700], size: 75.0)
+          ),
+          SizedBox(height: 15.0),
+          Text("You've not start a conversation, tap on the 'edit' icon to create a conversation."),
+        ],
+      ),
+    );
+  }
+
+  String takeUserWithCuid(snapshot, index){
+    String cuid =  snapshot.data.documents[index].data()["memberSender"][0];
+    //if(userList.length > 0){
+      for(var i = 0; i < userList.length; i++){
+        if(cuid == userList[i].uid){
+          print(userList[i].name);
+          //names.add(userList[i].name);
+          return userList[i].name;
+        }
+      }
+    //}
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: ListView.builder(
-        padding: EdgeInsets.all(10),
-        itemCount: 2,
-        itemBuilder: (context, index) {
-          return CustomChat(
-            mini: false,
-            onTap: () {},
-            onLongPress: () {},
-            title: Text("Test", style: TextStyle(color: Colors.black)),
-            subtitle: Text("Subtitle"),
-            leading: Container(
-              constraints: BoxConstraints(maxHeight: 60, maxWidth: 60),
-              child: Stack(
-                children: <Widget>[
-                  CircleAvatar(
-                    maxRadius: 30,
-                    backgroundColor: Colors.white,
-                    backgroundImage: NetworkImage(
-                        "https://w7.pngwing.com/pngs/359/1024/png-transparent-firebase-cloud-messaging-computer-icons-google-cloud-messaging-android-angle-triangle-computer-programming-thumbnail.png"),
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Container(
-                      height: 15,
-                      width: 15,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: Colors.green),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
-        },
+      child: StreamBuilder(
+          stream: _conversations,
+          builder: (context, snapshot){
+            if(snapshot.hasData){
+              if(snapshot.data != null){
+                if(snapshot.data.documents.length != 0) {
+                  return ListView.builder(
+                    padding: EdgeInsets.all(10),
+                    shrinkWrap: true,
+                    itemCount: snapshot.data.documents.length,
+                    itemBuilder: (context, index) {
+                      String name = takeUserWithCuid(snapshot, index);
+                      if(name != null ){
+                      return ListTile(
+                        leading: Icon(
+                            Icons.account_circle //searchResults[index].avatar
+                        ),
+                        title: Text(name),
+                        onTap: () {
+                          String cid = snapshot.data.documents[index].data()["cid"];
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => ChatScreen(cid: cid)));
+                        },
+                        /*
+                        trailing: Icon(
+                            Icons.delete
+                        ),
+                         */
+                      );
+                      } else {
+                        return Center(
+                            child: CircularProgressIndicator()
+                        );
+                      }
+                    },
+                  );
+                } else {
+                  return noConversationWidget();
+                  }
+              } else {
+                // view to add a new view: make a conversation
+                return noConversationWidget();
+              }
+            } else {
+              return Center(
+                  child: CircularProgressIndicator()
+              );
+            }}
       ),
     );
   }
@@ -110,13 +145,21 @@ class _ChatListContainerState extends State<ChatListContainer> {
 
 // Button that let the user make a new message: always present, right bottom
 class NewChatBtn extends StatelessWidget {
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-          color: Colors.blue, borderRadius: BorderRadius.circular(50)),
-      child: Icon(Icons.edit, color: Colors.black, size: 25),
       padding: EdgeInsets.all(25),
+      child: FloatingActionButton(
+        child: Icon(
+            Icons.edit, color: Colors.black, size: 25
+        ),
+        onPressed: (){
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => createConversations()));
+        },
+      ),
     );
   }
 }
@@ -133,7 +176,7 @@ class LogoUser extends StatelessWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50), color: Colors.blue),
         child: //using a stack -> 2 items
-            Stack(
+        Stack(
           children: <Widget>[
             Align(
               alignment: Alignment.center,

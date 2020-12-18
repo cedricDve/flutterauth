@@ -5,6 +5,7 @@ import 'package:flutter_familly_app/commons/const.dart';
 import 'package:flutter_familly_app/commons/utils.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_familly_app/models/famEvent.dart';
 
 import 'FBCloudMessaging.dart';
 
@@ -125,7 +126,7 @@ class FBCloudStore {
   }
 
   static Future<void> commentToPost(
-      //String toUserID,
+      String toUserID,
       String toCommentID,
       String postID,
       String commentContent,
@@ -137,7 +138,6 @@ class FBCloudStore {
     if (userProfile.myFCMToken == null) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       myFCMToken = prefs.get('FCMToken');
-      
     } else {
       myFCMToken = userProfile.myFCMToken;
     }
@@ -155,7 +155,7 @@ class FBCloudStore {
         .collection('comment')
         .doc(commentID)
         .set({
-      //'toUserID': toUserID,
+      'toUserID': toUserID,
       'commentID': commentID,
       'toCommentID': toCommentID,
       'userName': userProfile.myName,
@@ -165,7 +165,39 @@ class FBCloudStore {
       'commentLikeCount': 0,
       'FCMToken': myFCMToken
     });
-    /*await FBCloudMessaging.instance.sendNotificationMessageToPeerUser(
-        commentContent, '${userProfile.myName} was commented', postFCMToken);*/
+    await FBCloudMessaging.instance.sendNotificationMessageToPeerUser(
+        commentContent, '${userProfile.myName} was commented', postFCMToken);
+  }
+
+  static Future<void> sendEventInFirebase(String eventTitle,
+      String eventContent, FamEvent famEvent, String eventImageURL) async {
+    final FirebaseHelper _firebaseHelper = FirebaseHelper();
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    String postFCMToken;
+    if (famEvent.myFCMToken == null) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      postFCMToken = prefs.get('FCMToken');
+    } else {
+      postFCMToken = famEvent.myFCMToken;
+    }
+    String cuid =
+        await _firebaseHelper.getCurrentUser().then((user) => user.uid);
+    DocumentSnapshot ds = await _firestore.collection("users").doc(cuid).get();
+    FirebaseFirestore.instance
+        .collection('families')
+        .doc(ds.get('fid'))
+        .collection('events')
+        .doc()
+        .set({
+      'owner': cuid,
+      'title': eventTitle,
+      'event_image': famEvent.eventImage,
+      'postTimeStamp': DateTime.now().millisecondsSinceEpoch,
+      'description': eventContent,
+      'images': eventImageURL,
+      'postCommentCount': 0,
+      'members': "members",
+      'FCMToken': postFCMToken
+    });
   }
 }

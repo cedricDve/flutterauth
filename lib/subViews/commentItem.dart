@@ -32,6 +32,9 @@ class _CommentItem extends State<CommentItem>{
 
   @override
   Widget build(BuildContext context) {
+    print("Helooooooooo");
+    print(widget.data['commentContent']);
+    print("Zeuuuuubuiiiibibibibi");
     return Padding(
       padding: widget.data['toCommentID'] == null ? EdgeInsets.all(8.0) : EdgeInsets.fromLTRB(34.0,8.0,8.0,8.0),
       child: Stack(
@@ -61,8 +64,8 @@ class _CommentItem extends State<CommentItem>{
                             child: Text(widget.data['userName'],style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left:4.0),
-                            child: widget.data['toCommentID'] == null ? Text(widget.data['commentContent'],maxLines: null,) :
+                            padding: const EdgeInsets.only(left:6.0),
+                            child: widget.data['toCommentID'] == null ? Text(widget.data['commentContent'],maxLines: 1,) :
                             RichText(
                               text: TextSpan(
                                 children: <TextSpan>[

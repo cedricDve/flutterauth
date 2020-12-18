@@ -5,15 +5,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/screens/Choose.dart';
 import 'package:flutter_familly_app/screens/feedmain.dart';
+import 'package:flutter_familly_app/screens/pages/Event/eventPage.dart';
 import 'package:flutter_familly_app/screens/pages/calendarHome..dart';
-
-import 'package:flutter_familly_app/screens/pages/test.dart';
 import 'package:flutter_familly_app/screens/userProfile.dart';
-
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:flutter_familly_app/widgets/navbarKey.dart';
-
 import 'pages/chatlist.dart';
 
 class Home extends StatefulWidget {
@@ -73,7 +70,8 @@ class _HomeState extends State<Home> {
         userName: _userName,
         email: _email,
       ),
-      TestPage(),
+      //EventTest(),
+      EventPage(),
       CalendarHome(),
     ]; //  HomeP(auth: widget.auth, firestore: widget.firestore)
 
@@ -164,68 +162,6 @@ class _ProfilePState extends State<ProfileP> {
                 fontWeight: FontWeight.bold)),
         backgroundColor: Colors.black87,
         elevation: 0.0,
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.symmetric(vertical: 50.0),
-          children: <Widget>[
-            Icon(Icons.account_circle, size: 150.0, color: Colors.grey[700]),
-            SizedBox(height: 15.0),
-            Text(widget.userName,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 7.0),
-            ListTile(
-              onTap: () {
-                final CurvedNavigationBarState navState =
-                    NavbarKey.getKey().currentState;
-                navState.setPage(2);
-              },
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-              leading: Icon(Icons.group),
-              title: Text('Groups'),
-            ),
-            ListTile(
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-              leading: GestureDetector(
-                onTap: () {
-                  _showNotification();
-                },
-                child: (isJoin)
-                    ? Icon(
-                        Icons.notification_important,
-                        color: Colors.red,
-                      )
-                    : Icon(Icons.notification_important),
-              ),
-              title: (isJoin)
-                  ? Text('New Family Request')
-                  : Text('No New Request'),
-            ),
-            ListTile(
-              selected: true,
-              onTap: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Home()));
-              },
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-              leading: Icon(Icons.account_circle),
-              title: Text('Profile'),
-            ),
-            ListTile(
-              onTap: () async {
-                await Auth(auth: widget._auth).signOut();
-              },
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-              leading: Icon(Icons.exit_to_app, color: Colors.red),
-              title: Text('Log Out', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        ),
       ),
       body: UserProfile(),
       /*

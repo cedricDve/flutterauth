@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
-import 'package:flutter_familly_app/screens/home.dart';
+import 'package:flutter_familly_app/main.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -168,7 +168,7 @@ class _JoinStatefulWidgetState extends State<JoinStatefulWidget> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Home()));
+                                      builder: (context) => Root()));
                             }
                           } else {
                             Fluttertoast.showToast(
