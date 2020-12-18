@@ -11,6 +11,7 @@ class FamEvent {
   final int position;
   final List members;
   final List images;
+  final String myFCMToken;
   FamEvent({
     this.date,
     this.owner,
@@ -20,6 +21,7 @@ class FamEvent {
     this.position,
     this.members,
     this.images,
+    this.myFCMToken,
   });
 
   FamEvent copyWith({
@@ -29,8 +31,9 @@ class FamEvent {
     String eventImage,
     String description,
     int position,
-    List<String> members,
-    List<String> images,
+    List members,
+    List images,
+    String myFCMToken,
   }) {
     return FamEvent(
       date: date ?? this.date,
@@ -41,6 +44,7 @@ class FamEvent {
       position: position ?? this.position,
       members: members ?? this.members,
       images: images ?? this.images,
+      myFCMToken: myFCMToken ?? this.myFCMToken,
     );
   }
 
@@ -54,6 +58,7 @@ class FamEvent {
       'position': position,
       'members': members,
       'images': images,
+      'myFCMToken': myFCMToken,
     };
   }
 
@@ -67,8 +72,9 @@ class FamEvent {
       eventImage: map['eventImage'],
       description: map['description'],
       position: map['position'],
-      members: List<String>.from(map['members']),
-      images: List<String>.from(map['images']),
+      members: List.from(map['members']),
+      images: List.from(map['images']),
+      myFCMToken: map['myFCMToken'],
     );
   }
 
@@ -79,7 +85,7 @@ class FamEvent {
 
   @override
   String toString() {
-    return 'FamEvent(date: $date, owner: $owner, title: $title, eventImage: $eventImage, description: $description, position: $position, members: $members, images: $images)';
+    return 'FamEvent(date: $date, owner: $owner, title: $title, eventImage: $eventImage, description: $description, position: $position, members: $members, images: $images, myFCMToken: $myFCMToken)';
   }
 
   @override
@@ -94,7 +100,8 @@ class FamEvent {
         o.description == description &&
         o.position == position &&
         listEquals(o.members, members) &&
-        listEquals(o.images, images);
+        listEquals(o.images, images) &&
+        o.myFCMToken == myFCMToken;
   }
 
   @override
@@ -106,6 +113,7 @@ class FamEvent {
         description.hashCode ^
         position.hashCode ^
         members.hashCode ^
-        images.hashCode;
+        images.hashCode ^
+        myFCMToken.hashCode;
   }
 }

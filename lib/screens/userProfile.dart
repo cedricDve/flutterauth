@@ -10,9 +10,11 @@ import 'package:flutter_familly_app/widgets/top_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_familly_app/services/auth.dart';
+import 'introductionScreen.dart';
+import 'faqPage.dart';
+import 'package:flutter_familly_app/services/databaseService.dart';
 
 DocumentSnapshot ds;
-final FirebaseHelper _firebaseHelper = FirebaseHelper();
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 String fid;
 
@@ -74,20 +76,22 @@ class _UserProfile extends State<UserProfile> {
     });
   }
 
+  Future deleteUser() async {
+    try {
+      User user = await _firebaseHelper.getCurrentUser();
+      user.delete();
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    print(isAdmin);
-
-    print(" ----------------------");
-    print(join_username);
-    print(isJoin);
-
     getCurrentUserData();
-    String famillyId = fid;
-    final size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Container(
-        height: (isAdmin) ? 650 : 500,
+        height: (isAdmin) ? 750 : 600,
         child: Stack(
           children: <Widget>[
             Container(),
@@ -281,6 +285,86 @@ class _UserProfile extends State<UserProfile> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               IconButton(
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (_) => IntroScreen()),
+                                    );
+                                  },
+                                  icon: Icon(Icons.help,
+                                      color: Colors.blue[200])),
+                              SizedBox(width: 24.0),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  const Text(
+                                    "Getting Started With Fami",
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4.0),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ))),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: FadeAnimation(
+                        1.5,
+                        Card(
+                            child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 21.0,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              IconButton(
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (_) => FaqPage()),
+                                    );
+                                  },
+                                  icon: Icon(Icons.help,
+                                      color: Colors.blue[200])),
+                              SizedBox(width: 24.0),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  const Text(
+                                    "Help / FAQ",
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4.0),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ))),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: FadeAnimation(
+                        1.5,
+                        Card(
+                            child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 21.0,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              IconButton(
                                   onPressed: () async {
                                     await Auth(auth: widget.auth).signOut();
                                   },
@@ -291,20 +375,50 @@ class _UserProfile extends State<UserProfile> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Text(
+                                  const Text(
                                     "Log Out",
                                     style: TextStyle(
                                       fontSize: 18.0,
                                     ),
                                   ),
-                                  SizedBox(height: 4.0),
-                                  /* Text(
-                                    '$fid',
+                                  const SizedBox(height: 4.0),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ))),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: FadeAnimation(
+                        1.5,
+                        Card(
+                            child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 21.0,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              IconButton(
+                                  onPressed: () async {
+                                    //delete user
+                                    await deleteUser();
+                                  },
+                                  icon: Icon(Icons.delete, color: Colors.red)),
+                              SizedBox(width: 24.0),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  const Text(
+                                    "Delete My Account",
                                     style: TextStyle(
-                                      color: Colors.grey[700],
-                                      fontSize: 12.0,
+                                      fontSize: 18.0,
                                     ),
-                                  ),*/
+                                  ),
+                                  const SizedBox(height: 4.0),
                                 ],
                               ),
                             ],

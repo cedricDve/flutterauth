@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
 import 'package:flutter_familly_app/commons/const.dart';
 import 'package:flutter_familly_app/models/user.dart';
-import 'package:flutter_familly_app/screens/Choose.dart';
+import 'package:flutter_familly_app/screens/introductionScreen.dart';
 import 'package:flutter_familly_app/screens/login.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -254,7 +254,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Choose()));
+                                    builder: (context) => IntroScreen()));
                           } else {
                             //show error
                             displayToastMessage(returnValue, context);

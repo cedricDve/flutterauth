@@ -37,7 +37,7 @@ class App extends StatelessWidget {
           if (snapshot.hasError) {
             return const Scaffold(
               body: Center(
-                child: Text("Error"),
+                child: const Text("Error"),
               ),
             );
           }
@@ -48,7 +48,7 @@ class App extends StatelessWidget {
           // Otherwise, show something whilst waiting for initialization to complete
           return const Scaffold(
             body: Center(
-              child: Text("Loading..."),
+              child: const Text("Loading..."),
             ),
           );
         },
@@ -57,8 +57,7 @@ class App extends StatelessWidget {
   }
 }
 
-//User authenticated ?
-// the Root decide were next page is
+//User authenticated ? => Root decide were next page is
 class Root extends StatefulWidget {
   @override
   _RootState createState() => _RootState();
@@ -69,13 +68,13 @@ class _RootState extends State<Root> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseHelper _firebaseHelper = FirebaseHelper();
   User user;
+
   @override
   Widget build(BuildContext context) {
-    // the functions i wrote returns future string so -> use streambuilder
+    // the functions I wrote returns future string so -> use streambuilder
     return StreamBuilder(
       //auth stream
       stream: Auth(auth: _auth).user,
-      //builder
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           if (snapshot.data?.uid == null) {
@@ -86,12 +85,9 @@ class _RootState extends State<Root> {
               firestore: _firebaseFirestore,
             );
           } else {
-            //logged in
-            //email verify
+            //logged in => email verify
             user = _auth.currentUser;
             bool checkMail = _firebaseHelper.isEmailVerified(user);
-            print(checkMail);
-            print(" !!!!!!!!!!");
             if (!checkMail) {
               user.sendEmailVerification();
               return VerifyPage(auth: _auth, user: user);
@@ -130,39 +126,48 @@ class _VerifyPageState extends State<VerifyPage> {
   final FirebaseHelper _firebaseHelper = FirebaseHelper();
   @override
   Widget build(BuildContext context) {
-    print("FUCK YASSIN");
     if (_firebaseHelper.isEmailVerified(widget.user)) Root();
-
     return Scaffold(
         body: Center(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-          LinearProgressIndicator(),
-          SizedBox(height: 50.0),
-          Text(
-              'An email has been sent to ${widget.user.email}. Please verify your email and log in again ! '),
-          SizedBox(height: 50.0),
-          GestureDetector(
-              onTap: () async {
-                await Auth(auth: widget.auth).signOut();
-              },
-              child: FadeAnimation(
-                  1.9,
-                  Container(
-                    height: 50,
-                    margin: EdgeInsets.symmetric(horizontal: 60),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: Color.fromRGBO(0, 171, 236, 1),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Login",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ))),
-        ])));
+            child: FadeAnimation(
+      1.9,
+      Padding(
+        padding: const EdgeInsets.only(left: 30, right: 30),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              LinearProgressIndicator(),
+              const SizedBox(height: 50.0),
+              Image.network(
+                'https://static4.depositphotos.com/1030387/456/v/600/depositphotos_4561981-stock-illustration-waiting-for-mailman.jpg',
+                height: 300,
+              ),
+              SizedBox(height: 50.0),
+              Text(
+                  'An email has been sent to ${widget.user.email}. Please verify your email and log in again ! '),
+              const SizedBox(height: 50.0),
+              GestureDetector(
+                  onTap: () async {
+                    await Auth(auth: widget.auth).signOut();
+                  },
+                  child: FadeAnimation(
+                      1.9,
+                      Container(
+                        height: 50,
+                        margin: EdgeInsets.symmetric(horizontal: 60),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: Color.fromRGBO(0, 171, 236, 1),
+                        ),
+                        child: Center(
+                          child: const Text(
+                            "Login",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ))),
+            ]),
+      ),
+    )));
   }
 }

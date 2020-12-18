@@ -26,6 +26,17 @@ class FirebaseMethods {
     return ds.get('isAdmin');
   }
 
+  Future<bool> isFamilyId() async {
+    String cuid = Auth(auth: _auth).currentUser.uid;
+    // Get data from Firestore of current user with cuid ->(CurrentUserID)
+    DocumentSnapshot ds =
+        await _firebaseFirestore.collection("users").doc(cuid).get();
+    if (ds.get('fid') != null)
+      return true;
+    else
+      return false;
+  }
+
   Future<String> getFID() async {
     String cuid = Auth(auth: _auth).currentUser.uid;
     // Get data from Firestore of current user with cuid ->(CurrentUserID)

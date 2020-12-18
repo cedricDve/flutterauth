@@ -60,7 +60,6 @@ class _ThreadMain extends State<ThreadMain> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getFidCurrentUser();
     getCurrentUserIsFamily();
