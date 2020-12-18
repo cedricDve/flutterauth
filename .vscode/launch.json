@@ -6,9 +6,10 @@
     "configurations": [
         {
             "name": "flutter_familly_app",
-            "program": "lib/Welcome_page.dart",
+            "program": "lib/main.dart",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "flutterMode": "profile"
         }
     ]
 }
