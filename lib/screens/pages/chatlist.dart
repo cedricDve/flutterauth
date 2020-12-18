@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_familly_app/screens/chatscreens/createConversation.dart';
+import 'package:flutter_familly_app/screens/chatscreens/createConversations.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:flutter_familly_app/models/user.dart';
 import 'package:flutter_familly_app/screens/chatscreens/chat.dart';

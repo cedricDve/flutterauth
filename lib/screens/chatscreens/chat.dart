@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/models/user.dart';
-import 'package:flutter_familly_app/screens/chatscreens/customMessageTile.dart';
+import 'package:flutter_familly_app/screens/chatscreens/customMessagesTile.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:flutter_familly_app/screens/home.dart';
 import 'package:flutter_familly_app/widgets/navbarKey.dart';
