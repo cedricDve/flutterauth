@@ -29,4 +29,11 @@ class FirebaseHelper {
 
   Future<List> joinFamily() => _firebaseHelper.joinFamily();
   Future<List> getFamMembers() => _firebaseHelper.getFamMembers();
+  // Future<List> getFamCalendar() => _firebaseHelper.getFamilyCalendar();
+  Future<bool> isAdmin() => _firebaseHelper.isAdmin();
+  Future<bool> isFamilyId() => _firebaseHelper.isFamilyId();
+  Future<String> getFID() => _firebaseHelper.getFID();
+
+  //Future<List<Events>> getFamEvents() => _firebaseHelper.getFamEvents();
+  bool isEmailVerified(User user) => _firebaseHelper.isEmailVerified(user);
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/commons/const.dart';
 import 'package:flutter_familly_app/commons/utils.dart';
 import 'package:flutter_familly_app/screens/writePost.dart';
+import 'package:flutter_familly_app/screens/home.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:flutter_familly_app/subViews/threadItem.dart';
 
@@ -19,7 +20,7 @@ class ThreadMain extends StatefulWidget {
 }
 
 class _ThreadMain extends State<ThreadMain> {
-  bool _isLoading = false;
+  bool _isLoading = true;
   FirebaseHelper _firebaseHelper = FirebaseHelper();
 
   String fID;
@@ -30,15 +31,15 @@ class _ThreadMain extends State<ThreadMain> {
         context,
         MaterialPageRoute(
             builder: (context) => WritePost(
-                  myData: widget.myData,
-                )));
+              myData: widget.myData,
+            )));
   }
 
   void getFidCurrentUser() async {
     String cuid =
-        await _firebaseHelper.getCurrentUser().then((user) => user.uid);
+    await _firebaseHelper.getCurrentUser().then((user) => user.uid);
     DocumentSnapshot ds =
-        await widget._firestore.collection("users").doc(cuid).get();
+    await widget._firestore.collection("users").doc(cuid).get();
 
     setState(() {
       fID = ds.get('fid');
@@ -47,9 +48,10 @@ class _ThreadMain extends State<ThreadMain> {
 
   void getCurrentUserIsFamily() async {
     String cuid =
-        await _firebaseHelper.getCurrentUser().then((user) => user.uid);
+    await _firebaseHelper.getCurrentUser().then((user) => user.uid);
     DocumentSnapshot ds =
-        await widget._firestore.collection("users").doc(cuid).get();
+    await widget._firestore.collection("users").doc(cuid).get();
+    print(ds.get('isFamily'));
 
     setState(() {
       isFamily = ds.get('isFamily');
@@ -57,44 +59,59 @@ class _ThreadMain extends State<ThreadMain> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    // get fid of current user => use fID to have fid of current user
+  void initState() {
+    super.initState();
     getFidCurrentUser();
     getCurrentUserIsFamily();
+  }
 
-    return Scaffold(
-      body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('families')
-              .doc(fID)
-              .collection('thread')
-              .orderBy('postTimeStamp', descending: true)
-              .snapshots(),
-          builder: (context, snapshot) {
-            //if no data => tru e: false
-            if (!snapshot.hasData) return LinearProgressIndicator();
+  @override
+  Widget build(BuildContext context) {
+    print(isFamily);
+    print("!!");
+    // get fid of current user => use fID to have fid of current user
 
-            return Stack(
-              children: <Widget>[
-                (snapshot.data.docs.length > 0 && isFamily)
-                    ? ListView(
-                        shrinkWrap: true,
-                        children:
-                            snapshot.data.docs.map((DocumentSnapshot data) {
-                          return ThreadItem(
-                            data: data,
-                            myData: widget.myData,
-                            updateMyDataToMain: widget.updateMyData,
-                            threadItemAction: _moveToContentDetail,
-                            isFromThread: true,
-                            commentCount: data['postCommentCount'],
-                            parentContext: context,
-                          );
-                        }).toList(),
-                      )
-                    : Container(
-                        child: Center(
-                            child: Column(
+    return RefreshIndicator(
+      onRefresh: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Home()));
+      },
+      child: Scaffold(
+        body: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('families')
+                .doc(fID)
+                .collection('thread')
+                .orderBy('postTimeStamp', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              //if no data => tru e: false
+              if (!snapshot.hasData) return LinearProgressIndicator();
+
+              return Stack(
+                children: <Widget>[
+                  (snapshot.data.docs.length > 0 && isFamily && _isLoading)
+                      ? ListView(
+                    shrinkWrap: true,
+                    children:
+                    snapshot.data.docs.map((DocumentSnapshot data) {
+                      if (data != null) {
+                        _isLoading = false;
+                        return ThreadItem(
+                          data: data,
+                          myData: widget.myData,
+                          updateMyDataToMain: widget.updateMyData,
+                          threadItemAction: _moveToContentDetail,
+                          isFromThread: true,
+                          commentCount: data['postCommentCount'],
+                          parentContext: context,
+                        );
+                      }
+                    }).toList(),
+                  )
+                      : Container(
+                    child: Center(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Icon(
@@ -113,16 +130,20 @@ class _ThreadMain extends State<ThreadMain> {
                             ),
                           ],
                         )),
-                      ),
-                Utils.loadingCircle(_isLoading),
-              ],
-            );
-          }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _writePost,
-        tooltip: 'Increment',
-        child: Icon(Icons.create),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+                  ),
+                  if (_isLoading)
+                    LinearProgressIndicator()
+                  else
+                    Utils.loadingCircle(_isLoading)
+                ],
+              );
+            }),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _writePost,
+          tooltip: 'Increment',
+          child: Icon(Icons.create),
+        ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 
@@ -131,9 +152,10 @@ class _ThreadMain extends State<ThreadMain> {
         context,
         MaterialPageRoute(
             builder: (context) => ContentDetail(
-                  postData: data,
-                  myData: widget.myData,
-                  updateMyData: widget.updateMyData,
-                )));
+              postData: data,
+              myData: widget.myData,
+              updateMyData: widget.updateMyData,
+            )));
   }
 }
+

@@ -38,6 +38,7 @@ final FirebaseHelper _firebaseHelper = FirebaseHelper();
     currentMyData = widget.myData;
     _msgTextController.addListener(_msgTextControllerListener);
     super.initState();
+    getFid();
   }
   void getFid()async{
       String cuid =
@@ -56,7 +57,8 @@ final FirebaseHelper _firebaseHelper = FirebaseHelper();
     }
   }
 
-  void _replyComment(List<String> commentData) async{//String replyTo,String replyCommentID,String replyUserToken) async {
+  void _replyComment(List<String> commentData) async{
+    String replyTo, replyCommentID;
     _replyUserID = commentData[0];
     _replyCommentID = commentData[1];
     _replyUserFCMToken = commentData[2];
@@ -69,18 +71,24 @@ final FirebaseHelper _firebaseHelper = FirebaseHelper();
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    String postId = widget.postData['postID'];
+    print("yooooooooooooooooooooooooo");
+    print(postId);
     return Scaffold(
       appBar: AppBar(
         title: Text('Post Detail'),
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('families').doc(fID).collection('thread').doc(widget.postData['postID']).collection('comment').orderBy('commentTimeStamp',descending: true).snapshots(),
-        builder: (context,snapshot) {
+        stream: _firestore.collection('families').doc(fID).collection('thread').doc(postId).collection('comment').orderBy('commentTimeStamp',descending: true).snapshots(),
+        builder: (context,snapshot){
           if (!snapshot.hasData){ return LinearProgressIndicator();}
           else if (snapshot.hasData){
-          return
-            Column(
+            print("HEEEEEEEEEEEEEEEEEERRRRRRRR");
+                      print(snapshot.data.docs.length);
+                      print("KWWWWWWWWWDDDDDDDDDD");
+
+          return Column(
               children: <Widget>[
                 Expanded(
                   child: SingleChildScrollView(
@@ -97,7 +105,7 @@ final FirebaseHelper _firebaseHelper = FirebaseHelper();
                                 shrinkWrap: true,
                                 children: Utils.sortDocumentsByComment(snapshot.data.docs).map((document) {
                                   print("SNAPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
-                                  print(snapshot.data.docs);
+                                  print(document.id);
                                   return CommentItem(data: document,myData: widget.myData,size: size,updateMyDataToMain: widget.updateMyData,replyComment:_replyComment);
                                 }).toList(),
                               ) : Container(),
@@ -168,11 +176,11 @@ final FirebaseHelper _firebaseHelper = FirebaseHelper();
   Future<void> _handleSubmitted(String content) async {
     try{
    //DocumentSnapshot ds2 = await _firestore.collection("families").doc(fID).collection("thread").doc(widget.postData['postID']).get();
-      String toCommentID =widget.postData['userName'],
+      String toUserID=widget.postData['userName'], toCommentID =widget.postData['userName'],
       postID=widget.postData['postID'],
       postFCMToken = widget.postData['FCMToken'];
 
-    await FBCloudStore.commentToPost(toCommentID,postID,content,widget.myData,postFCMToken);
+    await FBCloudStore.commentToPost(toUserID,toCommentID,postID,content,widget.myData,postFCMToken);
     await FBCloudStore.updatePostCommentCount(widget.postData);
     FocusScope.of(context).requestFocus(FocusNode());
       _msgTextController.text = '';

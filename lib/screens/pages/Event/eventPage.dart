@@ -1,36 +1,177 @@
-import 'dart:io';
-import 'dart:math';
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_familly_app/commons/const.dart';
+import 'package:flutter_familly_app/services/firebaseHelper.dart';
+import 'package:flutter_familly_app/screens/pages/Event/famEventDetails.dart';
+import 'package:flutter_familly_app/models/famEvent.dart';
+import 'dart:math';
 import 'package:flutter_familly_app/commons/utils.dart';
 import 'package:flutter_familly_app/controllers/FBCloudStore.dart';
 import 'package:flutter_familly_app/controllers/FBStorage.dart';
-import 'package:image_crop/image_crop.dart';
-import 'package:image_cropper/image_cropper.dart';
-
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
+import 'dart:io';
+import 'package:image_crop/image_crop.dart';
+import 'package:image_cropper/image_cropper.dart';
 
-class WritePost extends StatefulWidget {
-  final MyProfileData myData;
-  WritePost({this.myData});
+class EventPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _WritePost();
+  _EventPageState createState() => _EventPageState();
 }
 
-class _WritePost extends State<WritePost> {
+class _EventPageState extends State<EventPage> {
+  FirebaseHelper _firebaseHelper = FirebaseHelper();
+  String fid;
+  FamEvent events;
+  @override
+  void initState() {
+    super.initState();
+    _firebaseHelper.getFID().then((value) {
+      setState(() {
+        fid = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Family Events"),
+      ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('families')
+            .doc(fid)
+            .collection('events')
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data.docs.length >= 1)
+              return PageView.builder(
+                itemCount: snapshot.data.docs.length,
+                itemBuilder: (BuildContext context, int index) {
+                  print((snapshot.data.docs[index].data()));
+                  events = FamEvent(
+                    title: snapshot.data.docs[index].data()['title'],
+                    position: snapshot.data.docs[index].data()['position'],
+                    images: snapshot.data.docs[index].data()['images'],
+                    eventImage: snapshot.data.docs[index].data()['event_image'],
+                    description:
+                        snapshot.data.docs[index].data()['description'],
+                    owner: snapshot.data.docs[index].data()['owner'],
+                    members: snapshot.data.docs[index].data()['members'],
+                    date: snapshot.data.docs[index].data()['date'],
+                  );
+
+                  return GestureDetector(
+                    onTap: () {
+                      print(events);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FamEventDetails(
+                            events: events,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Image.network(
+                            snapshot.data.docs.elementAt(index)['event_image']),
+                        Text(
+                              snapshot.data.docs.elementAt(index)['title'],
+                              style: TextStyle(fontSize: 30.0),
+                            ) ??
+                            Text(""),
+                        Text(
+                              snapshot.data.docs.elementAt(index)['owner'],
+                              style: TextStyle(fontSize: 20.0),
+                            ) ??
+                            Text(""),
+                        Text(
+                              snapshot.data.docs
+                                  .elementAt(index)['description'],
+                              style: TextStyle(fontSize: 20.0),
+                            ) ??
+                            Text(""),
+                        Text(
+                              snapshot.data.docs.elementAt(index)['date'],
+                              style: TextStyle(fontSize: 20.0),
+                            ) ??
+                            Text(""),
+                      ],
+                    ),
+                  );
+                },
+              );
+            else {
+              return Container(
+                child: Center(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.error,
+                      color: Colors.grey[700],
+                      size: 64,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: Text(
+                        'There are no Family Events',
+                        style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                )),
+              );
+            }
+          } else {
+            debugPrint('Loading...');
+            return Center(
+              child: Text('Loading...'),
+            );
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          //navigate
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => NewFamilyEvent(events: events)));
+        },
+      ),
+    );
+  }
+}
+
+class NewFamilyEvent extends StatefulWidget {
+  final FamEvent events;
+
+  const NewFamilyEvent({this.events});
+  @override
+  State<StatefulWidget> createState() => _NewFamilyEvent();
+}
+
+class _NewFamilyEvent extends State<NewFamilyEvent> {
   TextEditingController writingTextController = TextEditingController();
+  TextEditingController titleTextController = TextEditingController();
   final FocusNode _nodeText1 = FocusNode();
   FocusNode writingTextFocus = FocusNode();
   bool _isLoading = false;
   File _postImageFile;
-  final cropKey = GlobalKey<CropState>();
   File _file;
   File _sample;
   File _lastCropped;
   File _pickedImage;
+  final cropKey = GlobalKey<CropState>();
 
   @override
   void dispose() {
@@ -95,8 +236,8 @@ class _WritePost extends State<WritePost> {
       postImageURL = await FBStorage.uploadPostImages(
           postID: postID, postImageFile: _postImageFile);
     }
-    FBCloudStore.sendPostInFirebase(postID, writingTextController.text,
-        widget.myData, postImageURL ?? 'NONE');
+    FBCloudStore.sendEventInFirebase(titleTextController.text,
+        writingTextController.text, widget.events, postImageURL ?? 'NONE');
 
     setState(() {
       _isLoading = false;
@@ -148,10 +289,10 @@ class _WritePost extends State<WritePost> {
                                     width: 40,
                                     height: 40,
                                     child: Image.asset(
-                                        'assets/images/${widget.myData.myThumbnail}')),
+                                        'assets/images/${widget.events.eventImage}')),
                               ),
                               Text(
-                                widget.myData.myName,
+                                widget.events.owner,
                                 style: TextStyle(
                                     fontSize: 22, fontWeight: FontWeight.bold),
                               ),
@@ -160,6 +301,18 @@ class _WritePost extends State<WritePost> {
                           Divider(
                             height: 1,
                             color: Colors.black,
+                          ),
+                          TextField(
+                            autofocus: true,
+                            focusNode: writingTextFocus,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Writing anything.',
+                              hintMaxLines: 2,
+                            ),
+                            controller: titleTextController,
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
                           ),
                           TextFormField(
                             autofocus: true,
@@ -202,7 +355,7 @@ class _WritePost extends State<WritePost> {
     File cropped = await ImageCropper.cropImage(
       androidUiSettings: AndroidUiSettings(
         statusBarColor: Colors.red,
-        toolbarColor: Colors.red,
+        toolbarColor: Colors.blue[200],
         toolbarTitle: "Crop Image",
         toolbarWidgetColor: Colors.white,
       ),
@@ -223,7 +376,6 @@ class _WritePost extends State<WritePost> {
   }
 
   void _showPickOptionsDialog(BuildContext context) {
-    print("Daniel");
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

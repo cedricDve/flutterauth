@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_familly_app/models/events.dart';
+import 'package:flutter_familly_app/models/famEvent.dart';
 
-class EventDetails extends StatelessWidget {
-  final Events events;
+class FamEventDetails extends StatelessWidget {
+  final FamEvent events;
 
-  const EventDetails({Key key, this.events}) : super(key: key);
+  const FamEventDetails({Key key, this.events}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +104,8 @@ class EventDetails extends StatelessWidget {
               width: 260,
               height: 260,
               child: Hero(
-                  tag: events.position, child: Image.network(events.avatar)),
+                  tag: events.position,
+                  child: Image.network(events.eventImage)),
             ),
             Positioned(
               top: 60,
