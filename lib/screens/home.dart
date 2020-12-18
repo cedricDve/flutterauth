@@ -207,8 +207,12 @@ class _ProfilePState extends State<ProfileP> {
             ListTile(
               selected: true,
               onTap: () {
+
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Home()));
+                    context, MaterialPageRoute(builder: (context) => Home( )));
+                final CurvedNavigationBarState navState =
+                    NavbarKey.getKey().currentState;
+                navState.setPage(2);
               },
               contentPadding:
                   EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),

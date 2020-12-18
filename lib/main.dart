@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_familly_app/screens/home.dart';
 import 'package:flutter_familly_app/screens/login.dart';
-import 'package:flutter_familly_app/screens/search.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 
 void main() {
@@ -25,7 +24,7 @@ class App extends StatelessWidget {
       routes: {
         //all the other routes
         //multiple searchs
-        '/search': (context) => SearchScreen(),
+        //'/': (context) => SearchScreen(),
       },
       home: FutureBuilder(
         // Initialize FlutterFire:
