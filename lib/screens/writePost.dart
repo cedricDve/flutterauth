@@ -6,12 +6,10 @@ import 'package:flutter_familly_app/commons/const.dart';
 import 'package:flutter_familly_app/commons/utils.dart';
 import 'package:flutter_familly_app/controllers/FBCloudStore.dart';
 import 'package:flutter_familly_app/controllers/FBStorage.dart';
-import 'package:image_crop/image_crop.dart';
 import 'package:image_cropper/image_cropper.dart';
-
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
-import 'package:keyboard_actions/keyboard_actions_config.dart';
+//import 'package:keyboard_actions/keyboard_actions_config.dart';
 
 class WritePost extends StatefulWidget {
   final MyProfileData myData;
@@ -26,7 +24,6 @@ class _WritePost extends State<WritePost> {
   FocusNode writingTextFocus = FocusNode();
   bool _isLoading = false;
   File _postImageFile;
-  final cropKey = GlobalKey<CropState>();
   File _file;
   File _sample;
   File _lastCropped;
@@ -131,13 +128,12 @@ class _WritePost extends State<WritePost> {
               children: <Widget>[
                 Container(
                     width: size.width,
-                    height: size.height -
-                        MediaQuery.of(context).viewInsets.bottom -
-                        80,
+                    height: size.height - MediaQuery.of(context).viewInsets.bottom - 80,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 14.0, left: 10.0),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -167,7 +163,7 @@ class _WritePost extends State<WritePost> {
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: 'Writing anything.',
-                              hintMaxLines: 4,
+                              hintMaxLines: 10,
                             ),
                             controller: writingTextController,
                             keyboardType: TextInputType.multiline,
@@ -183,8 +179,8 @@ class _WritePost extends State<WritePost> {
                       ),
                     )),
               ],
-            ),
-          ),
+            ),),
+          
           Utils.loadingCircle(_isLoading),
         ],
       ),
