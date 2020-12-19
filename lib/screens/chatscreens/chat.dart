@@ -1,20 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/models/user.dart';
 import 'package:flutter_familly_app/screens/chatscreens/customMessagesTile.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
-import 'package:flutter_familly_app/screens/home.dart';
-import 'package:flutter_familly_app/widgets/navbarKey.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-
 
 class ChatScreen extends StatefulWidget {
   final UserModel receiver;
   String cid;
-  ChatScreen({this.receiver, this.cid});
+  String name;
+  String image;
+  ChatScreen({this.receiver, this.cid, this.name, this.image});
 
   @override
-  _ChatScreenState createState() => _ChatScreenState(cid);
+  _ChatScreenState createState() => _ChatScreenState(cid, name);
 }
 
 class _ChatScreenState extends State<ChatScreen> {
@@ -22,7 +19,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Stream _messages;
   String cuid;
   TextEditingController messageEditingController = new TextEditingController();
-  _ChatScreenState(cid);
+  _ChatScreenState(cid, name);
 
   @override
   void initState() {
@@ -44,7 +41,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('name cuid2'),
+        title: Text(widget.name),
+        backgroundColor: Colors.blue[200],
       ),
 
       body: Container(
@@ -78,15 +76,13 @@ class _ChatScreenState extends State<ChatScreen> {
                     SizedBox(width: 12.0),
                     GestureDetector(
                       onTap:()async{
-                        //TODO: send the messageModel to firebase in the conversation doc in the messages list
                         _sendMessage();
-                        print("_sendMessage()");
                       },
                       child: Container(
                         height: 50.0,
                         width: 50.0,
                         decoration: BoxDecoration(
-                            color: Colors.blueAccent,
+                            color: Colors.blue[200],
                             borderRadius: BorderRadius.circular(50)
                         ),
                         child: Center(
@@ -113,6 +109,23 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Widget noMessageWidget(){
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          GestureDetector(
+              child: new Image.asset('assets/images/${widget.image}'),
+          ),
+          SizedBox(height: 15.0),
+          Text("You've not start to convert with ${widget.name}."),
+        ],
+      ),
+    );
+  }
+
   Widget chatList(){
     //Stream _messages;
     return StreamBuilder(
@@ -120,21 +133,28 @@ class _ChatScreenState extends State<ChatScreen> {
         builder: (context, snapshot){
           //TODO: if the list of messages have data = not sure i need do do this
           if(snapshot.hasData){
-              return ListView.builder(
-                itemCount: snapshot.data.documents.length,
-                itemBuilder: (context, index){
-                  return CustomMessageTile(
-                    //TODO: why ?
-                    message: snapshot.data.documents[index].data()["message"],
-                    //sender: snapshot.data.documents[index].data()["sender"],
-                    sentByMe: cuid == snapshot.data.documents[index].data()["sender"],
-                    cid: widget.cid,
-                    mid: snapshot.data.documents[index].data()["mid"]
-                  );
-                },
-              );
+            if(snapshot.data != null) {
+              if(snapshot.data.documents.length != 0) {
+                return ListView.builder(
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, index) {
+                    return CustomMessageTile(
+                        message: snapshot.data.documents[index].data()["message"],
+                        sentByMe: cuid ==
+                            snapshot.data.documents[index].data()["sender"],
+                        cid: widget.cid,
+                        mid: snapshot.data.documents[index].data()["mid"]
+                    );
+                  },
+                );
+              } else {
+                return noMessageWidget();
+              }
+            } else {
+              return noMessageWidget();
+            }
           } else {
-            return Container();
+            return LinearProgressIndicator();
           }
         }
     );

@@ -105,7 +105,8 @@ class FirebaseMethods {
     List<UserModel> userList = List<UserModel>();
 
     DocumentSnapshot ds =
-        await _firebaseFirestore.collection("users").doc(cuid).get();
+    await _firebaseFirestore.collection("users").doc(cuid).get();
+
     QuerySnapshot querySnapshot = await _firebaseFirestore
         .collection("users")
         .where("fid", isEqualTo: ds.get('fid'))
@@ -258,7 +259,7 @@ class FirebaseMethods {
           .collection("families")
           .doc(fid)
           .collection("conversations")
-          .where("members", arrayContains: cuid)
+          .where("members", arrayContainsAny: [cuid])
           .snapshots();
     }
   }

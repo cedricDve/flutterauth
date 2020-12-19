@@ -10,7 +10,7 @@ class ChatList extends StatefulWidget {
   _ChatListState createState() => _ChatListState();
 }
 
-class _ChatListState extends State<ChatList> {
+class _ChatListState extends State<ChatList> with TickerProviderStateMixin{
 
   @override
   void initState() {
@@ -22,7 +22,8 @@ class _ChatListState extends State<ChatList> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Conversations"),
-        automaticallyImplyLeading: false ,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.blue[200],
       ),
       floatingActionButton: NewChatBtn(),
       body: ChatListContainer(),
@@ -39,11 +40,10 @@ class _ChatListContainerState extends State<ChatListContainer> {
   FirebaseHelper firebaseHelper = FirebaseHelper();
   Stream<QuerySnapshot> _conversations;
   List<UserModel> userList = List<UserModel>();
-  
+
   @override
   void initState() {
     super.initState();
-    //TODO: make a cloud function
     firebaseHelper.fetchAllConversations().then((list) => {
       setState(() {
         _conversations = list;
@@ -64,7 +64,7 @@ class _ChatListContainerState extends State<ChatListContainer> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           GestureDetector(
-              child: Icon(Icons.edit, color: Colors.grey[700], size: 75.0)
+              child: Icon(Icons.edit, color: Colors.blue[200], size: 75.0)
           ),
           SizedBox(height: 15.0),
           Text("You've not start a conversation, tap on the 'edit' icon to create a conversation."),
@@ -73,17 +73,14 @@ class _ChatListContainerState extends State<ChatListContainer> {
     );
   }
 
-  String takeUserWithCuid(snapshot, index){
-    String cuid =  snapshot.data.documents[index].data()["memberSender"][0];
-    //if(userList.length > 0){
-      for(var i = 0; i < userList.length; i++){
-        if(cuid == userList[i].uid){
-          print(userList[i].name);
-          //names.add(userList[i].name);
-          return userList[i].name;
-        }
+  UserModel takeUserWithCuid(snapshot, index){
+    String cuid = snapshot.data.documents[index].data()["members"][0];
+    String cuid2 = snapshot.data.documents[index].data()["memberSender"][0];
+    for(var i = 0; i < userList.length; i++){
+      if(cuid == userList[i].uid || cuid2 == userList[i].uid){
+        return userList[i];
       }
-    //}
+    }
     return null;
   }
 
@@ -101,42 +98,37 @@ class _ChatListContainerState extends State<ChatListContainer> {
                     shrinkWrap: true,
                     itemCount: snapshot.data.documents.length,
                     itemBuilder: (context, index) {
-                      String name = takeUserWithCuid(snapshot, index);
-                      if(name != null ){
-                      return ListTile(
-                        leading: Icon(
-                            Icons.account_circle //searchResults[index].avatar
-                        ),
-                        title: Text(name),
-                        onTap: () {
-                          String cid = snapshot.data.documents[index].data()["cid"];
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => ChatScreen(cid: cid)));
-                        },
-                        /*
-                        trailing: Icon(
-                            Icons.delete
-                        ),
-                         */
-                      );
-                      } else {
-                        return Center(
-                            child: CircularProgressIndicator()
+                      UserModel user = takeUserWithCuid(snapshot, index);
+                      if(user != null){
+                        return ListTile(
+                          leading: new Image.asset('assets/images/${user.avatar}'),
+                          title: Text(user.name),
+                          dense: false,
+                          onTap: () {
+                            String cid = snapshot.data.documents[index].data()["cid"];
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => ChatScreen(cid: cid, name: user.name, image: user.avatar)));
+                          },
+                          onLongPress: () {
+                            //TODO: Delete conversation
+                            print("delete fucker");
+                          },
                         );
+                      } else {
+                        return LinearProgressIndicator();
                       }
                     },
                   );
                 } else {
                   return noConversationWidget();
-                  }
+                }
               } else {
                 // view to add a new view: make a conversation
                 return noConversationWidget();
               }
             } else {
-              return Center(
-                  child: CircularProgressIndicator()
-              );
+
+              return LinearProgressIndicator();
             }}
       ),
     );
@@ -145,7 +137,6 @@ class _ChatListContainerState extends State<ChatListContainer> {
 
 // Button that let the user make a new message: always present, right bottom
 class NewChatBtn extends StatelessWidget {
-
 
   @override
   Widget build(BuildContext context) {
@@ -156,8 +147,8 @@ class NewChatBtn extends StatelessWidget {
             Icons.edit, color: Colors.black, size: 25
         ),
         onPressed: (){
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => createConversations()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => createConversations()));
         },
       ),
     );
@@ -174,7 +165,7 @@ class LogoUser extends StatelessWidget {
         height: 35,
         width: 35,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50), color: Colors.blue),
+            borderRadius: BorderRadius.circular(50), color: Colors.blue[200]),
         child: //using a stack -> 2 items
         Stack(
           children: <Widget>[
