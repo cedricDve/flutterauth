@@ -37,6 +37,7 @@ dependencies:
   firebase_helpers: ^0.2.2
   mailer:
   provider:
+  transparent_image: ^1.0.0
 
   table_calendar: ^2.3.1
   firebase_storage: "5.2.0"

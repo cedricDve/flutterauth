@@ -5,7 +5,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/screens/Choose.dart';
 import 'package:flutter_familly_app/screens/feedmain.dart';
-import 'package:flutter_familly_app/screens/pages/Event/eventPage.dart';
+//import 'package:flutter_familly_app/screens/pages/Event/eventPage.dart';
+//import 'package:flutter_familly_app/screens/pages/Event/homeEvent.dart';
+import 'package:flutter_familly_app/screens/pages/Event/famEventList.dart';
 import 'package:flutter_familly_app/screens/pages/calendarHome..dart';
 import 'package:flutter_familly_app/screens/userProfile.dart';
 import 'package:flutter_familly_app/services/auth.dart';
@@ -63,8 +65,7 @@ class _HomeState extends State<Home> {
         userName: _userName,
         email: _email,
       ),
-      //EventTest(),
-      EventPage(),
+      HomeFamEvents(),
       CalendarHome(),
     ]; //  HomeP(auth: widget.auth, firestore: widget.firestore)
 
