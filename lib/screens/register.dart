@@ -26,6 +26,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController _passwordControler = new TextEditingController();
   TextEditingController nameControler = new TextEditingController();
   TextEditingController birthdayControler = new TextEditingController();
+  
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -164,12 +165,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                     ),
                                     child: Center(
                                       child: Text(
-                                        "Pick your Birthday",
+                                        "Choose your birthday",
                                         style: TextStyle(color: Colors.white),
                                       ),
                                     ),
                                   )),
                             ),
+                            
                             Container(
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
@@ -235,7 +237,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             email: emailControler.text.trim(),
                             name: nameControler.text.trim(),
                             birthday:
-                                _dateTime.toIso8601String().split('T').first,
+                                _dateTime.toIso8601String().split('T').first ?? "No birthday selected", //Here
                             avatar: myThumbnail,
                             isFamily: false,
                             isAdmin: false,

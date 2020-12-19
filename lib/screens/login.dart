@@ -136,14 +136,23 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 20,
                   ),
-                  FadeAnimation(
+                  GestureDetector(
+                    onTap: ()async{
+                      try{
+                        firebaseHelper.resetPassword(emailController.text);
+                        displayToastMessage("A reset email has been send to "+emailController.text,context);
+                        }catch(e){
+                          e.printStackTrace("No email detected");
+                            displayToastMessage("Please put in a valid email adress",context);                        }
+                    },
+                  child: FadeAnimation(
                       1.7,
                       Center(
                           child: Text(
                         "Forgot Password?",
                         style:
                             TextStyle(color: Color.fromRGBO(196, 135, 198, 1)),
-                      ))),
+                      )))),
                   SizedBox(
                     height: 30,
                   ),
