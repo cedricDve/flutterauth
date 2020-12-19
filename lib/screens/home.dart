@@ -56,13 +56,6 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     checkIsFamily();
-    /*_firebaseHelper.getFamMembers().then((List list) {
-      setState(() {
-        join_username = list[0];
-        isJoin = list[1];
-        isFam = list[2];
-      });
-    });*/
     final screen = [
       MyFeedPageMain(),
       ChatList(),
@@ -164,102 +157,6 @@ class _ProfilePState extends State<ProfileP> {
         elevation: 0.0,
       ),
       body: UserProfile(),
-      /*
-      body: Container(
-          padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 170.0),
-          child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Icon(Icons.account_circle,
-                    size: 200.0, color: Colors.grey[700]),
-                SizedBox(height: 15.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Full Name', style: TextStyle(fontSize: 17.0)),
-                    Text(widget.userName, style: TextStyle(fontSize: 17.0)),
-                  ],
-                ),
-                Divider(height: 20.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Email', style: TextStyle(fontSize: 17.0)),
-                    Text(widget.email, style: TextStyle(fontSize: 17.0)),
-                  ],
-                ),
-              ],
-            ),
-          )),
-      */
-    );
-  }
-
-  void _showNotification() async {
-    await showDialog(
-      context: context,
-      child: new AlertDialog(
-        contentPadding: const EdgeInsets.all(16.0),
-        content: new Row(
-          children: <Widget>[
-            new Expanded(
-              child: (isJoin)
-                  ? new Text(join_username + "would like to join the family !")
-                  : new Text("No Notifications ..."),
-            )
-          ],
-        ),
-        actions: <Widget>[
-          new FlatButton(
-              child: const Text('ACCEPT'),
-              onPressed: () async {
-                String cuid = await _firebaseHelper
-                    .getCurrentUser()
-                    .then((user) => user.uid);
-                DocumentSnapshot ds =
-                    await firestore.collection("users").doc(cuid).get();
-                DocumentSnapshot dsf = await firestore
-                    .collection("families")
-                    .doc(ds.get('fid'))
-                    .get();
-                List a = dsf.get('membersRequest');
-
-                //update to members
-                await FirebaseFirestore.instance
-                    .collection("families")
-                    .doc(ds.get('fid'))
-                    .update({
-                  'members': FieldValue.arrayUnion([a[0]])
-                });
-                // set joined user to isFamily true
-                await FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(a[0])
-                    .update({'isFamily': true});
-
-                //delete from membersRequest
-                await FirebaseFirestore.instance
-                    .collection("families")
-                    .doc(ds.get('fid'))
-                    .update({
-                  'membersRequest': FieldValue.arrayRemove([a[0]])
-                });
-                setState(() {
-                  isJoin = false;
-                });
-                Navigator.pop(context);
-                final CurvedNavigationBarState navState =
-                    NavbarKey.getKey().currentState;
-                navState.setPage(2);
-              }),
-          new FlatButton(
-              child: const Text('Later'),
-              onPressed: () {
-                Navigator.pop(context);
-              })
-        ],
-      ),
     );
   }
 }
