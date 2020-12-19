@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_familly_app/models/user.dart';
-import 'package:flutter_familly_app/models/message.dart';
-import 'package:flutter_familly_app/models/conversation.dart';
+import 'package:flutter_familly_app/models/famMemberModel.dart';
+
 import 'package:flutter_familly_app/services/firebaseMethods.dart';
 
 class FirebaseHelper {
@@ -36,4 +36,7 @@ class FirebaseHelper {
   Future<void> resetPassword(String mail)=>_firebaseHelper.resetPassword(mail);
   //Future<List<Events>> getFamEvents() => _firebaseHelper.getFamEvents();
   bool isEmailVerified(User user) => _firebaseHelper.isEmailVerified(user);
+
+  Future<List<FamMemberModel>> getFamilyAvatars() =>
+      _firebaseHelper.getFamilyAvatars();
 }

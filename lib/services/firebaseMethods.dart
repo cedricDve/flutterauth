@@ -7,6 +7,7 @@ import 'package:flutter_familly_app/models/user.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:flutter_familly_app/models/conversation.dart';
 import 'package:flutter_familly_app/models/message.dart';
+import 'package:flutter_familly_app/models/famMemberModel.dart';
 
 class FirebaseMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -15,7 +16,7 @@ class FirebaseMethods {
   List famMembers = List();
 
   Future<User> getCurrentUser() async {
-    User currentUser = await _auth.currentUser;
+    User currentUser = _auth.currentUser;
     return currentUser;
   }
 
@@ -46,6 +47,43 @@ class FirebaseMethods {
     return ds.get('fid');
   }
 
+  Future<String> getAvatarOfId(String id) async {
+    DocumentSnapshot ds =
+        await _firebaseFirestore.collection("users").doc(id).get();
+    return ds.get('avatar');
+  }
+
+  Future<String> getNameOfId(String id) async {
+    DocumentSnapshot ds =
+        await _firebaseFirestore.collection("users").doc(id).get();
+    return ds.get('name');
+  }
+
+  Future<List<FamMemberModel>> getFamilyAvatars() async {
+    FamMemberModel famMemberModel;
+    String fID;
+    String avatar;
+    String name;
+    await getFID().then((value) {
+      fID = value;
+    });
+    DocumentSnapshot dsf =
+        await _firebaseFirestore.collection("families").doc(fID).get();
+    List a = dsf.get('members');
+    List<FamMemberModel> listFamModel = List<FamMemberModel>();
+    for (var i = 0; i < a.length; i++) {
+      getAvatarOfId(a[i]).then((pieter) async {
+        await getNameOfId(a[i]).then((jan) {
+          name = jan;
+          avatar = pieter;
+          famMemberModel = FamMemberModel(avatar: avatar, id: name);
+          listFamModel.add(famMemberModel);
+        });
+      });
+    }
+    return listFamModel;
+  }
+
   //fetch all users in a List (for search) => Passing User : otherwise auth user could find himself ..
   Future<List<UserModel>> fetchAllUsers(User currentUser) async {
     List<UserModel> userList = List<UserModel>();
@@ -67,9 +105,11 @@ class FirebaseMethods {
     List<UserModel> userList = List<UserModel>();
 
     DocumentSnapshot ds =
-    await _firebaseFirestore.collection("users").doc(cuid).get();
-    QuerySnapshot querySnapshot =
-    await _firebaseFirestore.collection("users").where("fid", isEqualTo: ds.get('fid')).get();
+        await _firebaseFirestore.collection("users").doc(cuid).get();
+    QuerySnapshot querySnapshot = await _firebaseFirestore
+        .collection("users")
+        .where("fid", isEqualTo: ds.get('fid'))
+        .get();
 
     for (var i = 0; i < querySnapshot.docs.length; i++) {
       if (querySnapshot.docs[i].id != cuid) {
@@ -87,21 +127,30 @@ class FirebaseMethods {
     List<String> list2 = [cuid2, cuid];
 
     DocumentSnapshot ds =
-    await _firebaseFirestore.collection("users").doc(cuid).get();
+        await _firebaseFirestore.collection("users").doc(cuid).get();
     String fid = ds.get('fid');
 
     if (fid != null) {
-      QuerySnapshot querySnapshot = await _firebaseFirestore.collection(
-          "families").doc(fid)
+      QuerySnapshot querySnapshot = await _firebaseFirestore
+          .collection("families")
+          .doc(fid)
           .collection("conversations")
-          .where('members', isEqualTo: list1).get();
-      QuerySnapshot querySnapshotSender = await _firebaseFirestore.collection(
-          "families").doc(fid)
+          .where('members', isEqualTo: list1)
+          .get();
+      QuerySnapshot querySnapshotSender = await _firebaseFirestore
+          .collection("families")
+          .doc(fid)
           .collection("conversations")
-          .where('memberSender', isEqualTo: list2).get();
+          .where('memberSender', isEqualTo: list2)
+          .get();
 
-      await _firebaseFirestore.collection("families").doc(fid).
-      collection("conversations").doc().get().then((value) {
+      await _firebaseFirestore
+          .collection("families")
+          .doc(fid)
+          .collection("conversations")
+          .doc()
+          .get()
+          .then((value) {
         if (querySnapshot.docs.isEmpty || querySnapshotSender.docs.isEmpty) {
           ConversationModel conversationModel = ConversationModel(
             cid: value.id,
@@ -109,9 +158,12 @@ class FirebaseMethods {
             members: list1,
             memberSender: list2,
           );
-          _firebaseFirestore.collection("families").doc(fid)
-              .collection("conversations").doc(value.id).set(
-              conversationModel.toMap(conversationModel));
+          _firebaseFirestore
+              .collection("families")
+              .doc(fid)
+              .collection("conversations")
+              .doc(value.id)
+              .set(conversationModel.toMap(conversationModel));
           cid = value.id;
         } else {
           cid = querySnapshot.docs.first.id;
@@ -125,26 +177,40 @@ class FirebaseMethods {
   Future<void> createMessage(String message, String cid) async {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
-    await _firebaseFirestore.collection("users").doc(cuid).get();
+        await _firebaseFirestore.collection("users").doc(cuid).get();
     String fid = ds.get('fid');
 
     if (fid != null) {
-      await _firebaseFirestore.collection("families").doc(fid).collection(
-          "conversations").doc(cid)
-          .collection("message").doc().get().then((value) {
+      await _firebaseFirestore
+          .collection("families")
+          .doc(fid)
+          .collection("conversations")
+          .doc(cid)
+          .collection("message")
+          .doc()
+          .get()
+          .then((value) {
         MessageModel messageModel = MessageModel(
           mid: value.id,
           message: message,
           sender: cuid,
           time: DateTime.now().millisecondsSinceEpoch,
         );
-        _firebaseFirestore.collection("families").doc(fid).collection(
-            "conversations").doc(cid)
-            .collection("messages").doc(value.id).set(
-            messageModel.toMap(messageModel));
+        _firebaseFirestore
+            .collection("families")
+            .doc(fid)
+            .collection("conversations")
+            .doc(cid)
+            .collection("messages")
+            .doc(value.id)
+            .set(messageModel.toMap(messageModel));
         // if user create a conversation user it take the last time
-        _firebaseFirestore.collection("families").doc(fid).collection(
-            "conversations").doc(cid).update({
+        _firebaseFirestore
+            .collection("families")
+            .doc(fid)
+            .collection("conversations")
+            .doc(cid)
+            .update({
           'updateDate': DateTime.now().millisecondsSinceEpoch,
         });
       });
@@ -155,17 +221,27 @@ class FirebaseMethods {
   fetchAllMessages(String cid) async {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
-    await _firebaseFirestore.collection("users").doc(cuid).get();
+        await _firebaseFirestore.collection("users").doc(cuid).get();
     String fid = ds.get('fid');
 
-    if(fid != null){
+    if (fid != null) {
       // if user fetch user it take the last time
-      _firebaseFirestore.collection("families").doc(fid).collection(
-          "conversations").doc(cid).update({
+      _firebaseFirestore
+          .collection("families")
+          .doc(fid)
+          .collection("conversations")
+          .doc(cid)
+          .update({
         'updateDate': DateTime.now().millisecondsSinceEpoch,
       });
-      return _firebaseFirestore.collection("families").doc(fid).collection("conversations")
-          .doc(cid).collection("messages").orderBy('time').snapshots();
+      return _firebaseFirestore
+          .collection("families")
+          .doc(fid)
+          .collection("conversations")
+          .doc(cid)
+          .collection("messages")
+          .orderBy('time')
+          .snapshots();
     }
   }
 
@@ -173,26 +249,36 @@ class FirebaseMethods {
   fetchAllConversations() async {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
-    await _firebaseFirestore.collection("users").doc(cuid).get();
+        await _firebaseFirestore.collection("users").doc(cuid).get();
     String fid = ds.get('fid');
 
-    if(fid != null){
+    if (fid != null) {
       //TODO: order by date
-      return _firebaseFirestore.collection("families").doc(fid).collection("conversations")
-          .where("members", arrayContains: cuid).snapshots();
+      return _firebaseFirestore
+          .collection("families")
+          .doc(fid)
+          .collection("conversations")
+          .where("members", arrayContains: cuid)
+          .snapshots();
     }
   }
 
   //replace the writed message to "message is delete"
-  Future<void> deleteMessageForAll(String cid, String mid) async{
+  Future<void> deleteMessageForAll(String cid, String mid) async {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
-    await _firebaseFirestore.collection("users").doc(cuid).get();
+        await _firebaseFirestore.collection("users").doc(cuid).get();
     String fid = ds.get('fid');
 
-    if(fid != null){
-    _firebaseFirestore.collection("families").doc(fid).collection("conversations").doc(cid)
-        .collection("messages").doc(mid).update({'message': "message delete"});
+    if (fid != null) {
+      _firebaseFirestore
+          .collection("families")
+          .doc(fid)
+          .collection("conversations")
+          .doc(cid)
+          .collection("messages")
+          .doc(mid)
+          .update({'message': "message delete"});
     }
   }
 

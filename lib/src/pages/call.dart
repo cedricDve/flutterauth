@@ -33,7 +33,8 @@ class _CallPageState extends State<CallPage> {
     _users.clear();
     // destroy sdk
     _engine.leaveChannel();
-    _engine.destroy();
+    //de-alocating the recources that were being used
+    _engine.destroy(); 
     super.dispose();
   }
 
@@ -55,9 +56,8 @@ class _CallPageState extends State<CallPage> {
       return;
     }
 
-    await _initAgoraRtcEngine();
+    await _initAgoraRtcEngine(); 
     _addAgoraEventHandlers();
-    await _engine.enableWebSdkInteroperability(true);
     VideoEncoderConfiguration configuration = VideoEncoderConfiguration();
     configuration.dimensions = VideoDimensions(1920, 1080);
     await _engine.setVideoEncoderConfiguration(configuration);
@@ -297,9 +297,9 @@ class _CallPageState extends State<CallPage> {
       body: Center(
         child: Stack(
           children: <Widget>[
-            _viewRows(),
-            _panel(),
-            _toolbar(),
+            _viewRows(), //screen 
+            _panel(), //strings
+            _toolbar(), //3 action buttons
           ],
         ),
       ),
