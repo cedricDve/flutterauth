@@ -85,9 +85,10 @@ class _createConversationsState extends State<createConversations> {
             onTap: () async {
               String cuid2 = searchResults[index].uid;
               String cid = await firebaseHelper.createConversation(cuid2);
-              //TODO: via chatlist() to ChatScreen()
-
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> ChatScreen(cid: cid)));//TODO: via chatlist() to ChatScreen()
+              Navigator.pop(context);
+              /*
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> ChatScreen(cid: cid)));
+               */
             },
           );
         })
