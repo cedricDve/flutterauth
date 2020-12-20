@@ -30,7 +30,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     firebaseHelper.fetchAllMessages(widget.cid).then((list) => {
       setState(() {
-        _messages = list;
+        _messages = list as Stream<dynamic>;
       }),
     });
     firebaseHelper.getCurrentUser().then((user) {
@@ -168,14 +168,16 @@ class _ChatScreenState extends State<ChatScreen> {
               if(snapshot.data.documents.length != 0) {
                 return ListView.builder(
                   reverse: true,
-                  itemCount: snapshot.data.docs.length,
+                  itemCount: snapshot.data.docs.length as int,
                   itemBuilder: (context, index) {
                     return CustomMessageTile(
-                        message: snapshot.data.documents[index].data()["message"],
+                        message: snapshot.data.documents[index]
+                        .data()["message"] as String,
                         sentByMe: cuid ==
                             snapshot.data.documents[index].data()["sender"],
                         cid: widget.cid,
-                        mid: snapshot.data.documents[index].data()["mid"]
+                        mid: snapshot.data.documents[index]
+                        .data()["mid"] as String
                     );
                   },
                 );
@@ -186,7 +188,7 @@ class _ChatScreenState extends State<ChatScreen> {
               return noMessageWidget();
             }
           } else {
-            return LinearProgressIndicator();
+            return const LinearProgressIndicator();
           }
         }
     );

@@ -61,7 +61,7 @@ class _FaqListState extends State<FaqList> {
           } else {
             //connected => data ready
             return ListView.builder(
-                itemCount: snapshot.data.length,
+                itemCount: snapshot.data.length as int,
                 itemBuilder: (context, index) {
                   return ListTile(
                     onTap: () {
@@ -69,9 +69,9 @@ class _FaqListState extends State<FaqList> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  FaqDetailsPage(faq: snapshot.data[index])));
+                                  FaqDetailsPage(faq: snapshot.data[index] as DocumentSnapshot)));
                     },
-                    title: Text(snapshot.data[index].data()['title']),
+                    title: Text(snapshot.data[index].data()['title'] as String),
                     trailing: IconButton(
                       onPressed: () {},
                       icon: Icon(
@@ -107,8 +107,8 @@ class _FaqDetailsPageState extends State<FaqDetailsPage> {
       body: Container(
           child: Card(
         child: ListTile(
-          title: Text(widget.faq.data()['title']),
-          subtitle: Text(widget.faq.data()["description"]),
+          title: Text(widget.faq.data()['title'] as String),
+          subtitle: Text(widget.faq.data()["description"] as String),
         ),
       )),
     );

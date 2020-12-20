@@ -45,7 +45,7 @@ final FirebaseHelper _firebaseHelper = FirebaseHelper();
         await _firebaseHelper.getCurrentUser().then((user) => user.uid);
     DocumentSnapshot ds = await _firestore.collection("users").doc(cuid).get();
     setState(() {
-      fID = ds.get('fid');
+      fID = ds.get('fid') as String;
     });
   }
 
@@ -66,12 +66,12 @@ final FirebaseHelper _firebaseHelper = FirebaseHelper();
     _msgTextController.text = '${commentData[0]} ';
   }
 
-  void _moveToFullImage() => Navigator.push(context, MaterialPageRoute(builder: (context) => FullPhoto(imageUrl: widget.postData['postImage'],)));
+  void _moveToFullImage() => Navigator.push(context, MaterialPageRoute(builder: (context) => FullPhoto(imageUrl: widget.postData['postImage'] as String,)));
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    String postId = widget.postData['postID'];
+    String postId = widget.postData['postID'] as String;
     print("yooooooooooooooooooooooooo");
     print(postId);
     return Scaffold(
@@ -176,9 +176,9 @@ final FirebaseHelper _firebaseHelper = FirebaseHelper();
   Future<void> _handleSubmitted(String content) async {
     try{
    //DocumentSnapshot ds2 = await _firestore.collection("families").doc(fID).collection("thread").doc(widget.postData['postID']).get();
-      String toUserID=widget.postData['userName'], toCommentID =widget.postData['userName'],
-      postID=widget.postData['postID'],
-      postFCMToken = widget.postData['FCMToken'];
+      String toUserID=widget.postData['userName'] as String, toCommentID =widget.postData['userName'] as String,
+      postID=widget.postData['postID'] as String,
+      postFCMToken = widget.postData['FCMToken'] as String;
 
     await FBCloudStore.commentToPost(toUserID,toCommentID,postID,content,widget.myData,postFCMToken);
     await FBCloudStore.updatePostCommentCount(widget.postData);

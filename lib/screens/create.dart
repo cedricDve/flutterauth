@@ -172,11 +172,11 @@ class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
                           _firestore
                               .collection("families")
                               .doc(code)
-                              .set(famModel.toMap(famModel))
+                              .set(famModel.toMap(famModel) as Map<String, dynamic>)
                               .then((value) =>
                                   Fluttertoast.showToast(msg: "Success"))
                               .catchError(
-                                  (e) => Fluttertoast.showToast(msg: e));
+                                  (e) => Fluttertoast.showToast(msg: e as String)as String);
 
                           DocumentSnapshot qs =
                               await _f.collection("users").doc(cuid).get();
@@ -193,7 +193,7 @@ class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
                                 .then((value) =>
                                     Fluttertoast.showToast(msg: "Fid Set"))
                                 .catchError(
-                                    (e) => Fluttertoast.showToast(msg: e));
+                                    (e) => Fluttertoast.showToast(msg: e as String));
                           }
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) => Root()));

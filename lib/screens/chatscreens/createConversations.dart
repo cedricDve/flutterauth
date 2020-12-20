@@ -56,7 +56,7 @@ class _createConversationsState extends State<createConversations> {
                   },
                 ),
                 Expanded(
-                  child: buildResults(query),
+                  child: buildResults(query) as Widget,
                 )
               ],
             ),
