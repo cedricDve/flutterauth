@@ -156,7 +156,7 @@ class _ChatScreenState extends State<ChatScreen> {
             if(snapshot.data != null) {
               if(snapshot.data.documents.length != 0) {
                 return ListView.builder(
-                  reverse: true,
+                  //reverse: true,
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
                     return CustomMessageTile(

@@ -136,8 +136,8 @@ class _UserProfile extends State<UserProfile> {
     try {
       User user = await _firebaseHelper.getCurrentUser();
       // TODO:
-      await _firebaseHelper.deleteUserData();
       user.delete();
+      await _firebaseHelper.deleteUserData();
     } catch (e) {
       print(e.toString());
       return null;

@@ -461,64 +461,28 @@ class FirebaseMethods {
         }
       });
 
-      /*
-      Future<List> joinFamily() async {
-    // Get the current user ID => get doc snapshot of current user from Firestore
-    String cuid = Auth(auth: _auth).currentUser.uid;
-    DocumentSnapshot ds =
-        await _firebaseFirestore.collection("users").doc(cuid).get();
-    // Get data from Firestore of family with FID of cuid
-    DocumentSnapshot dsf = await _firebaseFirestore
-        .collection("families")
-        .doc(ds.get('fid') as String)
-        .get();
-    //List for the family request
-    List a = dsf.get('membersRequest') as List<dynamic>;
-    //check family state: family-id and check if user is in a family
-    if (ds.get('fid') == null)
-      isFam = false;
-    //check if user is admin
-    else if (ds.get('isAdmin') as bool && a.length >= 1) {
-      print("A USER WANA JOIN THE FAM");
-      //status user: isJoin ? => get user id and prevent the admin
-      bool isJoin = true;
-      String juid = a[0] as String;
-      // Get data from Firestore of user that like to join the family
-      DocumentSnapshot jds =
-          await _firebaseFirestore.collection("users").doc(juid).get();
-      //List of data from the joining user
-      List data = List();
-      data.add(jds.get('name'));
-      data.add(isJoin);
-      data.add(isFam);
-      return data;
-    }
-    return List();
-  }
-       */
-      /*
+      DocumentSnapshot ds =
+      await _firebaseFirestore.collection("users").doc(cuid).get();
       CollectionReference collectionReference = _firebaseFirestore.collection("families").doc(fid).collection("thread");
       await collectionReference.get().then((documents){
         for(var i = 0; i < documents.size; i++){
-          documents.docs.forEach((elementOfDocuments) async {
 
-            if(elementOfDocuments.get('postLikeCount') != 0){
-              await collectionReference.doc(elementOfDocuments.id).collection("like").where('userName', isEqualTo: getCurrentUser().then((value) => value.displayName)).get();
-            }
+          documents.docs.forEach((elementOfDocuments) async {
             if(elementOfDocuments.get('postCommentCount') != 0){
-            await collectionReference.doc(elementOfDocuments.id).collection("comment").where('userName', isEqualTo: getCurrentUser().then((value) => value.displayName)).get().then((value){
-              value.docs.
+            await collectionReference.doc(elementOfDocuments.id).collection("comment").where('userName', isEqualTo: ds.get('name')).get().then((snapshot){
+              for(DocumentSnapshot doc in snapshot.docs){
+                doc.reference.delete();
+              }
             });
             }
           });
         }
       });
 
-       */
 
       await _firebaseFirestore.collection("families").doc(fid).update({'members': FieldValue.arrayRemove([cuid])});
 
-      await _firebaseFirestore.collection("families").doc(fid).collection("users").where('userId', isEqualTo: cuid).get().then((snapshot) {
+      await _firebaseFirestore.collection("users").where('uid', isEqualTo: cuid).get().then((snapshot) {
         for (DocumentSnapshot doc in snapshot.docs) {
           doc.reference.delete();
         }

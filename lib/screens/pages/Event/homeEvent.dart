@@ -6,8 +6,9 @@ import 'addImages.dart';
 
 class EventHomePage extends StatefulWidget {
   final String eventId;
-
-  const EventHomePage({this.eventId});
+  final String title;
+  final String description;
+  const EventHomePage({this.eventId, this.title, this.description});
 
   @override
   _EventHomePageState createState() => _EventHomePageState();
@@ -39,35 +40,49 @@ class _EventHomePageState extends State<EventHomePage> {
                   )));
         },
       ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('families')
-            .doc(fid)
-            .collection('imageURLs')
-            .where('eventId', isEqualTo: widget.eventId)
-            .snapshots(),
-        builder: (context, snapshot) {
-          return !snapshot.hasData
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Container(
-                  padding: EdgeInsets.all(4),
-                  child: GridView.builder(
-                      itemCount: snapshot.data.documents.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          margin: EdgeInsets.all(3),
-                          child: FadeInImage.memoryNetwork(
-                              fit: BoxFit.cover,
-                              placeholder: kTransparentImage,
-                              image: snapshot.data.documents[index].get('url')),
-                        );
-                      }),
-                );
-        },
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: Text(widget.title , style: TextStyle(fontSize: 30),),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(widget.description , style: TextStyle(fontSize: 30),),
+            ),
+            StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('families')
+                  .doc(fid)
+                  .collection('imageURLs')
+                  .where('eventId', isEqualTo: widget.eventId)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                return !snapshot.hasData
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Container(
+                        padding: EdgeInsets.all(4),
+                        child: GridView.builder(
+                            itemCount: snapshot.data.documents.length,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3),
+                            itemBuilder: (context, index) {
+                              return Container(
+                                margin: EdgeInsets.all(3),
+                                child: FadeInImage.memoryNetwork(
+                                    fit: BoxFit.cover,
+                                    placeholder: kTransparentImage,
+                                    image: snapshot.data.documents[index].get('url')),
+                              );
+                            }),
+                      );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -45,7 +45,7 @@ class _HomeFamEventsState extends State<HomeFamEvents> {
             if (snapshot.hasData) {
               return ListView.builder(
                   itemCount: snapshot.data.docs.length,
-                  itemBuilder: (contex, index) {
+                  itemBuilder: (context, index) {
                     return ListTile(
                       leading: Icon(Icons.event_note),
                       title:
@@ -58,7 +58,7 @@ class _HomeFamEventsState extends State<HomeFamEvents> {
                             MaterialPageRoute(
                                 builder: (context) => EventHomePage(
                                       eventId: snapshot.data.docs[index]
-                                          .data()['eventId'],
+                                          .data()['eventId'], title: snapshot.data.docs[index].data()['title'],description: snapshot.data.docs[index].data()['description'],
                                     )));
                       },
                     );
@@ -145,6 +145,19 @@ class _CreateFamEventState extends State<CreateFamEvent> {
                 controller: _description,
                 decoration: InputDecoration(hintText: "Give a Description")),
           ),
+          FlatButton(
+            child: const Text("Create event"),
+            color: Colors.blueAccent,
+              onPressed: () {
+                if (_titel.text.isEmpty || _description.text.isEmpty) {
+                  Fluttertoast.showToast(
+                      msg: "Please enter a title and a description");
+                } else {
+                  uploadData(_titel.text.trim(), _description.text.trim());
+                  Navigator.of(context).pop();
+                }
+              },
+              )
         ],
       )),
     );
