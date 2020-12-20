@@ -21,6 +21,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       //theme: ThemeData.dark(),
       title: "Family App",
+      theme: ThemeData(fontFamily: 'Courgette-Regular'),
       //routing : / is the main route = main.dart
       initialRoute: "/",
       routes: {

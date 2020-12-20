@@ -23,8 +23,8 @@ class MyFeedPageMain extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.lightBlue,
-      ),
+      primarySwatch: Colors.lightBlue,
+      fontFamily: 'Courgette-Regular'),
       home: MyFeedPage(),
       debugShowCheckedModeBanner: false,
     );
@@ -103,7 +103,7 @@ class _MyFeedPageState extends State<MyFeedPage> with TickerProviderStateMixin {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text('FamMe'),
+        title: Text('FamMe',style: TextStyle(fontFamily: 'Courgette')),
         centerTitle: true,
         backgroundColor: Colors.blue[200],
       ),
