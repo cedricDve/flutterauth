@@ -49,12 +49,12 @@ class CalendarEvent {
     if (map == null) return null;
   
     return CalendarEvent(
-      title: map['title'],
-      id: map['id'],
-      description: map['description'],
-      date: DateTime.fromMillisecondsSinceEpoch(map['date']),
-      userId: map['userId'],
-      isPublic: map['isPublic'],
+      title: map['title'] as String,
+      id: map['id'] as String,
+      description: map['description'] as String,
+      date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
+      userId: map['userId'] as String,
+      isPublic: map['isPublic'] as bool,
     );
   }
   // DS : DataSnapshot
@@ -62,18 +62,18 @@ class CalendarEvent {
     if (map == null) return null;
   
     return CalendarEvent(
-      title: map['title'],
+      title: map['title'] as String,
       id: id,
-      description: map['description'],
-      date: DateTime.fromMillisecondsSinceEpoch(map['date']),
-      userId: map['userId'],
-      isPublic: map['isPublic'],
+      description: map['description'] as String,
+      date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
+      userId: map['userId'] as String,
+      isPublic: map['isPublic'] as bool,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory CalendarEvent.fromJson(String source) => CalendarEvent.fromMap(json.decode(source));
+  factory CalendarEvent.fromJson(String source) => CalendarEvent.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {

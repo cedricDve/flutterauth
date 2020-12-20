@@ -25,7 +25,7 @@ class FirebaseMethods {
     // Get data from Firestore of current user with cuid ->(CurrentUserID)
     DocumentSnapshot ds =
         await _firebaseFirestore.collection("users").doc(cuid).get();
-    return ds.get('isAdmin');
+    return ds.get('isAdmin') as bool;
   }
 
   Future<bool> isFamilyId() async {
@@ -44,19 +44,19 @@ class FirebaseMethods {
     // Get data from Firestore of current user with cuid ->(CurrentUserID)
     DocumentSnapshot ds =
         await _firebaseFirestore.collection("users").doc(cuid).get();
-    return ds.get('fid');
+    return ds.get('fid') as String;
   }
 
   Future<String> getAvatarOfId(String id) async {
     DocumentSnapshot ds =
         await _firebaseFirestore.collection("users").doc(id).get();
-    return ds.get('avatar');
+    return ds.get('avatar') as String;
   }
 
   Future<String> getNameOfId(String id) async {
     DocumentSnapshot ds =
         await _firebaseFirestore.collection("users").doc(id).get();
-    return ds.get('name');
+    return ds.get('name') as String;
   }
 
   Future<List<FamMemberModel>> getFamilyAvatars() async {
@@ -69,11 +69,11 @@ class FirebaseMethods {
     });
     DocumentSnapshot dsf =
         await _firebaseFirestore.collection("families").doc(fID).get();
-    List a = dsf.get('members');
+    List a = dsf.get('members') as List<dynamic>;
     List<FamMemberModel> listFamModel = List<FamMemberModel>();
     for (var i = 0; i < a.length; i++) {
-      getAvatarOfId(a[i]).then((pieter) async {
-        await getNameOfId(a[i]).then((jan) {
+      getAvatarOfId(a[i] as String).then((pieter) async {
+        await getNameOfId(a[i] as String).then((jan) {
           name = jan;
           avatar = pieter;
           famMemberModel = FamMemberModel(avatar: avatar, id: name);
@@ -129,7 +129,7 @@ class FirebaseMethods {
 
     DocumentSnapshot ds =
         await _firebaseFirestore.collection("users").doc(cuid).get();
-    String fid = ds.get('fid');
+    String fid = ds.get('fid') as String;
 
       QuerySnapshot querySnapshot = await _firebaseFirestore
           .collection("families")
@@ -163,7 +163,7 @@ class FirebaseMethods {
               .doc(fid)
               .collection("conversations")
               .doc(value.id)
-              .set(conversationModel.toMap(conversationModel));
+              .set(conversationModel.toMap(conversationModel) as Map<String, dynamic>);
           cid = value.id;
         } else {
           cid = querySnapshot.docs.first.id;
@@ -178,7 +178,7 @@ class FirebaseMethods {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
         await _firebaseFirestore.collection("users").doc(cuid).get();
-    String fid = ds.get('fid');
+    String fid = ds.get('fid') as String;
 
 
       await _firebaseFirestore
@@ -203,7 +203,7 @@ class FirebaseMethods {
             .doc(cid)
             .collection("messages")
             .doc(value.id)
-            .set(messageModel.toMap(messageModel));
+            .set(messageModel.toMap(messageModel) as Map<String, dynamic>);
         // if user create a conversation user it take the last time
         _firebaseFirestore
             .collection("families")
@@ -222,7 +222,7 @@ class FirebaseMethods {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
     await _firebaseFirestore.collection("users").doc(cuid).get();
-    String fid = ds.get('fid');
+    String fid = ds.get('fid') as String;
 
     if (fid != null) {
       //TODO: order by date
@@ -240,7 +240,7 @@ class FirebaseMethods {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
         await _firebaseFirestore.collection("users").doc(cuid).get();
-    String fid = ds.get('fid');
+    String fid = ds.get('fid') as String;
 
     if (fid != null) {
       // if user fetch user it take the last time
@@ -268,7 +268,7 @@ class FirebaseMethods {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
     await _firebaseFirestore.collection("users").doc(cuid).get();
-    String fid = ds.get('fid');
+    String fid = ds.get('fid') as String;
 
     if (fid != null) {
       _firebaseFirestore
@@ -285,7 +285,7 @@ class FirebaseMethods {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
         await _firebaseFirestore.collection("users").doc(cuid).get();
-    String fid = ds.get('fid');
+    String fid = ds.get('fid') as String;
 
     if (fid != null) {
       _firebaseFirestore
@@ -308,18 +308,18 @@ class FirebaseMethods {
     // Get data from Firestore of family with FID of cuid
     DocumentSnapshot dsf = await _firebaseFirestore
         .collection("families")
-        .doc(ds.get('fid'))
+        .doc(ds.get('fid') as String)
         .get();
 
-    List a = dsf.get('membersRequest');
+    List a = dsf.get('membersRequest') as List<dynamic>;
     if (ds.get('fid') == null)
       isFam = false;
-    else if (ds.get('isAdmin') && a.length >= 1) {
+    else if (ds.get('isAdmin') as bool && a.length >= 1) {
       print("A USER WANA JOIN THE FAM");
 
       bool isJoin = true;
 
-      String juid = a[0];
+      String juid = a[0] as String;
 
       DocumentSnapshot jds =
           await _firebaseFirestore.collection("users").doc(juid).get();
@@ -342,9 +342,9 @@ class FirebaseMethods {
     // Get data from Firestore of family with FID of cuid
     DocumentSnapshot dsf = await _firebaseFirestore
         .collection("families")
-        .doc(ds.get('fid'))
+        .doc(ds.get('fid') as String)
         .get();
-    List a = dsf.get('members');
+    List a = dsf.get('members') as List<dynamic>;
     if (a.length >= 1) {
       for (var i = 0; i < a.length; i++) {
         famMembers.add(a[i]);

@@ -1,3 +1,4 @@
+// ignore: prefer_double_quotes
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -52,9 +53,9 @@ class _UserProfile extends State<UserProfile> {
     });
     _firebaseHelper.joinFamily().then((List list) {
       setState(() {
-        join_username = list[0];
-        isJoin = list[1];
-        isFam = list[2];
+        join_username = list[0] as String;
+        isJoin = list[1] as bool;
+        isFam = list[2] is bool;
       });
     });
     _firebaseHelper.getFamilyAvatars().then((List<FamMemberModel> value) {
@@ -69,20 +70,20 @@ class _UserProfile extends State<UserProfile> {
     cuid = await _firebaseHelper.getCurrentUser().then((user) => user.uid);
     ds = await _firestore.collection("users").doc(cuid).get();
     setState(() {
-      _myName = ds.get("name");
-      _myThumbnail = ds.get("avatar");
-      currentStatus = ds.get("isAdmin");
-      fid = ds.get('fid');
+      _myName = ds.get('name') as String;
+      _myThumbnail = ds.get('avatar') as String;
+      currentStatus = ds.get('isAdmin') as bool;
+      fid = ds.get('fid') as String;
       if (currentStatus == false) {
-        _mystatus = "Member";
+        _mystatus = 'Member';
       } else if (currentStatus == true) {
-        _mystatus = "Owner";
+        _mystatus = 'Owner';
       }
     });
     DocumentSnapshot fds =
-        await firestore.collection("families").doc(fid).get();
+        await firestore.collection('families').doc(fid).get();
     setState(() {
-      famName = fds.get('fname');
+      famName = fds.get('fname') as String;
     });
   }
 
@@ -96,13 +97,14 @@ class _UserProfile extends State<UserProfile> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     getCurrentUserData();
 
     return SingleChildScrollView(
       child: Container(
-        height: (isAdmin) ? 1000 : 900,
+        height: isAdmin ? 1000 : 900,
         child: Stack(
           children: <Widget>[
             Container(),
@@ -112,9 +114,9 @@ class _UserProfile extends State<UserProfile> {
                   1.5,
                   Container(
                     height: 300.0,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('assets/images/layer.png'),
+                        image: AssetImage("assets/images/layer.png"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -146,10 +148,10 @@ class _UserProfile extends State<UserProfile> {
                                     showDialog(
                                       context: context,
                                       builder: (context) =>
-                                          ChangeUserIcon('$_myThumbnail'),
+                                          ChangeUserIcon('$_myThumbnail')??ChangeUserIcon('$_myThumbnail'),
                                       barrierDismissible: true,
                                     ).then((newMyThumbnail) {
-                                      _updateMyData(_myName, newMyThumbnail);
+                                      _updateMyData(_myName, newMyThumbnail as String);
                                     });
                                   }),
                             )
@@ -552,27 +554,28 @@ class _UserProfile extends State<UserProfile> {
                     await firestore.collection("users").doc(cuid).get();
                 DocumentSnapshot dsf = await firestore
                     .collection("families")
-                    .doc(ds.get('fid'))
+                    // ignore: prefer_double_quotes
+                    .doc(ds.get('fid') as String)
                     .get();
-                List a = dsf.get('membersRequest');
+                List a = dsf.get('membersRequest') as List<dynamic>;
 
                 //update to members
                 await FirebaseFirestore.instance
                     .collection("families")
-                    .doc(ds.get('fid'))
+                    .doc(ds.get('fid') as String)
                     .update({
                   'members': FieldValue.arrayUnion([a[0]])
                 });
                 // set joined user to isFamily true
                 await FirebaseFirestore.instance
                     .collection("users")
-                    .doc(a[0])
+                    .doc(a[0] as String)
                     .update({'isFamily': true});
 
                 //delete from membersRequest
                 await FirebaseFirestore.instance
                     .collection("families")
-                    .doc(ds.get('fid'))
+                    .doc(ds.get('fid') as String)
                     .update({
                   'membersRequest': FieldValue.arrayRemove([a[0]])
                 });
@@ -593,20 +596,20 @@ class _UserProfile extends State<UserProfile> {
                     await firestore.collection("users").doc(cuid).get();
                 DocumentSnapshot dsf = await firestore
                     .collection("families")
-                    .doc(ds.get('fid'))
+                    .doc(ds.get('fid') as String)
                     .get();
                 setState(() {});
-                List a = dsf.get('membersRequest');
+                List a = dsf.get('membersRequest') as List<dynamic>;
                 // set joined user to isFamily false
                 await FirebaseFirestore.instance
                     .collection("users")
-                    .doc(a[0])
+                    .doc(a[0] as String)
                     .update({'isFamily': false});
 
                 //delete from membersRequest
                 await FirebaseFirestore.instance
                     .collection("families")
-                    .doc(ds.get('fid'))
+                    .doc(ds.get('fid') as String)
                     .update({
                   'membersRequest': FieldValue.arrayRemove([a[0]])
                 });

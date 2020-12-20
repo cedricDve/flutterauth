@@ -7,6 +7,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
   if (message.containsKey('data')) {
     print('myBackgroundMessageHandler data');
@@ -48,7 +50,7 @@ class FBCloudMessaging {
           String msg = 'notibody';
           String name = 'chatapp';
           if (Platform.isIOS) {
-            msg = message['aps']['alert']['body'];
+            msg = message['aps']['alert']['body'] ;
             name = message['aps']['alert']['title'];
           } else {
             msg = message['notification']['body'];

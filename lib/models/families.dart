@@ -26,11 +26,11 @@ class FamilyModel{
 
 //parse the map and create a user object
   FamilyModel.fromMap(Map<String, dynamic> mapData) {
-  this.fid = mapData['uid'];
-  this.fname = mapData['fname'];
-  this.avatar = mapData['avatar'];
-  this.members = mapData['members'];
-  this.membersRequest = mapData['membersRequest'];
+  this.fid = mapData['uid'] as String;
+  this.fname = mapData['fname'] as String;
+  this.avatar = mapData['avatar'] as String;
+  this.members = mapData['members'] as List<String>;
+  this.membersRequest = mapData['membersRequest'] as List<String>;
   }
 
 }

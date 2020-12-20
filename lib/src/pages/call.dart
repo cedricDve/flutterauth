@@ -121,7 +121,7 @@ class _CallPageState extends State<CallPage> {
 
   /// Video view wrapper
   Widget _videoView(view) {
-    return Expanded(child: Container(child: view));
+    return Expanded(child: Container(child: view as Widget));
   }
 
   /// Video view row wrapper

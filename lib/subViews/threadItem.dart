@@ -37,17 +37,17 @@ class _ThreadItem extends State<ThreadItem> {
   void _getUserThumbnailAndName(String cuid) async {
     DocumentSnapshot ds = await _firestore.collection("users").doc(cuid).get();
     setState(() {
-      _myName = ds.get("name");
-      _myThumbnail = ds.get("avatar");
+      _myName = ds.get("name") as String;
+      _myThumbnail = ds.get("avatar") as String;
     });
   }
 
   @override
   void initState() {
     _currentMyData = widget.myData;
-    _likeCount = widget.data['postLikeCount'];
+    _likeCount = widget.data['postLikeCount'] as int;
     super.initState();
-    _getUserThumbnailAndName(widget.data['userId']);
+    _getUserThumbnailAndName(widget.data['userId'] as String);
   }
 
   void _updateLikeCount(bool isLikePost) async {
@@ -109,7 +109,7 @@ class _ThreadItem extends State<ThreadItem> {
                         Padding(
                           padding: const EdgeInsets.all(2.0),
                           child: Text(
-                            Utils.readTimestamp(widget.data['postTimeStamp']),
+                            Utils.readTimestamp(widget.data['postTimeStamp'] as int),
                             style:
                                 TextStyle(fontSize: 16, color: Colors.black87),
                           ),
@@ -141,9 +141,9 @@ class _ThreadItem extends State<ThreadItem> {
                         showDialog(
                             context: widget.parentContext,
                             builder: (BuildContext context) => ReportPost(
-                                  postUserName: widget.data['userName'],
-                                  postId: widget.data['postID'],
-                                  content: widget.data['postContent'],
+                                  postUserName: widget.data['userName'] as String,
+                                  postId: widget.data['postID'] as String,
+                                  content: widget.data['postContent'] as String,
                                   reporter: widget.myData.myName,
                                 ));
                       },
@@ -158,7 +158,9 @@ class _ThreadItem extends State<ThreadItem> {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 10, 4, 10),
                   child: Text(
-                    (widget.data['postContent'] as String).length > 200
+                    // ignore: prefer_double_quotes
+                    (widget.data['postContent']as String
+                    ).length > 200
                         ? '${widget.data['postContent'].substring(0, 132)} ...'
                         : widget.data['postContent'],
                     style: TextStyle(
@@ -174,7 +176,7 @@ class _ThreadItem extends State<ThreadItem> {
                           ? widget.threadItemAction(widget.data)
                           : widget.threadItemAction(),
                       child: Utils.cacheNetworkImageWithEvent(
-                          context, widget.data['postImage'], 0, 0))
+                          context, widget.data['postImage'] as String, 0, 0))
                   : Container(),
               Divider(
                 height: 2,

@@ -22,9 +22,9 @@ class ConversationModel {
 
 //parse the map and create a user object
   ConversationModel.fromMap(Map<String, dynamic> mapData) {
-    this.cid = mapData['cid'];
-    this.updateDate = mapData['updateDate'];
-    this.members = mapData['members'];
-    this.memberSender = mapData['memberSender'];
+    this.cid = mapData["cid"] as String;
+    this.updateDate = mapData['updateDate'] as int;
+    this.members = mapData['members'] as List<String>;
+    this.memberSender = mapData['memberSender'] as List<String>;
   }
 }

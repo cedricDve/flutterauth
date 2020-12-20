@@ -69,27 +69,29 @@ class UserModel {
     if (map == null) return null;
 
     return UserModel(
-      uid: map['uid'],
-      fid: map['fid'],
-      name: map['name'],
-      email: map['email'],
-      role: map['role'],
-      birthday: map['birthday'],
-      avatar: map['avatar'],
-      isFamily: map['isFamily'],
-      isAdmin: map['isAdmin'],
-      uniqueId: map['uniqueId'],
+      uid: map['uid'] as String,
+      fid: map['fid'] as String,
+      name: map['name'] as String,
+      email: map['email'] as String,
+      role: map['role'] as String,
+      birthday: map['birthday'] as String,
+      avatar: map['avatar'] as String,
+      isFamily: map['isFamily'] as bool,
+      isAdmin: map['isAdmin'] as bool,
+      uniqueId: map['uniqueId'] as String,
     );
   }
 
   String toJson() => json.encode(toMap());
 
   factory UserModel.fromJson(String source) =>
-      UserModel.fromMap(json.decode(source));
+      UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, fid: $fid, name: $name, email: $email, role: $role, birthday: $birthday, avatar: $avatar, isFamily: $isFamily, isAdmin: $isAdmin, uniqueId: $uniqueId)';
+    // ignore: lines_longer_than_80_chars
+    // ignore: prefer_double_quotes
+    return 'UserModel(uid: $uid, fid: $fid,name: $name, email: $email, role: $role,birthday: $birthday, avatar: $avatar,isFamily: $isFamily, isAdmin: $isAdmin,uniqueId: $uniqueId)';
   }
 
   @override

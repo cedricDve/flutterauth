@@ -65,7 +65,7 @@ class _MyFeedPageState extends State<MyFeedPage> with TickerProviderStateMixin {
     DocumentSnapshot ds = await _fs.collection('users').doc(cuid).get();
     print("¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨");
     print(ds.get('name'));
-    myThumbnail = ds.get('avatar');
+    myThumbnail = ds.get('avatar') as String;
 
     if (prefs.get('myThumbnail') == null) {
       String tempThumbnail = iconImageList[Random().nextInt(50)];
@@ -73,12 +73,12 @@ class _MyFeedPageState extends State<MyFeedPage> with TickerProviderStateMixin {
       myThumbnail = tempThumbnail;
     }
 //change username !!!
-    prefs.setString('myName', ds.get('name'));
+    prefs.setString('myName', ds.get('name') as String);
 
     setState(() {
       myData = MyProfileData(
-        myThumbnail: ds.get('avatar'),
-        myName: ds.get('name'),
+        myThumbnail: ds.get('avatar') as String,
+        myName: ds.get('name') as String,
         myLikeList: prefs.getStringList('likeList'),
         myLikeCommnetList: prefs.getStringList('likeCommnetList'),
         myFCMToken: prefs.getString('FCMToken'),
@@ -103,7 +103,7 @@ class _MyFeedPageState extends State<MyFeedPage> with TickerProviderStateMixin {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text('FamMe',style: TextStyle(fontFamily: 'Courgette')),
+        title: Text('FamMe',style: const TextStyle(fontFamily: 'Courgette')),
         centerTitle: true,
         backgroundColor: Colors.blue[200],
       ),

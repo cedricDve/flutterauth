@@ -139,9 +139,9 @@ class _ProfilePState extends State<ProfileP> {
   Widget build(BuildContext context) {
     _firebaseHelper.joinFamily().then((List list) {
       setState(() {
-        join_username = list[0];
-        isJoin = list[1];
-        isFam = list[2];
+        join_username = list[0] as String;
+        isJoin = list[1] as bool;
+        isFam = list[2] as bool;
       });
     });
     print(" ----------------------");

@@ -61,16 +61,16 @@ class _CommentItem extends State<CommentItem>{
                         children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.all(4.0),
-                            child: Text(widget.data['userName'],style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                            child: Text(widget.data['userName'] as String,style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left:6.0),
-                            child: widget.data['toCommentID'] == null ? Text(widget.data['commentContent'],maxLines: 1,) :
+                            child: widget.data['toCommentID'] == null ? Text(widget.data['commentContent'] as String,maxLines: 1,) :
                             RichText(
                               text: TextSpan(
                                 children: <TextSpan>[
                                   //TextSpan(text: widget.data['toUserID'], style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blue[800])),
-                                  TextSpan(text: widget.data['commentContent'], style: TextStyle(color:Colors.black)),
+                                  TextSpan(text: widget.data['commentContent'] as String, style: TextStyle(color:Colors.black)),
                                 ],
                               ),
                             ),
@@ -93,7 +93,7 @@ class _CommentItem extends State<CommentItem>{
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          Text(Utils.readTimestamp(widget.data['commentTimeStamp'])),
+                          Text(Utils.readTimestamp(widget.data['commentTimeStamp'] as int)),
                           GestureDetector(
                               onTap: () => _updateLikeCount(_currentMyData.myLikeCommnetList != null && _currentMyData.myLikeCommnetList.contains(widget.data['commentID']) ? true : false),
                               child: Text('Like',
@@ -101,7 +101,7 @@ class _CommentItem extends State<CommentItem>{
                           ),
                           GestureDetector(
                               onTap: (){
-                                widget.replyComment([widget.data['userName'],widget.data['commentID'],widget.data['FCMToken']]);
+                                widget.replyComment([widget.data['userName'] as String,widget.data['commentID'] as String,widget.data['FCMToken'] as String]);
 //                                _replyComment(widget.data['userName'],widget.data['commentID'],widget.data['FCMToken']);
                                 print('leave comment of commnet');
                               },
@@ -116,7 +116,8 @@ class _CommentItem extends State<CommentItem>{
             ],
           ),
 
-          widget.data['commentLikeCount'] > 0 ? Positioned(
+          widget.data['commentLikeCount'] as int> 0 
+          ? Positioned(
             bottom: 10,
             right:0,
             child: Card(
@@ -126,7 +127,8 @@ class _CommentItem extends State<CommentItem>{
                   child: Row(
                     children: <Widget>[
                       Icon(Icons.favorite,size: 14,color: Colors.blue[900],),
-                      Text('${widget.data['commentLikeCount']}',style:TextStyle(fontSize: 14)),
+                      Text('${widget.data['commentLikeCount']}',
+                      style:TextStyle(fontSize: 14)),
                     ],
                   ),
                 )
