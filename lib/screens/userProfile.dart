@@ -15,6 +15,7 @@ import 'introductionScreen.dart';
 import 'Choose.dart';
 import 'faqPage.dart';
 import 'package:flutter_familly_app/models/famMemberModel.dart';
+import 'package:flutter_familly_app/screens/privacy.dart';
 
 DocumentSnapshot ds;
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -134,8 +135,7 @@ class _UserProfile extends State<UserProfile> {
     try {
       User user = await _firebaseHelper.getCurrentUser();
       // TODO:
-      //await deleteUserPosts();
-
+      await _firebaseHelper.deleteUserData();
       user.delete();
     } catch (e) {
       print(e.toString());
@@ -509,6 +509,49 @@ class _UserProfile extends State<UserProfile> {
                             ],
                           ),
                         ))),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: FadeAnimation(
+                        1.5,
+                        Card(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: 21.0,
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+
+                                  IconButton(
+                                    onPressed: (){
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (_) => PrivacyPage()),
+                                      );
+                                    },
+
+                                      icon: Icon(Icons.privacy_tip,
+                                          color: Colors.red)),
+                                  SizedBox(width: 24.0),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      const Text(
+                                        "Privacy policy",
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4.0),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ))),
+
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),

@@ -437,6 +437,62 @@ class FirebaseMethods {
 
 //Delete data of user
 
+  Future<void> deleteUserData() async {
+    String cuid = Auth(auth: _auth).currentUser.uid;
+    String fid;
+    await getFID().then((value) async {
+      fid = value;
+
+      await _firebaseFirestore.collection("families").doc(fid).collection("conversations").where("members", arrayContainsAny: [cuid]).get().then((snapshot) {
+        for (DocumentSnapshot doc in snapshot.docs) {
+          doc.reference.delete();
+        }
+      });
+
+      await _firebaseFirestore.collection("families").doc(fid).collection("thread").where('userId', isEqualTo: cuid).get().then((snapshot) {
+        for (DocumentSnapshot doc in snapshot.docs) {
+          doc.reference.delete();
+        }
+      });
+
+      await _firebaseFirestore.collection("families").doc(fid).collection("thread").where('userId', isEqualTo: cuid).get().then((snapshot) {
+        for (DocumentSnapshot doc in snapshot.docs) {
+          doc.reference.delete();
+        }
+      });
+
+
+
+      CollectionReference collectionReference = _firebaseFirestore.collection("families").doc(fid).collection("thread");
+/*
+      await collectionReference.get().then((documents){
+        for(var i = 0; i < documents.size; i++){
+          documents.docs.forEach((elementOfDocuments) async {
+
+            if(elementOfDocuments.get('postLikeCount') != 0){
+              await collectionReference.doc(elementOfDocuments.id).collection("like");
+            }
+            if(elementOfDocuments.get('postCommentCount') != 0){
+            await collectionReference.doc(elementOfDocuments.id).collection("comment")
+                .where('userName', isEqualTo: getCurrentUser().then((value) => value.displayName));
+
+            }
+
+          });
+        }
+      });
+      
+ */
+
+      await _firebaseFirestore.collection("families").doc(fid).update({'members': FieldValue.arrayRemove([cuid])});
+
+      await _firebaseFirestore.collection("families").doc(fid).collection("users").where('userId', isEqualTo: cuid).get().then((snapshot) {
+        for (DocumentSnapshot doc in snapshot.docs) {
+          doc.reference.delete();
+        }
+      });
+  });
+}
 }
 
 // For Calendar Events: Using firebase_helpers:

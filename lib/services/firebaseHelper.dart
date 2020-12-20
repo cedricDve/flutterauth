@@ -52,4 +52,5 @@ class FirebaseHelper {
   Future<int> countFamImages() => _firebaseHelper.countFamImages();
   Future<int> countCalendarCU() => _firebaseHelper.countCalendarCU();
   Future<int> countFaq() => _firebaseHelper.countFaq();
+  Future<void> deleteUserData() => _firebaseHelper.deleteUserData();
 }
