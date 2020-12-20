@@ -9,9 +9,9 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ChatScreen extends StatefulWidget {
   final UserModel receiver;
-  String cid;
-  String name;
-  String image;
+  final String cid;
+  final String name;
+  final String image;
   ChatScreen({this.receiver, this.cid, this.name, this.image});
 
   @override
@@ -42,7 +42,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _handleCameraAndMic(Permission permission) async {
     final status = await permission.request();
-    print(status);
   }
 
   @override
@@ -74,52 +73,59 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Container(
         child: Stack(
           children: <Widget>[
-            chatList(),
-            Container(
-              alignment: Alignment.bottomCenter,
-              width: MediaQuery.of(context).size.width,
+            Positioned(
+              bottom: 65,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-                color: Colors.grey[700],
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: TextField(
-                        controller: messageEditingController,
-                        style: TextStyle(
-                            color: Colors.white
-                        ),
-                        decoration: InputDecoration(
-                            hintText: "Send a message ...",
-                            hintStyle: TextStyle(
-                              color: Colors.white38,
-                              fontSize: 16,
-                            ),
-                            border: InputBorder.none
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 12.0),
-                    GestureDetector(
-                      onTap:()async{
-                        _sendMessage();
-                      },
-                      child: Container(
-                        height: 50.0,
-                        width: 50.0,
-                        decoration: BoxDecoration(
-                            color: Colors.blue[200],
-                            borderRadius: BorderRadius.circular(50)
-                        ),
-                        child: Center(
-                            child: Icon(Icons.send, color: Colors.white)
-                        ),
-                      ),
-                    )
-                  ],
-                ),
+                child: chatList(),
               ),
             ),
+            Positioned(
+              child: Container(
+                alignment: Alignment.bottomCenter,
+                width: MediaQuery.of(context).size.width,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+                  color: Colors.grey[700],
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: TextField(
+                          controller: messageEditingController,
+                          style: TextStyle(
+                              color: Colors.white
+                          ),
+                          decoration: InputDecoration(
+                              hintText: "Send a message ...",
+                              hintStyle: TextStyle(
+                                color: Colors.white38,
+                                fontSize: 16,
+                              ),
+                              border: InputBorder.none
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 12.0),
+                      GestureDetector(
+                        onTap:()async{
+                          _sendMessage();
+                        },
+                        child: Container(
+                          height: 50.0,
+                          width: 50.0,
+                          decoration: BoxDecoration(
+                              color: Colors.blue[200],
+                              borderRadius: BorderRadius.circular(50)
+                          ),
+                          child: Center(
+                              child: Icon(Icons.send, color: Colors.white)
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),
@@ -143,7 +149,7 @@ class _ChatScreenState extends State<ChatScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           GestureDetector(
-              child: new Image.asset('assets/images/${widget.image}'),
+            child: new Image.asset('assets/images/${widget.image}'),
           ),
           SizedBox(height: 15.0),
           Text("You've not start to convert with ${widget.name}."),

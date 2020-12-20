@@ -8,7 +8,7 @@ class CustomMessageTile extends StatelessWidget {
   final bool sentByMe;
   final String cid;
   final String mid;
-  FirebaseMethods _firebaseHelper = FirebaseMethods();
+  final FirebaseMethods _firebaseHelper = FirebaseMethods();
 
   CustomMessageTile({this.message, this.sender, this.sentByMe, this.cid, this.mid});
 
@@ -16,7 +16,6 @@ class CustomMessageTile extends StatelessWidget {
     Widget deleteButton = FlatButton(
       child: Text("Delete"),
       onPressed: () async {
-
           await _firebaseHelper.deleteMessageForAll(cid, mid);
           Navigator.of(context).pop();
         },
@@ -26,7 +25,6 @@ class CustomMessageTile extends StatelessWidget {
       child: Text("Cancel"),
       onPressed: () {
         Navigator.of(context).pop();
-
       },
     );
 
@@ -48,6 +46,7 @@ class CustomMessageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(message);
     return Container(
         child: GestureDetector(
           onLongPress: () {
