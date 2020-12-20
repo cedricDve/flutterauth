@@ -32,13 +32,13 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   bool isFamily = false;
 
   void _onIntroEndFirst(context) {
-    Navigator.of(context).push(
+    Navigator.of(context as BuildContext).push(
       MaterialPageRoute(builder: (_) => Choose()),
     );
   }
 
   void _onIntroEnd(context) {
-    Navigator.of(context).push(
+    Navigator.of(context as BuildContext).push(
       MaterialPageRoute(builder: (_) => Home()),
     );
   }

@@ -157,7 +157,7 @@ class _JoinStatefulWidgetState extends State<JoinStatefulWidget> {
                                   .then((value) =>
                                       Fluttertoast.showToast(msg: "Fid Set"))
                                   .catchError(
-                                      (e) => Fluttertoast.showToast(msg: e));
+                                      (e) => Fluttertoast.showToast(msg: e as String));
                               //members request list add
                               _firestore
                                   .collection("families")

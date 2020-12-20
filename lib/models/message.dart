@@ -22,9 +22,9 @@ class MessageModel {
 
 //parse the map and create a user object
   MessageModel.fromMap(Map<String, dynamic> mapData) {
-    this.mid = mapData['mid'];
-    this.message = mapData['message'];
-    this.time = mapData['time'];
-    this.sender = mapData['sender'];
+    this.mid = mapData['mid'] as String;
+    this.message = mapData['message'] as String;
+    this.time = mapData['time'] as int;
+    this.sender = mapData['sender'] as String;
   }
 }

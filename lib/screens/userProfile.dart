@@ -1,3 +1,4 @@
+// ignore: prefer_double_quotes
 import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -125,9 +126,9 @@ class _UserProfile extends State<UserProfile> {
       _mystatus = "Owner";
     }
     DocumentSnapshot fds =
-        await firestore.collection("families").doc(fid).get();
+        await firestore.collection('families').doc(fid).get();
     setState(() {
-      famName = fds.get('fname');
+      famName = fds.get('fname') as String;
     });
   }
 
@@ -159,9 +160,9 @@ class _UserProfile extends State<UserProfile> {
                   1.5,
                   Container(
                     height: 300.0,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('assets/images/layer.png'),
+                        image: AssetImage("assets/images/layer.png"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -198,7 +199,7 @@ class _UserProfile extends State<UserProfile> {
                                           ChangeUserIcon('$_myThumbnail'),
                                       barrierDismissible: true,
                                     ).then((newMyThumbnail) {
-                                      _updateMyData(_myName, newMyThumbnail);
+                                      _updateMyData(_myName, newMyThumbnail as String);
                                     });
                                   }),
                             )
@@ -763,13 +764,13 @@ class _UserProfile extends State<UserProfile> {
                 // set joined user to isFamily false
                 await FirebaseFirestore.instance
                     .collection("users")
-                    .doc(a[0])
+                    .doc(a[0] as String)
                     .update({'isFamily': false});
 
                 //delete from membersRequest
                 await FirebaseFirestore.instance
                     .collection("families")
-                    .doc(ds.get('fid'))
+                    .doc(ds.get('fid') as String)
                     .update({
                   'membersRequest': FieldValue.arrayRemove([a[0]])
                 });

@@ -235,7 +235,7 @@ Future<String> getToken() async {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String cuid;
   cuid = Auth(auth: _auth).currentUser.uid;
-  String userTokenThisDevice = prefs.get('FCMToken');
+  String userTokenThisDevice = prefs.get('FCMToken') as String;
   print(cuid);
 
   if (userTokenThisDevice == null) {

@@ -39,8 +39,8 @@ class FamMemberModel {
     if (map == null) return null;
 
     return FamMemberModel(
-      id: map['id'],
-      avatar: map['avatar'],
+      id: map['id'] as String,
+      avatar: map['avatar'] as String,
       fid: map['fid'],
       name: map['name'],
     );
@@ -49,7 +49,7 @@ class FamMemberModel {
   String toJson() => json.encode(toMap());
 
   factory FamMemberModel.fromJson(String source) =>
-      FamMemberModel.fromMap(json.decode(source));
+      FamMemberModel.fromMap(json.decode(source)as Map<String, dynamic>);
 
   @override
   String toString() =>

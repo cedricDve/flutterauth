@@ -48,7 +48,7 @@ class FBCloudMessaging {
           String msg = 'notibody';
           String name = 'chatapp';
           if (Platform.isIOS) {
-            msg = message['aps']['alert']['body'];
+            msg = message['aps']['alert']['body'] ;
             name = message['aps']['alert']['title'];
           } else {
             msg = message['notification']['body'];

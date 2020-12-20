@@ -79,8 +79,13 @@ class Utils{
     );
   }
 
-  static Future<MyProfileData> updateLikeCount(DocumentSnapshot data, bool isLikePost,MyProfileData myProfileData,ValueChanged<MyProfileData> updateMyData, bool isThread) async {
-    List<String> newLikeList = await LocalTempDB.saveLikeList(data[isThread ? 'postID' : 'commentID'],myProfileData.myLikeList,isLikePost,isThread ?'likeList':'likeCommnetList');
+  static Future<MyProfileData> updateLikeCount(DocumentSnapshot data,
+  bool isLikePost,
+  MyProfileData myProfileData,
+  ValueChanged<MyProfileData> updateMyData, bool isThread) async {
+    List<String> newLikeList = await LocalTempDB.saveLikeList(data[isThread ? 'postID' : 'commentID']as
+     String,myProfileData.myLikeList,isLikePost,isThread 
+     ?'likeList':'likeCommnetList');
     MyProfileData myNewProfileData = MyProfileData(
         myName: myProfileData.myName,
         myThumbnail: myProfileData.myThumbnail,
@@ -88,9 +93,10 @@ class Utils{
         myLikeCommnetList: isThread ? myProfileData.myLikeCommnetList : newLikeList
     );
     updateMyData(myNewProfileData);
-    isThread ? await FBCloudStore.updatePostLikeCount(data,isLikePost,myProfileData) : await FBCloudStore.updateCommentLikeCount(data,isLikePost,myProfileData);
+    isThread ? await FBCloudStore.updatePostLikeCount(data,isLikePost,myProfileData) 
+    : await FBCloudStore.updateCommentLikeCount(data,isLikePost,myProfileData);
     if (isThread) {
-      await FBCloudStore.likeToPost(data['postID'], myProfileData,isLikePost);
+      await FBCloudStore.likeToPost(data["postID"] as String, myProfileData,isLikePost);
     }
     return myNewProfileData;
   }
@@ -103,13 +109,15 @@ class Utils{
       for(int j = 0; j < _originalData.length; j++){
         if (_originalData[i]['commentID'] == _originalData[j]['toCommentID']){
           List<DocumentSnapshot> savedCommentData;
-          if (commentDocuments[_originalData[i]['commentID']] != null && commentDocuments[_originalData[i]['commentID']].length > 0) {
+          if (commentDocuments[_originalData[i]['commentID']] 
+          != null && commentDocuments[_originalData[i]['commentID']].length > 0) {
             savedCommentData = commentDocuments[_originalData[i]['commentID']];
           }else {
             savedCommentData = List<DocumentSnapshot>();
           }
           savedCommentData.add(_originalData[j]);
-          commentDocuments[_originalData[i]['commentID']] = savedCommentData;
+          commentDocuments[_originalData[i]['commentID'] as String]
+           = savedCommentData;
           replyCommentIndex.add(j);
         }
       }

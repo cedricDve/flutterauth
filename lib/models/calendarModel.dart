@@ -53,63 +53,59 @@ class CalendarEvent {
 //Map
   factory CalendarEvent.fromMap(Map<String, dynamic> map) {
     if (map == null) return null;
-
+  
     return CalendarEvent(
-      title: map['title'],
-      id: map['id'],
-      description: map['description'],
-      date: DateTime.fromMillisecondsSinceEpoch(map['date']),
-      userId: map['userId'],
-      isPublic: map['isPublic'],
-      groupMeetingCode: map['groupMeetingCode'],
+      title: map['title'] as String,
+      id: map['id'] as String,
+      description: map['description'] as String,
+      date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
+      userId: map['userId'] as String,
+      isPublic: map['isPublic'] as bool,
     );
   }
   // DS : DataSnapshot
-  factory CalendarEvent.fromDS(String id, Map<String, dynamic> map) {
+  factory CalendarEvent.fromDS(String id,Map<String, dynamic> map) {
     if (map == null) return null;
-
+  
     return CalendarEvent(
-      title: map['title'],
+      title: map['title'] as String,
       id: id,
-      description: map['description'],
-      date: DateTime.fromMillisecondsSinceEpoch(map['date']),
-      userId: map['userId'],
-      isPublic: map['isPublic'],
+      description: map['description'] as String,
+      date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
+      userId: map['userId'] as String,
+      isPublic: map['isPublic'] as bool,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory CalendarEvent.fromJson(String source) =>
-      CalendarEvent.fromMap(json.decode(source));
+  factory CalendarEvent.fromJson(String source) => CalendarEvent.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
-    return 'CalendarEvent(title: $title, id: $id, description: $description, date: $date, userId: $userId, isPublic: $isPublic, groupMeetingCode: $groupMeetingCode)';
+    return 'CalendarEvent(title: $title, id: $id, description: $description, date: $date, userId: $userId, isPublic: $isPublic)';
   }
 
   @override
   bool operator ==(Object o) {
     if (identical(this, o)) return true;
-
+  
     return o is CalendarEvent &&
-        o.title == title &&
-        o.id == id &&
-        o.description == description &&
-        o.date == date &&
-        o.userId == userId &&
-        o.isPublic == isPublic &&
-        o.groupMeetingCode == groupMeetingCode;
+      o.title == title &&
+      o.id == id &&
+      o.description == description &&
+      o.date == date &&
+      o.userId == userId &&
+      o.isPublic == isPublic;
   }
 
   @override
   int get hashCode {
     return title.hashCode ^
-        id.hashCode ^
-        description.hashCode ^
-        date.hashCode ^
-        userId.hashCode ^
-        isPublic.hashCode ^
-        groupMeetingCode.hashCode;
+      id.hashCode ^
+      description.hashCode ^
+      date.hashCode ^
+      userId.hashCode ^
+      isPublic.hashCode;
   }
 }
