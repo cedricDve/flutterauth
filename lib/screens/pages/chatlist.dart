@@ -10,8 +10,7 @@ class ChatList extends StatefulWidget {
   _ChatListState createState() => _ChatListState();
 }
 
-class _ChatListState extends State<ChatList> with TickerProviderStateMixin{
-
+class _ChatListState extends State<ChatList> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
@@ -45,10 +44,10 @@ class _ChatListContainerState extends State<ChatListContainer> {
   void initState() {
     super.initState();
     firebaseHelper.fetchAllConversations().then((list) => {
-      setState(() {
-        _conversations = list;
-      }),
-    });
+          setState(() {
+            _conversations = list;
+          }),
+        });
     firebaseHelper.fetchUsersWithFid().then((usersList) {
       setState(() {
         userList = usersList;
@@ -56,7 +55,7 @@ class _ChatListContainerState extends State<ChatListContainer> {
     });
   }
 
-  Widget noConversationWidget(){
+  Widget noConversationWidget() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.0),
       child: Column(
@@ -64,20 +63,20 @@ class _ChatListContainerState extends State<ChatListContainer> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           GestureDetector(
-              child: Icon(Icons.edit, color: Colors.blue[200], size: 75.0)
-          ),
+              child: Icon(Icons.edit, color: Colors.blue[200], size: 75.0)),
           SizedBox(height: 15.0),
-          Text("You've not start a conversation, tap on the 'edit' icon to create a conversation."),
+          Text(
+              "You've not start a conversation, tap on the 'edit' icon to create a conversation."),
         ],
       ),
     );
   }
 
-  UserModel takeUserWithCuid(snapshot, index){
+  UserModel takeUserWithCuid(snapshot, index) {
     String cuid = snapshot.data.documents[index].data()["members"][0];
     String cuid2 = snapshot.data.documents[index].data()["memberSender"][0];
-    for(var i = 0; i < userList.length; i++){
-      if(cuid == userList[i].uid || cuid2 == userList[i].uid){
+    for (var i = 0; i < userList.length; i++) {
+      if (cuid == userList[i].uid || cuid2 == userList[i].uid) {
         return userList[i];
       }
     }
@@ -89,25 +88,32 @@ class _ChatListContainerState extends State<ChatListContainer> {
     return Container(
       child: StreamBuilder(
           stream: _conversations,
-          builder: (context, snapshot){
-            if(snapshot.hasData){
-              if(snapshot.data != null){
-                if(snapshot.data.documents.length != 0) {
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data != null) {
+                if (snapshot.data.documents.length != 0) {
                   return ListView.builder(
                     padding: EdgeInsets.all(10),
                     shrinkWrap: true,
                     itemCount: snapshot.data.documents.length,
                     itemBuilder: (context, index) {
                       UserModel user = takeUserWithCuid(snapshot, index);
-                      if(user != null){
+                      if (user != null) {
                         return ListTile(
-                          leading: new Image.asset('assets/images/${user.avatar}'),
+                          leading:
+                              new Image.asset('assets/images/${user.avatar}'),
                           title: Text(user.name),
                           dense: false,
                           onTap: () {
-                            String cid = snapshot.data.documents[index].data()["cid"];
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => ChatScreen(cid: cid, name: user.name, image: user.avatar)));
+                            String cid =
+                                snapshot.data.documents[index].data()["cid"];
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatScreen(
+                                        cid: cid,
+                                        name: user.name,
+                                        image: user.avatar)));
                           },
                           onLongPress: () {
                             //TODO: Delete conversation
@@ -127,28 +133,24 @@ class _ChatListContainerState extends State<ChatListContainer> {
                 return noConversationWidget();
               }
             } else {
-
               return LinearProgressIndicator();
-            }}
-      ),
+            }
+          }),
     );
   }
 }
 
 // Button that let the user make a new message: always present, right bottom
 class NewChatBtn extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(25),
       child: FloatingActionButton(
-        child: Icon(
-            Icons.edit, color: Colors.black, size: 25
-        ),
-        onPressed: (){
+        child: Icon(Icons.edit, color: Colors.black, size: 25),
+        onPressed: () {
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => createConversations()));
+              MaterialPageRoute(builder: (context) => CreateConversations()));
         },
       ),
     );
@@ -167,7 +169,7 @@ class LogoUser extends StatelessWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50), color: Colors.blue[200]),
         child: //using a stack -> 2 items
-        Stack(
+            Stack(
           children: <Widget>[
             Align(
               alignment: Alignment.center,

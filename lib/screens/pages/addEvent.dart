@@ -5,6 +5,10 @@ import 'package:flutter_familly_app/services/firebaseMethods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
+import 'dart:math' show Random;
+import 'package:random_string/random_string.dart';
+
+import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 
 class AddEventPage extends StatefulWidget {
   final DateTime selectedDate;
@@ -20,6 +24,7 @@ class AddEventPage extends StatefulWidget {
 class _AddEventPageState extends State<AddEventPage> {
   final _formKey = GlobalKey<FormBuilderState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool state;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,6 +51,13 @@ class _AddEventPageState extends State<AddEventPage> {
                     _formKey.currentState.save();
                     final data =
                         Map<String, dynamic>.from(_formKey.currentState.value);
+                    if (state == false) {
+                      data['groupMeetingCode'] = randomAlpha(5);
+                      // random sequence of 5 alpha characters i.e. aRzt
+
+                    } else {
+                      data['groupMeetingCode'] = null;
+                    }
                     data['date'] =
                         (data['date'] as DateTime).millisecondsSinceEpoch;
                     print(data);
@@ -119,6 +131,29 @@ class _AddEventPageState extends State<AddEventPage> {
                         decoration: InputDecoration(
                           prefixIcon: Icon(Icons.calendar_today_sharp),
                         ),
+                      ),
+                      Divider(),
+                      LiteRollingSwitch(
+                        value: true,
+                        textOn: 'Event',
+                        textOff: 'Meeting',
+                        colorOn: Colors.deepOrange,
+                        colorOff: Colors.blueGrey,
+                        iconOn: Icons.event,
+                        iconOff: Icons.group,
+                        onChanged: (value) async {
+                          if (value == false) {
+                            setState(() {
+                              state = false;
+                              print("dit is de meeting");
+                            });
+                          } else if (value == true) {
+                            setState(() {
+                              state = true;
+                              print("dit is de evenb");
+                            });
+                          }
+                        },
                       ),
                     ],
                   )))

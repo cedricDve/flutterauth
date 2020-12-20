@@ -26,7 +26,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController _passwordControler = new TextEditingController();
   TextEditingController nameControler = new TextEditingController();
   TextEditingController birthdayControler = new TextEditingController();
-  
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -171,7 +171,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                     ),
                                   )),
                             ),
-                            
                             Container(
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
@@ -216,11 +215,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         myThumbnail = tempThumbnail;
 
                         if (passwordControler.text == _passwordControler.text) {
-                          // signIn
-                          final String returnValue =
-                              await Auth(auth: widget.auth).createAccount(
-                                  email: emailControler.text.trim(),
-                                  password: passwordControler.text.trim());
                           //Store user info to Firestore
                           if (nameControler.text.length < 3 &&
                               nameControler.text.length < 20)
@@ -237,7 +231,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             email: emailControler.text.trim(),
                             name: nameControler.text.trim(),
                             birthday:
-                                _dateTime.toIso8601String().split('T').first ?? "No birthday selected", //Here
+                                _dateTime.toIso8601String().split('T').first ??
+                                    "No birthday selected", //Here
                             avatar: myThumbnail,
                             isFamily: false,
                             isAdmin: false,
@@ -247,6 +242,11 @@ class _RegisterPageState extends State<RegisterPage> {
                               .collection("users")
                               .doc(widget.auth.currentUser.uid)
                               .set(userModel.toMap());
+                          // signIn
+                          final String returnValue =
+                              await Auth(auth: widget.auth).createAccount(
+                                  email: emailControler.text.trim(),
+                                  password: passwordControler.text.trim());
 
                           if (returnValue == "Success") {
                             emailControler.clear();

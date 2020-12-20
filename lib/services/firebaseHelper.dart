@@ -33,10 +33,20 @@ class FirebaseHelper {
   Future<bool> isAdmin() => _firebaseHelper.isAdmin();
   Future<bool> isFamilyId() => _firebaseHelper.isFamilyId();
   Future<String> getFID() => _firebaseHelper.getFID();
-  Future<void> resetPassword(String mail)=>_firebaseHelper.resetPassword(mail);
+  Future<void> resetPassword(String mail) =>
+      _firebaseHelper.resetPassword(mail);
   //Future<List<Events>> getFamEvents() => _firebaseHelper.getFamEvents();
   bool isEmailVerified(User user) => _firebaseHelper.isEmailVerified(user);
 
   Future<List<FamMemberModel>> getFamilyAvatars() =>
       _firebaseHelper.getFamilyAvatars();
+
+  Future<String> getFamCallCode(String id) =>
+      _firebaseHelper.getFamCallCode(id);
+
+  // Gamify
+  Future<int> countFamPost() => _firebaseHelper.countFamPost();
+  Future<int> countFamImages() => _firebaseHelper.countFamImages();
+  Future<int> countCalendarCU() => _firebaseHelper.countCalendarCU();
+  Future<int> countFaq() => _firebaseHelper.countFaq();
 }

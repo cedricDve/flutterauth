@@ -20,6 +20,10 @@ class FirebaseMethods {
     return currentUser;
   }
 
+  Future<String> getFamCallCode(String id) async {
+    return FirebaseFirestore.instance.collection("calender_events").doc(id).id;
+  }
+
   Future<bool> isAdmin() async {
     String cuid = Auth(auth: _auth).currentUser.uid;
     // Get data from Firestore of current user with cuid ->(CurrentUserID)
@@ -105,7 +109,7 @@ class FirebaseMethods {
     List<UserModel> userList = List<UserModel>();
 
     DocumentSnapshot ds =
-    await _firebaseFirestore.collection("users").doc(cuid).get();
+        await _firebaseFirestore.collection("users").doc(cuid).get();
 
     QuerySnapshot querySnapshot = await _firebaseFirestore
         .collection("users")
@@ -131,47 +135,45 @@ class FirebaseMethods {
         await _firebaseFirestore.collection("users").doc(cuid).get();
     String fid = ds.get('fid');
 
-    if (fid != null) {
-      QuerySnapshot querySnapshot = await _firebaseFirestore
-          .collection("families")
-          .doc(fid)
-          .collection("conversations")
-          .where('members', isEqualTo: list1)
-          .get();
-      QuerySnapshot querySnapshotSender = await _firebaseFirestore
-          .collection("families")
-          .doc(fid)
-          .collection("conversations")
-          .where('memberSender', isEqualTo: list2)
-          .get();
+    QuerySnapshot querySnapshot = await _firebaseFirestore
+        .collection("families")
+        .doc(fid)
+        .collection("conversations")
+        .where('members', isEqualTo: list1)
+        .get();
+    QuerySnapshot querySnapshotSender = await _firebaseFirestore
+        .collection("families")
+        .doc(fid)
+        .collection("conversations")
+        .where('memberSender', isEqualTo: list2)
+        .get();
 
-      await _firebaseFirestore
-          .collection("families")
-          .doc(fid)
-          .collection("conversations")
-          .doc()
-          .get()
-          .then((value) {
-        if (querySnapshot.docs.isEmpty || querySnapshotSender.docs.isEmpty) {
-          ConversationModel conversationModel = ConversationModel(
-            cid: value.id,
-            updateDate: DateTime.now().millisecondsSinceEpoch,
-            members: list1,
-            memberSender: list2,
-          );
-          _firebaseFirestore
-              .collection("families")
-              .doc(fid)
-              .collection("conversations")
-              .doc(value.id)
-              .set(conversationModel.toMap(conversationModel));
-          cid = value.id;
-        } else {
-          cid = querySnapshot.docs.first.id;
-        }
-      });
-      return cid;
-    }
+    await _firebaseFirestore
+        .collection("families")
+        .doc(fid)
+        .collection("conversations")
+        .doc()
+        .get()
+        .then((value) {
+      if (querySnapshot.docs.isEmpty || querySnapshotSender.docs.isEmpty) {
+        ConversationModel conversationModel = ConversationModel(
+          cid: value.id,
+          updateDate: DateTime.now().millisecondsSinceEpoch,
+          members: list1,
+          memberSender: list2,
+        );
+        _firebaseFirestore
+            .collection("families")
+            .doc(fid)
+            .collection("conversations")
+            .doc(value.id)
+            .set(conversationModel.toMap(conversationModel));
+        cid = value.id;
+      } else {
+        cid = querySnapshot.docs.first.id;
+      }
+    });
+    return cid;
   }
 
   //create a message in the selected conversation withe as input the conversation ID
@@ -222,7 +224,7 @@ class FirebaseMethods {
   fetchAllConversations() async {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
-    await _firebaseFirestore.collection("users").doc(cuid).get();
+        await _firebaseFirestore.collection("users").doc(cuid).get();
     String fid = ds.get('fid');
 
     if (fid != null) {
@@ -231,8 +233,7 @@ class FirebaseMethods {
           .collection("families")
           .doc(fid)
           .collection("conversations")
-          .where("members", arrayContainsAny: [cuid])
-          .snapshots();
+          .where("members", arrayContainsAny: [cuid]).snapshots();
     }
   }
 
@@ -259,7 +260,7 @@ class FirebaseMethods {
           .collection("conversations")
           .doc(cid)
           .collection("messages")
-          .orderBy('time',descending: true)
+          .orderBy('time', descending: true)
           .snapshots();
     }
   }
@@ -268,7 +269,7 @@ class FirebaseMethods {
   Future<void> deleteConversation(String cid, String mid) async {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
-    await _firebaseFirestore.collection("users").doc(cuid).get();
+        await _firebaseFirestore.collection("users").doc(cuid).get();
     String fid = ds.get('fid');
 
     if (fid != null) {
@@ -303,9 +304,8 @@ class FirebaseMethods {
   }
 
   Future<List> joinFamily() async {
-    // Get the current user ID
+    // Get the current user ID => get doc snapshot of current user from Firestore
     String cuid = Auth(auth: _auth).currentUser.uid;
-    // Get data from Firestore of current user with cuid ->(CurrentUserID)
     DocumentSnapshot ds =
         await _firebaseFirestore.collection("users").doc(cuid).get();
     // Get data from Firestore of family with FID of cuid
@@ -313,26 +313,28 @@ class FirebaseMethods {
         .collection("families")
         .doc(ds.get('fid'))
         .get();
-
+    //List for the family request
     List a = dsf.get('membersRequest');
+    //check family state: family-id and check if user is in a family
     if (ds.get('fid') == null)
       isFam = false;
+    //check if user is admin
     else if (ds.get('isAdmin') && a.length >= 1) {
       print("A USER WANA JOIN THE FAM");
-
+      //status user: isJoin ? => get user id and prevent the admin
       bool isJoin = true;
-
       String juid = a[0];
-
+      // Get data from Firestore of user that like to join the family
       DocumentSnapshot jds =
           await _firebaseFirestore.collection("users").doc(juid).get();
-
+      //List of data from the joining user
       List data = List();
       data.add(jds.get('name'));
       data.add(isJoin);
       data.add(isFam);
       return data;
     }
+    // else return an empty list
     return List();
   }
 
@@ -359,7 +361,7 @@ class FirebaseMethods {
 
   Future<void> resetPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
-}
+  }
 
   bool isEmailVerified(User user) {
     if (user.emailVerified) {
@@ -367,16 +369,81 @@ class FirebaseMethods {
     } else
       return false;
   }
+
+  //-------Gamify
+  Future<int> countFamPost() async {
+    String fID;
+    int countPosts;
+    await getFID().then((value) {
+      fID = value;
+    });
+    await _firebaseFirestore
+        .collection('families')
+        .doc(fID)
+        .collection('thread')
+        .get()
+        .then((snapshot) {
+      countPosts = snapshot.size;
+    });
+    return countPosts;
+  }
+
+  Future<int> countFamImages() async {
+    String fID;
+    int countImages;
+    await getFID().then((value) {
+      fID = value;
+    });
+    await _firebaseFirestore
+        .collection('families')
+        .doc(fID)
+        .collection('imageURLs')
+        .get()
+        .then((snapshot) {
+      countImages = snapshot.size;
+    });
+    return countImages;
+  }
+
+  Future<int> countCalendarCU() async {
+    String cuid = Auth(auth: _auth).currentUser.uid;
+    int countCalendarCU;
+    await _firebaseFirestore
+        .collection('calendar_events')
+        .where('user_id', isEqualTo: cuid)
+        .get()
+        .then((snapshot) {
+      countCalendarCU = snapshot.size;
+    });
+    return countCalendarCU;
+  }
+
+  Future<int> countFaq() async {
+    String cuid = Auth(auth: _auth).currentUser.uid;
+    const QUESTIONS = 3;
+    int countFaq = 0;
+    for (var i = 0; i < QUESTIONS; i++)
+      await _firebaseFirestore
+          .collection('faq')
+          .doc("question$i")
+          .collection('faqComments')
+          .where("user_id", isEqualTo: cuid)
+          .get()
+          .then((value) {
+        if (value != null) countFaq += value.size;
+        print(countFaq);
+      });
+    return countFaq;
+  }
+//---------------------End Gamify
 }
 
+// For Calendar Events: Using firebase_helpers:
 final eventDBS = DatabaseService<CalendarEvent>(
   AppDBConstants.eventCollection,
   fromDS: (id, data) => CalendarEvent.fromDS(id, data),
   toMap: (event) => event.toMap(),
 );
-
-// For Calendar Events
-// Using firebase_helpers:
 
 /*
 

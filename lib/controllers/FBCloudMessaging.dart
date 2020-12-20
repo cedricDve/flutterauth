@@ -7,15 +7,15 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
+void myBackgroundMessageHandler(Map<String, dynamic> message) {
   if (message.containsKey('data')) {
     print('myBackgroundMessageHandler data');
-    final dynamic data = message['data'];
+    // final dynamic data = message['data'];
   }
 
   if (message.containsKey('notification')) {
     print('myBackgroundMessageHandler notification');
-    final dynamic notification = message['notification'];
+    // final dynamic notification = message['notification'];
   }
   // Or do other work.
 }

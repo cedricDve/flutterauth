@@ -66,7 +66,7 @@ class _ThreadItem extends State<ThreadItem> {
     setState(() {
       isLikePost ? _likeCount-- : _likeCount++;
     });
-   /* Navigator.push(
+    /* Navigator.push(
             context, MaterialPageRoute(builder: (BuildContext context) => super.widget));*/
   }
 
@@ -92,8 +92,10 @@ class _ThreadItem extends State<ThreadItem> {
                       child: Container(
                           width: 48,
                           height: 48,
-                          child: Image.asset(
-                              'assets/images/$_myThumbnail') //profile icons on thread
+                          child: (_myThumbnail == null)
+                              ? const Text("")
+                              : Image.asset(
+                                  'assets/images/$_myThumbnail') //profile icons on thread
                           ),
                     ),
                     Column(

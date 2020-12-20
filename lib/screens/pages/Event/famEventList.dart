@@ -12,6 +12,18 @@ class HomeFamEvents extends StatefulWidget {
 }
 
 class _HomeFamEventsState extends State<HomeFamEvents> {
+  String fid;
+  FirebaseHelper _firebaseHelper = FirebaseHelper();
+  @override
+  void initState() {
+    super.initState();
+    _firebaseHelper.getFID().then((value) {
+      setState(() {
+        fid = value;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +38,7 @@ class _HomeFamEventsState extends State<HomeFamEvents> {
         body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('families')
-              .doc('43pcc')
+              .doc(fid)
               .collection('fam-events')
               .snapshots(),
           builder: (context, snapshot) {
@@ -102,13 +114,6 @@ class _CreateFamEventState extends State<CreateFamEvent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Create Family Event')),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => CreateFamEvent()));
-        },
-      ),
       body: Container(
           child: Column(
         children: <Widget>[

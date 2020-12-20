@@ -9,9 +9,9 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ChatScreen extends StatefulWidget {
   final UserModel receiver;
-  String cid;
-  String name;
-  String image;
+  final String cid;
+  final String name;
+  final String image;
   ChatScreen({this.receiver, this.cid, this.name, this.image});
 
   @override
@@ -29,10 +29,10 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     firebaseHelper.fetchAllMessages(widget.cid).then((list) => {
-      setState(() {
-        _messages = list;
-      }),
-    });
+          setState(() {
+            _messages = list;
+          }),
+        });
     firebaseHelper.getCurrentUser().then((user) {
       setState(() {
         cuid = user.uid;
@@ -51,26 +51,24 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
           title: Text(widget.name),
           backgroundColor: Colors.blue[200],
-          actions: < Widget > [
+          actions: <Widget>[
             IconButton(
                 icon: const Icon(Icons.video_call),
-                onPressed: () async{
+                onPressed: () async {
                   await _handleCameraAndMic(Permission.camera);
                   await _handleCameraAndMic(Permission.microphone);
                   // push video page with given channel name
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CallPage(channelName: widget.cid,
+                      builder: (context) => CallPage(
+                        channelName: widget.cid,
                         role: ClientRole.Broadcaster,
                       ),
                     ),
                   );
-                }
-            )
-          ]
-      ),
-
+                })
+          ]),
       body: Container(
         child: Stack(
           children: <Widget>[
@@ -86,22 +84,19 @@ class _ChatScreenState extends State<ChatScreen> {
                     Expanded(
                       child: TextField(
                         controller: messageEditingController,
-                        style: TextStyle(
-                            color: Colors.white
-                        ),
+                        style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                             hintText: "Send a message ...",
                             hintStyle: TextStyle(
                               color: Colors.white38,
                               fontSize: 16,
                             ),
-                            border: InputBorder.none
-                        ),
+                            border: InputBorder.none),
                       ),
                     ),
                     SizedBox(width: 12.0),
                     GestureDetector(
-                      onTap:()async{
+                      onTap: () async {
                         _sendMessage();
                       },
                       child: Container(
@@ -109,11 +104,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         width: 50.0,
                         decoration: BoxDecoration(
                             color: Colors.blue[200],
-                            borderRadius: BorderRadius.circular(50)
-                        ),
+                            borderRadius: BorderRadius.circular(50)),
                         child: Center(
-                            child: Icon(Icons.send, color: Colors.white)
-                        ),
+                            child: Icon(Icons.send, color: Colors.white)),
                       ),
                     )
                   ],
@@ -128,14 +121,15 @@ class _ChatScreenState extends State<ChatScreen> {
 
   _sendMessage() {
     if (messageEditingController.text.isNotEmpty) {
-      firebaseHelper.createMessage(messageEditingController.text.trim(), widget.cid);
+      firebaseHelper.createMessage(
+          messageEditingController.text.trim(), widget.cid);
       setState(() {
         messageEditingController.text = "";
       });
     }
   }
 
-  Widget noMessageWidget(){
+  Widget noMessageWidget() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.0),
       child: Column(
@@ -143,7 +137,7 @@ class _ChatScreenState extends State<ChatScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           GestureDetector(
-              child: new Image.asset('assets/images/${widget.image}'),
+            child: new Image.asset('assets/images/${widget.image}'),
           ),
           SizedBox(height: 15.0),
           Text("You've not start to convert with ${widget.name}."),
@@ -152,25 +146,25 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget chatList(){
+  Widget chatList() {
     //Stream _messages;
     return StreamBuilder(
         stream: _messages,
-        builder: (context, snapshot){
-          if(snapshot.hasData){
-            if(snapshot.data != null) {
-              if(snapshot.data.documents.length != 0) {
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data != null) {
+              if (snapshot.data.documents.length != 0) {
                 return ListView.builder(
                   reverse: true,
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
                     return CustomMessageTile(
-                        message: snapshot.data.documents[index].data()["message"],
+                        message:
+                            snapshot.data.documents[index].data()["message"],
                         sentByMe: cuid ==
                             snapshot.data.documents[index].data()["sender"],
                         cid: widget.cid,
-                        mid: snapshot.data.documents[index].data()["mid"]
-                    );
+                        mid: snapshot.data.documents[index].data()["mid"]);
                   },
                 );
               } else {
@@ -182,7 +176,6 @@ class _ChatScreenState extends State<ChatScreen> {
           } else {
             return LinearProgressIndicator();
           }
-        }
-    );
+        });
   }
 }
