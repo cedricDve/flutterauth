@@ -11,23 +11,6 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-//Firebase App
-
-import 'package:flutter/material.dart';
-
-import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_familly_app/screens/login.dart';
-
-void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    await tester.pumpWidget(Login());
-
-    await tester.enterText(find.byType(TextField), 'hi');
-    await tester.enterText(find.byType(TextField), 'hi');
-    //await tester.tap(find.byType());
-  });
-}
-
 class Login extends StatefulWidget {
   final FirebaseAuth auth;
   final FirebaseFirestore firestore;
@@ -152,22 +135,27 @@ class _LoginState extends State<Login> {
                     height: 20,
                   ),
                   GestureDetector(
-                    onTap: ()async{
-                      try{
-                        firebaseHelper.resetPassword(emailController.text);
-                        displayToastMessage("A reset email has been send to "+emailController.text,context);
-                        }catch(e){
+                      onTap: () async {
+                        try {
+                          firebaseHelper.resetPassword(emailController.text);
+                          displayToastMessage(
+                              "A reset email has been send to " +
+                                  emailController.text,
+                              context);
+                        } catch (e) {
                           e.printStackTrace("No email detected");
-                            displayToastMessage("Please put in a valid email adress",context);                        }
-                    },
-                  child: FadeAnimation(
-                      1.7,
-                      Center(
-                          child: Text(
-                        "Forgot Password?",
-                        style:
-                            TextStyle(color: Color.fromRGBO(196, 135, 198, 1)),
-                      )))),
+                          displayToastMessage(
+                              "Please put in a valid email adress", context);
+                        }
+                      },
+                      child: FadeAnimation(
+                          1.7,
+                          Center(
+                              child: Text(
+                            "Forgot Password?",
+                            style: TextStyle(
+                                color: Color.fromRGBO(196, 135, 198, 1)),
+                          )))),
                   SizedBox(
                     height: 30,
                   ),

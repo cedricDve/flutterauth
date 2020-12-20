@@ -10,8 +10,7 @@ class ChatList extends StatefulWidget {
   _ChatListState createState() => _ChatListState();
 }
 
-class _ChatListState extends State<ChatList> with TickerProviderStateMixin{
-
+class _ChatListState extends State<ChatList> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
@@ -174,12 +173,10 @@ class NewChatBtn extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(25),
       child: FloatingActionButton(
-        child: Icon(
-            Icons.edit, color: Colors.black, size: 25
-        ),
-        onPressed: (){
+        child: Icon(Icons.edit, color: Colors.black, size: 25),
+        onPressed: () {
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => createConversations()));
+              MaterialPageRoute(builder: (context) => CreateConversations()));
         },
       ),
     );

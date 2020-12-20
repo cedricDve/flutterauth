@@ -3,18 +3,26 @@ import 'dart:convert';
 class FamMemberModel {
   final String id;
   final String avatar;
+  final String fid;
+  final String name;
   FamMemberModel({
     this.id,
     this.avatar,
+    this.fid,
+    this.name,
   });
 
   FamMemberModel copyWith({
     String id,
     String avatar,
+    String fid,
+    String name,
   }) {
     return FamMemberModel(
       id: id ?? this.id,
       avatar: avatar ?? this.avatar,
+      fid: fid ?? this.fid,
+      name: name ?? this.name,
     );
   }
 
@@ -22,6 +30,8 @@ class FamMemberModel {
     return {
       'id': id,
       'avatar': avatar,
+      'fid': fid,
+      'name': name,
     };
   }
 
@@ -31,6 +41,8 @@ class FamMemberModel {
     return FamMemberModel(
       id: map['id'],
       avatar: map['avatar'],
+      fid: map['fid'],
+      name: map['name'],
     );
   }
 
@@ -40,13 +52,18 @@ class FamMemberModel {
       FamMemberModel.fromMap(json.decode(source));
 
   @override
-  String toString() => 'FamMemberModel(id: $id, avatar: $avatar)';
+  String toString() =>
+      'FamMemberModel(id: $id, avatar: $avatar, fid: $fid, name: $name)';
 
   @override
   bool operator ==(Object o) {
     if (identical(this, o)) return true;
 
-    return o is FamMemberModel && o.id == id && o.avatar == avatar;
+    return o is FamMemberModel &&
+        o.id == id &&
+        o.avatar == avatar &&
+        o.fid == fid &&
+        o.name == name;
   }
 
   @override

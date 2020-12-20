@@ -57,16 +57,16 @@ class IndexState extends State<IndexPage> {
                   Expanded(
                       child: Container(
                           child: TextField(
-                            controller: _channelController,
-                            decoration: InputDecoration(
-                              errorText:
-                              _validateError ? 'Channel name is mandatory' : null,
-                              border: OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(25.0),
-                              ),
-                              hintText: 'Channel name',
-                            ),
-                          ))),
+                    controller: _channelController,
+                    decoration: InputDecoration(
+                      errorText:
+                          _validateError ? 'Channel name is mandatory' : null,
+                      border: OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(25.0),
+                      ),
+                      hintText: 'Channel name',
+                    ),
+                  ))),
                 ],
               ),
               Padding(
@@ -101,7 +101,7 @@ class IndexState extends State<IndexPage> {
       _channelController.text.isEmpty
           ? _validateError = true
           : //if it is
-      _validateError = false; //else
+          _validateError = false; //else
     });
     if (_channelController.text.isNotEmpty) {
       // await for camera and mic permissions before pushing video page

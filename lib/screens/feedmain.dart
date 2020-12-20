@@ -5,12 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/commons/const.dart';
-import 'package:flutter_familly_app/models/user.dart';
+
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_familly_app/commons/utils.dart';
+
 import 'package:flutter_familly_app/controllers/FBCloudMessaging.dart';
 import 'threadMain.dart';
 
@@ -72,7 +72,7 @@ class _MyFeedPageState extends State<MyFeedPage> with TickerProviderStateMixin {
       prefs.setString('myThumbnail', tempThumbnail);
       myThumbnail = tempThumbnail;
     }
-//change username !!!
+
     prefs.setString('myName', ds.get('name'));
 
     setState(() {

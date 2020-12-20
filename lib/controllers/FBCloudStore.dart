@@ -77,7 +77,7 @@ class FBCloudStore {
           .doc(userProfile.myName);
       await FirebaseFirestore.instance
           .runTransaction((Transaction myTransaction) async {
-        await myTransaction.delete(likeReference);
+        myTransaction.delete(likeReference);
       });
     } else {
       await FirebaseFirestore.instance

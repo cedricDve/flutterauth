@@ -12,8 +12,6 @@ import 'package:flutter_familly_app/services/firebaseMethods.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-void main() => runApp(CalendarHome());
-
 class CalendarHome extends StatefulWidget {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -23,8 +21,8 @@ class CalendarHome extends StatefulWidget {
 
 class _CalendarHomeState extends State<CalendarHome> {
   FirebaseHelper _firebaseHelper = FirebaseHelper();
-  List famMembers = List();
-  bool isFam;
+  List famMembers;
+  bool isFam = true;
 
   CalendarController _calendarController = CalendarController();
   Map<DateTime, List<CalendarEvent>> _groupedEvents;
@@ -56,18 +54,15 @@ class _CalendarHomeState extends State<CalendarHome> {
     super.initState();
     _firebaseHelper.getFamMembers().then((List list) {
       setState(() {
-        for (var i = 0; i < list.length; i++) {
-          famMembers.add(list[i]);
-        }
+        famMembers = list;
       });
     });
+
     checkIsFamily();
   }
 
   @override
   Widget build(BuildContext context) {
-    print(famMembers);
-
     if (isFam)
       return Scaffold(
         appBar: AppBar(

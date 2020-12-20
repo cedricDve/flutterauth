@@ -8,6 +8,7 @@ import 'package:flutter_familly_app/screens/login.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
+import 'package:flutter_familly_app/screens/Choose.dart';
 
 void main() {
   runApp(App());
@@ -67,9 +68,27 @@ class _RootState extends State<Root> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseHelper _firebaseHelper = FirebaseHelper();
   User user;
+  // A function that look checks if the current user has a family. If the authenticated user has a family, he can continue, otherwise he will be redirected to a page where he can join or create a family
+// A function that look checks if the current user has a family. If the authenticated user has a family, he can continue, otherwise he will be redirected to a page where he can join or create a family
+  void checkIsFamily() async {
+    String cuid = Auth(auth: _auth).currentUser.uid;
+    // Get data from Firestore of current user with cuid ->(CurrentUserID)
+    DocumentSnapshot ds =
+        await _firebaseFirestore.collection("users").doc(cuid).get();
+    var fid = ds.get('fid');
+    var booleke = ds.get('isFamily');
+    print(fid);
+    print(booleke);
+    print("BG POUR LA VIE");
+    if (fid == null || booleke == false) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => Choose()));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    checkIsFamily();
     // the functions I wrote returns future string so -> use streambuilder
     return StreamBuilder(
       //auth stream
