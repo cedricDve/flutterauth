@@ -66,6 +66,8 @@ class _ThreadItem extends State<ThreadItem> {
     setState(() {
       isLikePost ? _likeCount-- : _likeCount++;
     });
+   /* Navigator.push(
+            context, MaterialPageRoute(builder: (BuildContext context) => super.widget));*/
   }
 
   @override

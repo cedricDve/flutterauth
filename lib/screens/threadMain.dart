@@ -35,6 +35,7 @@ class _ThreadMain extends State<ThreadMain> {
             )));
   }
 
+// get fid of current user => use fID to have fid of current user
   void getFidCurrentUser() async {
     String cuid =
     await _firebaseHelper.getCurrentUser().then((user) => user.uid);
@@ -69,13 +70,8 @@ class _ThreadMain extends State<ThreadMain> {
   Widget build(BuildContext context) {
     print(isFamily);
     print("!!");
-    // get fid of current user => use fID to have fid of current user
 
     return RefreshIndicator(
-      onRefresh: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Home()));
-      },
       child: Scaffold(
         body: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
@@ -85,12 +81,11 @@ class _ThreadMain extends State<ThreadMain> {
                 .orderBy('postTimeStamp', descending: true)
                 .snapshots(),
             builder: (context, snapshot) {
-              //if no data => tru e: false
+              //if no data => true: false
               if (!snapshot.hasData) return LinearProgressIndicator();
-
               return Stack(
                 children: <Widget>[
-                  (snapshot.data.docs.length > 0 && isFamily && _isLoading)
+                  (snapshot.data.docs.length > 0 && isFamily)
                       ? ListView(
                     shrinkWrap: true,
                     children:
@@ -143,7 +138,10 @@ class _ThreadMain extends State<ThreadMain> {
           tooltip: 'Increment',
           child: Icon(Icons.create),
         ), // This trailing comma makes auto-formatting nicer for build methods.
-      ),
+      ),onRefresh: (){
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Home()));
+      },
     );
   }
 

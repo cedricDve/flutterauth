@@ -69,8 +69,8 @@ class _CommentItem extends State<CommentItem>{
                             RichText(
                               text: TextSpan(
                                 children: <TextSpan>[
-                                  TextSpan(text: widget.data['toUserID'], style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blue[800])),
-                                  TextSpan(text: Utils.commentWithoutReplyUser(widget.data['commentContent']), style: TextStyle(color:Colors.black)),
+                                  //TextSpan(text: widget.data['toUserID'], style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blue[800])),
+                                  TextSpan(text: widget.data['commentContent'], style: TextStyle(color:Colors.black)),
                                 ],
                               ),
                             ),
