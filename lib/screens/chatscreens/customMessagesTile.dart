@@ -16,8 +16,9 @@ class CustomMessageTile extends StatelessWidget {
     Widget deleteButton = FlatButton(
       child: Text("Delete"),
       onPressed: () async {
-        await _firebaseHelper.deleteMessageForAll(cid, mid);
-        Navigator.of(context).pop();
+
+          await _firebaseHelper.deleteMessageForAll(cid, mid);
+          Navigator.of(context).pop();
         },
     );
 
@@ -50,7 +51,9 @@ class CustomMessageTile extends StatelessWidget {
     return Container(
         child: GestureDetector(
           onLongPress: () {
-            _popupDialog(context);
+            if(sentByMe){
+              _popupDialog(context);
+            }
           },
           child: Container(
             margin: sentByMe ? EdgeInsets.only(left: 30) : EdgeInsets.only(right: 30),
@@ -67,14 +70,14 @@ class CustomMessageTile extends StatelessWidget {
                   topRight: Radius.circular(23),
                   bottomRight: Radius.circular(23)
               ),
-              color: sentByMe ? Colors.blueAccent : Colors.grey[700],
+              color: sentByMe ? Colors.blue[200] : Colors.grey[700],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 //Text(sender.toUpperCase(), textAlign: TextAlign.start, style: TextStyle(fontSize: 13.0, fontWeight: FontWeight.bold, color: Colors.black, letterSpacing: -0.5)),
                 SizedBox(height: 7.0),
-                Text(message, textAlign: TextAlign.start, style: TextStyle(fontSize: 15.0, color: Colors.white)),
+                Text(message, textAlign: TextAlign.start, style: TextStyle(fontSize: 15.0, color: Colors.black)),
               ],
             ),
           ),

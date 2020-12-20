@@ -31,7 +31,6 @@ class FamilyModel{
   this.avatar = mapData['avatar'];
   this.members = mapData['members'];
   this.membersRequest = mapData['membersRequest'];
-
   }
 
 }

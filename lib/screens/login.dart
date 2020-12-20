@@ -13,6 +13,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 //Firebase App
 
+import 'package:flutter/material.dart';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_familly_app/screens/login.dart';
+
+void main() {
+  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+    await tester.pumpWidget(Login());
+
+    await tester.enterText(find.byType(TextField), 'hi');
+    await tester.enterText(find.byType(TextField), 'hi');
+    //await tester.tap(find.byType());
+  });
+}
+
 class Login extends StatefulWidget {
   final FirebaseAuth auth;
   final FirebaseFirestore firestore;

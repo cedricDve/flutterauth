@@ -27,9 +27,10 @@ class _createConversationsState extends State<createConversations> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.black,
+        //backgroundColor: Colors.black,
         appBar: AppBar(
           title:  const Text('new conversation'),
+          backgroundColor: Colors.blue[200],
         ),
         body: Scaffold(
           body: Container(
@@ -38,7 +39,7 @@ class _createConversationsState extends State<createConversations> {
                 TextField(
                   decoration: InputDecoration(
                     suffixIcon: IconButton(
-                      icon: Icon(Icons.close, color: Colors.blue),
+                      icon: Icon(Icons.close, color: Colors.blue[200],),
                       onPressed: (){
                         WidgetsBinding.instance.addPostFrameCallback(
                                 (_) => {searchController.clear()});
@@ -79,15 +80,11 @@ class _createConversationsState extends State<createConversations> {
         itemBuilder: ((context, index) {
           return ListTile(
             title: Text(searchResults[index].name),
-            leading: Icon(
-                Icons.account_circle //searchResults[index].avatar
-            ),
+            leading: new Image.asset('assets/images/${searchResults[index].avatar}'),
             onTap: () async {
               String cuid2 = searchResults[index].uid;
               String cid = await firebaseHelper.createConversation(cuid2);
-              //TODO: via chatlist() to ChatScreen()
-
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> ChatScreen(cid: cid)));//TODO: via chatlist() to ChatScreen()
+              Navigator.pop(context);
             },
           );
         })

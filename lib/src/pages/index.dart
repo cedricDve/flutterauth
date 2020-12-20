@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_familly_app/models/modelProvider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 import './call.dart';
 
@@ -29,6 +31,8 @@ class IndexState extends State<IndexPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeChange = Provider.of<DarkThemeProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Agora Flutter QuickStart'),
@@ -38,49 +42,31 @@ class IndexState extends State<IndexPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           height: 400,
           child: Column(
-            children: <Widget>[
+            children: [
+              new Padding(padding: EdgeInsets.only(top: 0.0)),
+              new Text(
+                'Call or Stream',
+                style: new TextStyle(
+                    color: Colors.lightBlue,
+                    fontSize: 40.0,
+                    fontWeight: FontWeight.bold),
+              ),
+              new Padding(padding: EdgeInsets.only(top: 50.0)),
               Row(
                 children: <Widget>[
                   Expanded(
-                      child: TextField(
-                    controller: _channelController,
-                    decoration: InputDecoration(
-                      errorText:
-                          _validateError ? 'Channel name is mandatory' : null,
-                      border: UnderlineInputBorder(
-                        borderSide: BorderSide(width: 1),
-                      ),
-                      hintText: 'Channel name',
-                    ),
-                  ))
-                ],
-              ),
-              Column(
-                children: [
-                  ListTile(
-                    title: Text(ClientRole.Broadcaster.toString()),
-                    leading: Radio(
-                      value: ClientRole.Broadcaster,
-                      groupValue: _role,
-                      onChanged: (ClientRole value) {
-                        setState(() {
-                          _role = value;
-                        });
-                      },
-                    ),
-                  ),
-                  ListTile(
-                    title: Text(ClientRole.Audience.toString()),
-                    leading: Radio(
-                      value: ClientRole.Audience,
-                      groupValue: _role,
-                      onChanged: (ClientRole value) {
-                        setState(() {
-                          _role = value;
-                        });
-                      },
-                    ),
-                  )
+                      child: Container(
+                          child: TextField(
+                            controller: _channelController,
+                            decoration: InputDecoration(
+                              errorText:
+                              _validateError ? 'Channel name is mandatory' : null,
+                              border: OutlineInputBorder(
+                                borderRadius: new BorderRadius.circular(25.0),
+                              ),
+                              hintText: 'Channel name',
+                            ),
+                          ))),
                 ],
               ),
               Padding(
@@ -89,9 +75,13 @@ class IndexState extends State<IndexPage> {
                   children: <Widget>[
                     Expanded(
                       child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(18.0),
+                          side: BorderSide(color: Colors.blue),
+                        ),
                         onPressed: onJoin,
-                        child: Text('Join'),
-                        color: Colors.blueAccent,
+                        child: Text('Start'),
+                        color: Colors.lightBlue,
                         textColor: Colors.white,
                       ),
                     )
@@ -110,7 +100,8 @@ class IndexState extends State<IndexPage> {
     setState(() {
       _channelController.text.isEmpty
           ? _validateError = true
-          : _validateError = false;
+          : //if it is
+      _validateError = false; //else
     });
     if (_channelController.text.isNotEmpty) {
       // await for camera and mic permissions before pushing video page

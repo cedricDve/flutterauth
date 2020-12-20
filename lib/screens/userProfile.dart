@@ -12,7 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 import 'introductionScreen.dart';
 import 'faqPage.dart';
-import 'package:flutter_familly_app/services/databaseService.dart';
+import 'package:flutter_familly_app/models/famMemberModel.dart';
 
 DocumentSnapshot ds;
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -37,12 +37,12 @@ class _UserProfile extends State<UserProfile> {
   final FirebaseHelper _firebaseHelper = FirebaseHelper();
   String _myThumbnail;
   String _myName;
+  String famName;
   String _mystatus;
   String cuid;
+  List<FamMemberModel> listFamModel = List<FamMemberModel>();
   @override
   void initState() {
-    _myName;
-    _myThumbnail;
     super.initState();
     _firebaseHelper.isAdmin().then((value) {
       setState(() {
@@ -55,6 +55,11 @@ class _UserProfile extends State<UserProfile> {
         join_username = list[0];
         isJoin = list[1];
         isFam = list[2];
+      });
+    });
+    _firebaseHelper.getFamilyAvatars().then((List<FamMemberModel> value) {
+      setState(() {
+        listFamModel = value;
       });
     });
   }
@@ -74,6 +79,11 @@ class _UserProfile extends State<UserProfile> {
         _mystatus = "Owner";
       }
     });
+    DocumentSnapshot fds =
+        await firestore.collection("families").doc(fid).get();
+    setState(() {
+      famName = fds.get('fname');
+    });
   }
 
   Future deleteUser() async {
@@ -89,9 +99,10 @@ class _UserProfile extends State<UserProfile> {
   @override
   Widget build(BuildContext context) {
     getCurrentUserData();
+
     return SingleChildScrollView(
       child: Container(
-        height: (isAdmin) ? 850 : 700,
+        height: (isAdmin) ? 1000 : 900,
         child: Stack(
           children: <Widget>[
             Container(),
@@ -166,6 +177,30 @@ class _UserProfile extends State<UserProfile> {
                       ),
                     ),
                   ),
+                  new SizedBox(
+                    height: 120.0,
+                    width: double.infinity,
+                    child: new ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: listFamModel.length,
+                        itemBuilder: (BuildContext context, int index) =>
+                            new Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Column(
+                                children: <Widget>[
+                                  new Container(
+                                      width: 80,
+                                      height: 80,
+                                      child: new Image.asset(
+                                          'assets/images/${listFamModel[index].avatar}')),
+                                  new Container(
+                                    child: new Text(listFamModel[index].id) ??
+                                        Text(""),
+                                  )
+                                ],
+                              ),
+                            )),
+                  ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: FadeAnimation(
@@ -193,19 +228,22 @@ class _UserProfile extends State<UserProfile> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
                                   Text(
-                                    "Familly ID",
+                                    "Family ID: $fid",
                                     style: TextStyle(
                                       fontSize: 18.0,
                                     ),
                                   ),
                                   SizedBox(height: 4.0),
-                                  Text(
-                                    '$fid',
-                                    style: TextStyle(
-                                      color: Colors.grey[700],
-                                      fontSize: 12.0,
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 18.0),
+                                    child: Text(
+                                      "$famName",
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                      ),
                                     ),
                                   ),
+                                  SizedBox(height: 2.0),
                                 ],
                               ),
                             ],
@@ -530,6 +568,40 @@ class _UserProfile extends State<UserProfile> {
                     .collection("users")
                     .doc(a[0])
                     .update({'isFamily': true});
+
+                //delete from membersRequest
+                await FirebaseFirestore.instance
+                    .collection("families")
+                    .doc(ds.get('fid'))
+                    .update({
+                  'membersRequest': FieldValue.arrayRemove([a[0]])
+                });
+                setState(() {
+                  isJoin = false;
+                });
+                Navigator.pop(context);
+              }),
+          //admin declines a user
+          new FlatButton(
+              child: const Text('DECLINE'),
+              onPressed: () async {
+                //update to members
+                String cuid = await _firebaseHelper
+                    .getCurrentUser()
+                    .then((user) => user.uid);
+                DocumentSnapshot ds =
+                    await firestore.collection("users").doc(cuid).get();
+                DocumentSnapshot dsf = await firestore
+                    .collection("families")
+                    .doc(ds.get('fid'))
+                    .get();
+                setState(() {});
+                List a = dsf.get('membersRequest');
+                // set joined user to isFamily false
+                await FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(a[0])
+                    .update({'isFamily': false});
 
                 //delete from membersRequest
                 await FirebaseFirestore.instance

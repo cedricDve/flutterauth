@@ -17,18 +17,4 @@ class FBStorage {
       return null;
     }
   }
-
-  static Future<String> uploadEventImages(
-      {@required String eventID, @required File eventImageFile}) async {
-    try {
-      String fileName = 'assets/images/$eventID/postImage';
-      Reference reference = FirebaseStorage.instance.ref().child(fileName);
-      UploadTask uploadTask = reference.putFile(eventImageFile);
-      TaskSnapshot storageTaskSnapshot = await uploadTask;
-      String eventIageURL = await storageTaskSnapshot.ref.getDownloadURL();
-      return eventIageURL;
-    } catch (e) {
-      return null;
-    }
-  }
 }
