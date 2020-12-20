@@ -56,6 +56,38 @@ class _ChatListContainerState extends State<ChatListContainer> {
     });
   }
 
+  void _popupDialog(BuildContext context, String cid) {
+    Widget deleteButton = FlatButton(
+      child: Text("Delete"),
+      onPressed: () async {
+        await firebaseHelper.deleteConversation(cid);
+        Navigator.of(context).pop();
+      },
+    );
+
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("Delete the message ?"),
+      actions: [
+        deleteButton,
+        cancelButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   Widget noConversationWidget(){
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.0),
@@ -100,18 +132,17 @@ class _ChatListContainerState extends State<ChatListContainer> {
                     itemBuilder: (context, index) {
                       UserModel user = takeUserWithCuid(snapshot, index);
                       if(user != null){
+                        String cid = snapshot.data.documents[index].data()["cid"];
                         return ListTile(
                           leading: new Image.asset('assets/images/${user.avatar}'),
                           title: Text(user.name),
                           dense: false,
                           onTap: () {
-                            String cid = snapshot.data.documents[index].data()["cid"];
                             Navigator.push(context, MaterialPageRoute(
                                 builder: (context) => ChatScreen(cid: cid, name: user.name, image: user.avatar)));
                           },
                           onLongPress: () {
-                            //TODO: Delete conversation
-                            print("delete fucker");
+                            _popupDialog(context, cid);
                           },
                         );
                       } else {
@@ -152,45 +183,5 @@ class NewChatBtn extends StatelessWidget {
         },
       ),
     );
-  }
-}
-
-class LogoUser extends StatelessWidget {
-  final String text;
-  //constructor -> passing a text: username
-  LogoUser(this.text);
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        height: 35,
-        width: 35,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50), color: Colors.blue[200]),
-        child: //using a stack -> 2 items
-        Stack(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                text,
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                  fontSize: 15,
-                ),
-              ),
-            ),
-            Align(
-                alignment: Alignment.topRight,
-                child: Container(
-                  height: 12,
-                  width: 12,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.green,
-                  ),
-                )),
-          ],
-        ));
   }
 }

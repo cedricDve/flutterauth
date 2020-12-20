@@ -27,6 +27,9 @@ class FirebaseHelper {
   Future<void> deleteMessageForAll(String cid, String mid) =>
       _firebaseHelper.deleteMessageForAll(cid, mid);
 
+  Future<void> deleteConversation(String cid) =>
+      _firebaseHelper.deleteConversation(cid);
+
   Future<List> joinFamily() => _firebaseHelper.joinFamily();
   Future<List> getFamMembers() => _firebaseHelper.getFamMembers();
   // Future<List> getFamCalendar() => _firebaseHelper.getFamilyCalendar();

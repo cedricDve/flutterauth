@@ -131,7 +131,6 @@ class FirebaseMethods {
         await _firebaseFirestore.collection("users").doc(cuid).get();
     String fid = ds.get('fid');
 
-    if (fid != null) {
       QuerySnapshot querySnapshot = await _firebaseFirestore
           .collection("families")
           .doc(fid)
@@ -171,7 +170,7 @@ class FirebaseMethods {
         }
       });
       return cid;
-    }
+
   }
 
   //create a message in the selected conversation withe as input the conversation ID
@@ -181,7 +180,7 @@ class FirebaseMethods {
         await _firebaseFirestore.collection("users").doc(cuid).get();
     String fid = ds.get('fid');
 
-    if (fid != null) {
+
       await _firebaseFirestore
           .collection("families")
           .doc(fid)
@@ -215,7 +214,7 @@ class FirebaseMethods {
           'updateDate': DateTime.now().millisecondsSinceEpoch,
         });
       });
-    }
+
   }
 
   //create a message in the selected conversation withe as input the conversation ID
@@ -265,7 +264,7 @@ class FirebaseMethods {
   }
 
   //replace the writed message to "message is delete"
-  Future<void> deleteConversation(String cid, String mid) async {
+  Future<void> deleteConversation(String cid) async {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
     await _firebaseFirestore.collection("users").doc(cuid).get();
@@ -277,9 +276,7 @@ class FirebaseMethods {
           .doc(fid)
           .collection("conversations")
           .doc(cid)
-          .collection("messages")
-          .doc(mid)
-          .update({'message': "message delete"});
+          .delete();
     }
   }
 
