@@ -16,9 +16,9 @@ class CustomMessageTile extends StatelessWidget {
     Widget deleteButton = FlatButton(
       child: Text("Delete"),
       onPressed: () async {
-        if()
-        await _firebaseHelper.deleteMessageForAll(cid, mid);
-        Navigator.of(context).pop();
+
+          await _firebaseHelper.deleteMessageForAll(cid, mid);
+          Navigator.of(context).pop();
         },
     );
 
@@ -51,7 +51,9 @@ class CustomMessageTile extends StatelessWidget {
     return Container(
         child: GestureDetector(
           onLongPress: () {
-            _popupDialog(context);
+            if(sentByMe){
+              _popupDialog(context);
+            }
           },
           child: Container(
             margin: sentByMe ? EdgeInsets.only(left: 30) : EdgeInsets.only(right: 30),

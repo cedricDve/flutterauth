@@ -57,44 +57,16 @@ class IndexState extends State<IndexPage> {
                   Expanded(
                       child: Container(
                           child: TextField(
-                    controller: _channelController,
-                    decoration: InputDecoration(
-                      errorText:
-                          _validateError ? 'Channel name is mandatory' : null,
-                      border: OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(25.0),
-                      ),
-                      hintText: 'Channel name',
-                    ),
-                  ))),
-                ],
-              ),
-              Column(
-                children: [
-                  ListTile(
-                    title: Text("Call"),
-                    leading: Radio(
-                      value: ClientRole.Broadcaster,
-                      groupValue: _role,
-                      onChanged: (ClientRole value) {
-                        setState(() {
-                          _role = value;
-                        });
-                      },
-                    ),
-                  ),
-                  ListTile(
-                    title: Text("Stream"),
-                    leading: Radio(
-                      value: ClientRole.Audience,
-                      groupValue: _role,
-                      onChanged: (ClientRole value) {
-                        setState(() {
-                          _role = value;
-                        });
-                      },
-                    ),
-                  )
+                            controller: _channelController,
+                            decoration: InputDecoration(
+                              errorText:
+                              _validateError ? 'Channel name is mandatory' : null,
+                              border: OutlineInputBorder(
+                                borderRadius: new BorderRadius.circular(25.0),
+                              ),
+                              hintText: 'Channel name',
+                            ),
+                          ))),
                 ],
               ),
               Padding(
@@ -129,7 +101,7 @@ class IndexState extends State<IndexPage> {
       _channelController.text.isEmpty
           ? _validateError = true
           : //if it is
-          _validateError = false; //else
+      _validateError = false; //else
     });
     if (_channelController.text.isNotEmpty) {
       // await for camera and mic permissions before pushing video page

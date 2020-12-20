@@ -219,6 +219,24 @@ class FirebaseMethods {
   }
 
   //create a message in the selected conversation withe as input the conversation ID
+  fetchAllConversations() async {
+    String cuid = Auth(auth: _auth).currentUser.uid;
+    DocumentSnapshot ds =
+    await _firebaseFirestore.collection("users").doc(cuid).get();
+    String fid = ds.get('fid');
+
+    if (fid != null) {
+      //TODO: order by date
+      return _firebaseFirestore
+          .collection("families")
+          .doc(fid)
+          .collection("conversations")
+          .where("members", arrayContainsAny: [cuid])
+          .snapshots();
+    }
+  }
+
+  //create a message in the selected conversation withe as input the conversation ID
   fetchAllMessages(String cid) async {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
@@ -241,26 +259,27 @@ class FirebaseMethods {
           .collection("conversations")
           .doc(cid)
           .collection("messages")
-          .orderBy('time')
+          .orderBy('time',descending: true)
           .snapshots();
     }
   }
 
-  //create a message in the selected conversation withe as input the conversation ID
-  fetchAllConversations() async {
+  //replace the writed message to "message is delete"
+  Future<void> deleteConversation(String cid, String mid) async {
     String cuid = Auth(auth: _auth).currentUser.uid;
     DocumentSnapshot ds =
-        await _firebaseFirestore.collection("users").doc(cuid).get();
+    await _firebaseFirestore.collection("users").doc(cuid).get();
     String fid = ds.get('fid');
 
     if (fid != null) {
-      //TODO: order by date
-      return _firebaseFirestore
+      _firebaseFirestore
           .collection("families")
           .doc(fid)
           .collection("conversations")
-          .where("members", arrayContainsAny: [cuid])
-          .snapshots();
+          .doc(cid)
+          .collection("messages")
+          .doc(mid)
+          .update({'message': "message delete"});
     }
   }
 

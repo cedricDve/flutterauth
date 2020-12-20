@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_familly_app/models/user.dart';
 import 'package:flutter_familly_app/screens/chatscreens/customMessagesTile.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
+import 'package:flutter_familly_app/src/pages/call.dart';
+import 'dart:async';
+import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ChatScreen extends StatefulWidget {
   final UserModel receiver;
@@ -24,7 +28,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    //TODO:make a cloud function
     firebaseHelper.fetchAllMessages(widget.cid).then((list) => {
       setState(() {
         _messages = list;
@@ -37,12 +40,35 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  Future<void> _handleCameraAndMic(Permission permission) async {
+    final status = await permission.request();
+    print(status);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.name),
-        backgroundColor: Colors.blue[200],
+          title: Text(widget.name),
+          backgroundColor: Colors.blue[200],
+          actions: < Widget > [
+            IconButton(
+                icon: const Icon(Icons.video_call),
+                onPressed: () async{
+                  await _handleCameraAndMic(Permission.camera);
+                  await _handleCameraAndMic(Permission.microphone);
+                  // push video page with given channel name
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CallPage(channelName: widget.cid,
+                        role: ClientRole.Broadcaster,
+                      ),
+                    ),
+                  );
+                }
+            )
+          ]
       ),
 
       body: Container(
@@ -131,11 +157,11 @@ class _ChatScreenState extends State<ChatScreen> {
     return StreamBuilder(
         stream: _messages,
         builder: (context, snapshot){
-          //TODO: if the list of messages have data = not sure i need do do this
           if(snapshot.hasData){
             if(snapshot.data != null) {
               if(snapshot.data.documents.length != 0) {
                 return ListView.builder(
+                  reverse: true,
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
                     return CustomMessageTile(

@@ -29,7 +29,7 @@ class CallScreenState extends State<CallScreen> {
 
   void getCurrentAppTheme() async {
     themeChangeProvider.darkTheme =
-        await themeChangeProvider.darkThemePreference.getTheme();
+    await themeChangeProvider.darkThemePreference.getTheme();
   }
 
   @override
