@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 import 'introductionScreen.dart';
+import 'Choose.dart';
 import 'faqPage.dart';
 import 'package:flutter_familly_app/models/famMemberModel.dart';
 
@@ -237,10 +238,17 @@ class _UserProfile extends State<UserProfile> {
                                   new Container(
                                       width: 80,
                                       height: 80,
-                                      child: new Image.asset(
-                                          'assets/images/${listFamModel[index].avatar}')),
+                                      child: GestureDetector(
+                                        child: new Image.asset(
+                                            'assets/images/${listFamModel[index].avatar}'),
+                                        onLongPress: () async {
+                                          _showNotificationAdmin(
+                                              listFamModel[index].name,
+                                              listFamModel[index].id);
+                                        },
+                                      )),
                                   new Container(
-                                    child: new Text(listFamModel[index].id) ??
+                                    child: new Text(listFamModel[index].name) ??
                                         Text(""),
                                   )
                                 ],
@@ -721,6 +729,58 @@ class _UserProfile extends State<UserProfile> {
                 });
                 setState(() {
                   isJoin = false;
+                });
+                Navigator.pop(context);
+              }),
+          new FlatButton(
+              child: const Text('Later'),
+              onPressed: () {
+                Navigator.pop(context);
+              })
+        ],
+      ),
+    );
+  }
+
+  void _showNotificationAdmin(String userName, String userId) async {
+    await showDialog(
+      context: context,
+      child: new AlertDialog(
+        contentPadding: const EdgeInsets.all(16.0),
+        content: new Row(
+          children: <Widget>[
+            new Expanded(
+              child: Text(
+                  "As Admin you can set a member to Admin or Delete a member"),
+            )
+          ],
+        ),
+        actions: <Widget>[
+          new FlatButton(
+              child: Text('SET $userName TO ADMIN'),
+              onPressed: () async {
+                //update  member
+                firestore
+                    .collection("users")
+                    .doc(userId)
+                    .update({'isAdmin': true});
+                Fluttertoast.showToast(msg: "$userName setted to ADMIN !");
+                Navigator.pop(context);
+              }),
+          //admin declines a user
+          new FlatButton(
+              child: Text('DELETE $userName FROM FAMILY'),
+              onPressed: () async {
+                await firestore
+                    .collection("users")
+                    .doc(userId)
+                    .update({'isFamily': false});
+                await firestore
+                    .collection("users")
+                    .doc(userId)
+                    .update({'fid': FieldValue.delete()});
+                await firestore.collection("families").doc(fid).update({
+                  'members': FieldValue.arrayRemove([userId])
                 });
                 Navigator.pop(context);
               }),

@@ -8,6 +8,7 @@ import 'package:flutter_familly_app/screens/login.dart';
 import 'package:flutter_familly_app/services/auth.dart';
 import 'package:flutter_familly_app/services/firebaseHelper.dart';
 import 'package:flutter_familly_app/Animation/FadeAnimation.dart';
+import 'package:flutter_familly_app/screens/Choose.dart';
 
 void main() {
   runApp(App());
@@ -67,6 +68,7 @@ class _RootState extends State<Root> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseHelper _firebaseHelper = FirebaseHelper();
   User user;
+  // A function that look checks if the current user has a family. If the authenticated user has a family, he can continue, otherwise he will be redirected to a page where he can join or create a family
 
   @override
   Widget build(BuildContext context) {

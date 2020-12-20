@@ -169,7 +169,7 @@ class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
                           );
 
                           //Put the family code => fid in the current Auth user
-                          _firestore
+                          await _firestore
                               .collection("families")
                               .doc(code)
                               .set(famModel.toMap(famModel))
@@ -182,7 +182,7 @@ class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
                               await _f.collection("users").doc(cuid).get();
                           print(qs.get('fid'));
                           if (qs.get('fid') == null) {
-                            _f
+                            await _f
                                 .collection("users")
                                 .doc(cuid)
                                 .update({

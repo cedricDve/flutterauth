@@ -38,9 +38,11 @@ class _HomeState extends State<Home> {
     // Get data from Firestore of current user with cuid ->(CurrentUserID)
     DocumentSnapshot ds =
         await widget.firestore.collection("users").doc(cuid).get();
-    if (ds.get('fid') == null)
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Choose()));
+
+    if (await ds.get('fid') == null || await ds.get('isFamily') == false) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => Choose()));
+    }
   }
 
   @override

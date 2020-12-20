@@ -80,7 +80,8 @@ class FirebaseMethods {
         await getNameOfId(a[i]).then((jan) {
           name = jan;
           avatar = pieter;
-          famMemberModel = FamMemberModel(avatar: avatar, id: name);
+          famMemberModel =
+              FamMemberModel(avatar: avatar, id: a[i], name: name, fid: fID);
           listFamModel.add(famMemberModel);
         });
       });
@@ -431,7 +432,6 @@ class FirebaseMethods {
           .get()
           .then((value) {
         if (value != null) countFaq += value.size;
-        print(countFaq);
       });
     return countFaq;
   }
