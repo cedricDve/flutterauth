@@ -436,6 +436,9 @@ class FirebaseMethods {
     return countFaq;
   }
 //---------------------End Gamify
+
+//Delete data of user
+
 }
 
 // For Calendar Events: Using firebase_helpers:

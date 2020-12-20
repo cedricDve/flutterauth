@@ -141,8 +141,6 @@ class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
                   ),
                   GestureDetector(
                       onTap: () async {
-                        FirebaseFirestore _f = FirebaseFirestore.instance;
-
                         bool success = true;
                         String cuid = await firebaseHelper
                             .getCurrentUser()
@@ -150,7 +148,7 @@ class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
                         //QuerySnapshot g=  await FirebaseFirestore.instance.collection("users").where(cuid).get();
                         //print(g.docs[1].get('uid'));
 
-                        await _f
+                        await _firestore
                             .collection("families")
                             .doc(code)
                             .get()
@@ -178,11 +176,14 @@ class _CreateStatefulWidgetState extends State<CreateStatefulWidget> {
                               .catchError(
                                   (e) => Fluttertoast.showToast(msg: e));
 
-                          DocumentSnapshot qs =
-                              await _f.collection("users").doc(cuid).get();
+                          DocumentSnapshot qs = await _firestore
+                              .collection("users")
+                              .doc(cuid)
+                              .get();
                           print(qs.get('fid'));
-                          if (qs.get('fid') == null) {
-                            await _f
+                          if (qs.get('fid') == null ||
+                              qs.get('isFamily') == false) {
+                            await _firestore
                                 .collection("users")
                                 .doc(cuid)
                                 .update({

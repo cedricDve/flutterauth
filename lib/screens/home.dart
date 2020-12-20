@@ -32,22 +32,8 @@ class _HomeState extends State<Home> {
     pageController = PageController();
   }
 
-// A function that look checks if the current user has a family. If the authenticated user has a family, he can continue, otherwise he will be redirected to a page where he can join or create a family
-  void checkIsFamily() async {
-    String cuid = Auth(auth: widget.auth).currentUser.uid;
-    // Get data from Firestore of current user with cuid ->(CurrentUserID)
-    DocumentSnapshot ds =
-        await widget.firestore.collection("users").doc(cuid).get();
-
-    if (await ds.get('fid') == null || await ds.get('isFamily') == false) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => Choose()));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    checkIsFamily();
     final screen = [
       MyFeedPageMain(),
       ChatList(),

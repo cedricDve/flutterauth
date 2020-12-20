@@ -133,6 +133,9 @@ class _UserProfile extends State<UserProfile> {
   Future deleteUser() async {
     try {
       User user = await _firebaseHelper.getCurrentUser();
+      // TODO:
+      //await deleteUserPosts();
+
       user.delete();
     } catch (e) {
       print(e.toString());
